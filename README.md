@@ -2,7 +2,7 @@
 &nbsp; [![badge](https://img.shields.io/github/stars/apivideo/api.video-android-live-stream?style=social)](https://github.com/apivideo/api.video-android-live-stream)
 &nbsp; [![badge](https://img.shields.io/discourse/topics?server=https%3A%2F%2Fcommunity.api.video)](https://community.api.video)
 ![](https://github.com/apivideo/API_OAS_file/blob/master/apivideo_banner.png)
-<h1 align="center">TODO: PROJECT NAME</h1>
+<h1 align="center">api.video Swift player</h1>
 
 [api.video](https://api.video) is the video infrastructure for product builders. Lightning fast
 video APIs for integrating, scaling, and managing on-demand & low latency live streaming features in
@@ -21,7 +21,8 @@ your app.
 
 # Project description
 
-This library is **TODO**
+Easily integrate a video player for videos from api.video in your Flutter application for iOS,
+Android and Web.
 
 # Getting started
 
@@ -52,4 +53,4 @@ We are using external library
 # FAQ
 
 If you have any questions, ask us in the [community](https://community.api.video). Or
-use [issues](**TODO** link to github project issues)..
+use [issues](https://github.com/apivideo/api.video-flutter-player/issues).
