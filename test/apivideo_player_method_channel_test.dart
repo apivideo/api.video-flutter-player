@@ -1,9 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:apivideo_player/apivideo_player_method_channel.dart';
+import 'package:apivideo_player/apivideo_player_controller.dart';
 
 void main() {
-  MethodChannelApiVideoPlayer platform = MethodChannelApiVideoPlayer();
+  ApiVideoPlayerController platform = ApiVideoPlayerController();
   const MethodChannel channel = MethodChannel('apivideo_player');
 
   TestWidgetsFlutterBinding.ensureInitialized();

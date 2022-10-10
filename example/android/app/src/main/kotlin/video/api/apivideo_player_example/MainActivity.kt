@@ -1,4 +1,4 @@
-package video.api.apivideo_player_example
+package video.api.flutter.player.example
 
 import io.flutter.embedding.android.FlutterActivity
 

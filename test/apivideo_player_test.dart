@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/apivideo_player_platform_interface.dart';
-import 'package:apivideo_player/apivideo_player_method_channel.dart';
+import 'package:apivideo_player/apivideo_player_controller.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 class MockApiVideoPlayerPlatform
@@ -15,8 +15,8 @@ class MockApiVideoPlayerPlatform
 void main() {
   final ApiVideoPlayerPlatform initialPlatform = ApiVideoPlayerPlatform.instance;
 
-  test('$MethodChannelApiVideoPlayer is the default instance', () {
-    expect(initialPlatform, isInstanceOf<MethodChannelApiVideoPlayer>());
+  test('$ApiVideoPlayerController is the default instance', () {
+    expect(initialPlatform, isInstanceOf<ApiVideoPlayerController>());
   });
 
   test('getPlatformVersion', () async {
