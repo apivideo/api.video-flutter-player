@@ -1,10 +1,7 @@
+import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/apivideo_player_controller.dart';
 import 'package:apivideo_player/apivideo_types.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
-import 'package:apivideo_player/apivideo_player.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,8 +15,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  late final ApiVideoPlayerController _controller;
+
   void _onViewCreated(ApiVideoPlayerController controller) {
-    controller.play();
+    _controller = controller;
   }
 
   @override
@@ -29,8 +28,33 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Center(
-          child: ApiVideoPlayer(videoId: 'vi3CjYlusQKz6JN7au0EmW9b', videoType: VideoType.vod, onViewCreated: _onViewCreated),
+        body: Column(
+          children: [
+            SizedBox(
+                width: 400.0,
+                height: 300.0,
+                child: ApiVideoPlayer(
+                    videoId: 'vi3CjYlusQKz6JN7au0EmW9b',
+                    videoType: VideoType.vod,
+                    onViewCreated: _onViewCreated)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.play_arrow),
+                  onPressed: () {
+                    _controller.play();
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.pause),
+                  onPressed: () {
+                    _controller.pause();
+                  },
+                ),
+              ],
+            )
+          ],
         ),
       ),
     );
