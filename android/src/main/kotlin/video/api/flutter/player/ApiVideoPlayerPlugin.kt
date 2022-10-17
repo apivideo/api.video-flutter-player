@@ -9,7 +9,7 @@ class ApiVideoPlayerPlugin : FlutterPlugin {
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         flutterPluginBinding.platformViewRegistry.registerViewFactory(
             "plugins.video.api/flutter_player_view",
-            ApiVideoPlayerViewFactory(flutterPluginBinding.binaryMessenger)
+            FlutterApiVideoPlayerViewFactory(flutterPluginBinding.binaryMessenger)
         )
     }
 
