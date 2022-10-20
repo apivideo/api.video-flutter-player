@@ -25,35 +25,15 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
         body: Column(
           children: [
-            SizedBox(
-                width: 400.0,
-                height: 300.0,
-                child: ApiVideoPlayer(
-                    videoId: 'vi3CjYlusQKz6JN7au0EmW9b',
-                    videoType: VideoType.vod,
-                    onViewCreated: _onViewCreated)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.play_arrow),
-                  onPressed: () {
-                    _controller.play();
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.pause),
-                  onPressed: () {
-                    _controller.pause();
-                  },
-                ),
-              ],
-            )
+            ApiVideoPlayer(
+              videoId: 'vi3CjYlusQKz6JN7au0EmW9b',
+              videoType: VideoType.vod,
+              onViewCreated: _onViewCreated,
+            ),
+            // const Text("FOO"),
+            // const Text("BAR"),
           ],
         ),
       ),

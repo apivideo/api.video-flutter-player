@@ -1,4 +1,5 @@
 import 'package:apivideo_player/apivideo_player_controller.dart';
+import 'package:apivideo_player/apivideo_player_web.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -22,6 +23,9 @@ class ApiVideoPlayer extends StatelessWidget {
   Widget build(BuildContext context) {
     const String viewType = 'plugins.video.api/flutter_player_view';
 
+    if (kIsWeb) {
+      return const ApiVideoPlayerWeb();
+    }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return AndroidView(
