@@ -3,12 +3,7 @@ import UIKit
 
 public class SwiftApiVideoPlayerPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "apivideo_player", binaryMessenger: registrar.messenger())
-    let instance = SwiftApiVideoPlayerPlugin()
-    registrar.addMethodCallDelegate(instance, channel: channel)
-  }
-
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    result("iOS " + UIDevice.current.systemVersion)
+      let factory = FlutterApiVideoPlayerViewFactory(binaryMessenger: registrar.messenger())
+            registrar.register(factory, withId: "plugins.video.api/flutter_player_view")
   }
 }
