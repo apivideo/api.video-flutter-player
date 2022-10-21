@@ -15,8 +15,6 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
-  webview_flutter: ^2.0.4
-  flutter_html: ^2.2.1
   json_annotation: ^4.7.0
 
 dev_dependencies:
