@@ -29,6 +29,9 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
   Widget build(BuildContext context) {
     return _textureId == ApiVideoPlayerController.kUninitializedTextureId
         ? Container()
-        : _playerPlatform.buildView(_textureId);
+        : SizedBox(
+            width: 400.0,
+            height: 300.0,
+            child: _playerPlatform.buildView(_textureId));
   }
 }
