@@ -1,50 +1,63 @@
-// In order to *not* need this ignore, consider extracting the "web" version
-// of your plugin as a separate package, instead of inlining it in the same
-// package as the core of your plugin.
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html show window;
 import 'dart:html';
 import 'dart:js' as js;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/shims/dart_ui.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 import 'apivideo_player_platform_interface.dart';
-import 'package:html/parser.dart' as htmlparser;
-import 'package:html/dom.dart' as dom;
+import 'apivideo_types.dart';
 
 /// A web implementation of the ApiVideoPlayerPlatform of the ApiVideoPlayer plugin.
-// class ApiVideoPlayerWeb extends ApiVideoPlayerPlatform {
-//   /// Constructs a ApiVideoPlayerWeb
-//   ApiVideoPlayerWeb();
+ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
+   /// Registers this class as the default instance of [PathProviderPlatform].
+   static void registerWith(Registrar registrar) {
+     ApiVideoPlayerPlatform.instance = ApiVideoPlayerPlugin();
+   }
 
-//   static void registerWith(Registrar registrar) {
-//     ApiVideoPlayerPlatform.instance = ApiVideoPlayerWeb();
-//   }
+   @override
+   Future<int?> create(VideoOptions videoOptions) {
+     // TODO
+     throw UnimplementedError('create() has not been implemented.');
+   }
 
-//   /// Returns a [String] containing the version of the platform.
-//   @override
-//   Future<String?> getPlatformVersion() async {
-//     final version = html.window.navigator.userAgent;
-//     return version;
-//   }
-// }
+   @override
+   Future<void> dispose(int textureId) {
+     // TODO
+     throw UnimplementedError('dispose() has not been implemented.');
+   }
+
+   @override
+   Future<void> play(int textureId) {
+     // TODO
+     throw UnimplementedError('play() has not been implemented.');
+   }
+
+   @override
+   Future<void> pause(int textureId) {
+     // TODO
+     throw UnimplementedError('pause() has not been implemented.');
+   }
+
+   @override
+   Widget buildView(int textureId) {
+     // TODO
+     throw UnimplementedError('buildView() has not been implemented.');
+   }
+}
 
 class ApiVideoPlayerWeb extends StatefulWidget {
   // Constructs a ApiVideoPlayerWeb
   const ApiVideoPlayerWeb({super.key});
 
-  static void registerWith(Registrar registrar) {
+ // static void registerWith(Registrar registrar) {
     // ScriptElement script = ScriptElement()
     //   ..innerText = '''
     //       window.player = new PlayerSdk("#playerDiv", { id: "vi2z94GxBgbkBrTkspLuXuBZ" });
     //     ''';
     // document.body?.insertAdjacentElement('beforeend', script);
-    createScript();
-  }
+  //  createScript();
+ // }
 
   static void createScript() {
     ScriptElement script = ScriptElement()

@@ -1,6 +1,4 @@
 import 'package:apivideo_player/apivideo_player.dart';
-import 'package:apivideo_player/apivideo_player_controller.dart';
-import 'package:apivideo_player/apivideo_types.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,11 +13,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late final ApiVideoPlayerController _controller;
-
-  void _onViewCreated(ApiVideoPlayerController controller) {
-    _controller = controller;
-  }
+  final ApiVideoPlayerController _controller = ApiVideoPlayerController(
+      VideoOptions(videoId: 'vi3CjYlusQKz6JN7au0EmW9b'));
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +23,7 @@ class _MyAppState extends State<MyApp> {
         body: Column(
           children: [
             ApiVideoPlayer(
-              videoId: 'vi3CjYlusQKz6JN7au0EmW9b',
-              videoType: VideoType.vod,
-              onViewCreated: _onViewCreated,
+              controller: _controller,
             ),
             // const Text("FOO"),
             // const Text("BAR"),

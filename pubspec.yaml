@@ -38,15 +38,18 @@ flutter:
   # All these are used by the tooling to maintain consistency when
   # adding or updating assets for this project.
   plugin:
+    implements: apivideo_player
     platforms:
       android:
+        dartPluginClass: ApiVideoMobilePlayer
         package: video.api.flutter.player
         pluginClass: ApiVideoPlayerPlugin
       ios:
+        dartPluginClass: ApiVideoMobilePlayer
         pluginClass: ApiVideoPlayerPlugin
       web:
-        pluginClass: ApiVideoPlayerWeb
-        fileName: apivideo_player_web.dart
+        pluginClass: ApiVideoPlayerPlugin
+        fileName: src/apivideo_player_web.dart
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

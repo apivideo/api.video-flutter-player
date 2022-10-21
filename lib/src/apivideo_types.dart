@@ -10,3 +10,10 @@ extension VideoTypeExtension on VideoType {
     }
   }
 }
+
+class VideoOptions {
+  String videoId;
+  VideoType videoType;
+
+  VideoOptions({required this.videoId, this.videoType = VideoType.vod});
+}
