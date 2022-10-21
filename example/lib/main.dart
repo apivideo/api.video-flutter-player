@@ -14,7 +14,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final ApiVideoPlayerController _controller = ApiVideoPlayerController(
-      VideoOptions(videoId: 'vi3CjYlusQKz6JN7au0EmW9b'));
+    VideoOptions(videoId: 'vi3CjYlusQKz6JN7au0EmW9b'),
+  );
 
   @override
   void initState() {
