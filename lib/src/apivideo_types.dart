@@ -1,16 +1,15 @@
-enum VideoType { vod, live }
+import 'package:json_annotation/json_annotation.dart';
 
-extension VideoTypeExtension on VideoType {
-  String get name {
-    switch (this) {
-      case VideoType.vod:
-        return 'vod';
-      case VideoType.live:
-        return 'live';
-    }
-  }
+part 'apivideo_types.g.dart';
+
+enum VideoType {
+  @JsonValue("vod")
+  vod,
+  @JsonValue("live")
+  live
 }
 
+@JsonSerializable()
 class VideoOptions {
   String videoId;
   VideoType videoType;
