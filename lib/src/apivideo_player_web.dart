@@ -16,6 +16,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   int _textureCounter = -1;
+  VideoOptions? _videoOptions;
 
   @override
   Future<int?> create(VideoOptions videoOptions) async {
@@ -25,9 +26,10 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       ..style.width = '100%';
 
     final int textureCounter = _textureCounter++;
-
     platformViewRegistry.registerViewFactory(
         'playerDiv$textureCounter', (int viewId) => videoElement);
+
+    _videoOptions = videoOptions;
 
     return textureCounter;
   }
@@ -52,11 +54,13 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Widget buildView(int textureId) {
+    if (_videoOptions == null) {
+      throw ArgumentError('videos options must be provided');
+    }
     void injectScript() {
       ScriptElement script = ScriptElement()
         ..innerText = '''
-            window.state = { name: 'api.video' };
-            window.player = new PlayerSdk("#playerDiv", { id: "vi7jYu4ydRwgvwhwEeuD1sWj" });
+            window.player = new PlayerSdk("#playerDiv", { id: "${_videoOptions!.videoId}", chromeless: true });
           ''';
       document.body?.insertAdjacentElement('beforeend', script);
     }
