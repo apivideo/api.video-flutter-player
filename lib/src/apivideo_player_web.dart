@@ -1,4 +1,5 @@
 import 'dart:html';
+import 'dart:js' as js;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/shims/dart_ui.dart';
@@ -39,13 +40,14 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<void> play(int textureId) async {
-    print("PLAY");
+    ArgumentError.checkNotNull(js.context['player'], 'player');
+    js.JsObject.fromBrowserObject(js.context['player']).callMethod('play');
   }
 
   @override
-  Future<void> pause(int textureId) {
-    // TODO
-    throw UnimplementedError('pause() has not been implemented.');
+  Future<void> pause(int textureId) async {
+    ArgumentError.checkNotNull(js.context['player'], 'player');
+    js.JsObject.fromBrowserObject(js.context['player']).callMethod('pause');
   }
 
   @override
@@ -59,13 +61,11 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       document.body?.insertAdjacentElement('beforeend', script);
     }
 
-    return Expanded(
-      child: AspectRatio(
-        aspectRatio: 1.0,
-        child: HtmlElementView(
-          viewType: 'playerDiv$textureId',
-          onPlatformViewCreated: (id) => injectScript(),
-        ),
+    return AspectRatio(
+      aspectRatio: 1.0,
+      child: HtmlElementView(
+        viewType: 'playerDiv$textureId',
+        onPlatformViewCreated: (id) => injectScript(),
       ),
     );
   }
