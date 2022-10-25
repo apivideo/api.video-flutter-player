@@ -1,3 +1,4 @@
+import 'package:apivideo_player/src/apivideo_player_controller_overlay.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'apivideo_player_controller.dart';
@@ -29,9 +30,21 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
   Widget build(BuildContext context) {
     return _textureId == ApiVideoPlayerController.kUninitializedTextureId
         ? Container()
-        : SizedBox(
-            width: 400.0,
-            height: 300.0,
-            child: _playerPlatform.buildView(_textureId));
+        : buildVideo();
   }
+
+  Widget buildVideo() => Stack(
+        children: <Widget>[
+          buildVideoPlayer(),
+          Positioned.fill(
+              child: ApiVideoPlayerControllerOverlay(
+                  controller: widget.controller)),
+        ],
+      );
+
+  Widget buildVideoPlayer() => SizedBox(
+        width: 400.0,
+        height: 300.0,
+        child: _playerPlatform.buildView(_textureId),
+      );
 }
