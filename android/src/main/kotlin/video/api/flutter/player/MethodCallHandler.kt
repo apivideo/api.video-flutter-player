@@ -16,6 +16,7 @@ class MethodCallHandler(
     }
 
     fun dispose() {
+        methodChannel.setMethodCallHandler(null)
         controller.disposeAll()
     }
 
