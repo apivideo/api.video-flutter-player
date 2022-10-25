@@ -25,13 +25,13 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       ..style.height = '100%'
       ..style.width = '100%';
 
-    final int textureCounter = _textureCounter++;
+    _textureCounter++;
     platformViewRegistry.registerViewFactory(
-        'playerDiv$textureCounter', (int viewId) => videoElement);
+        'playerDiv$_textureCounter', (int viewId) => videoElement);
 
     _videoOptions = videoOptions;
 
-    return textureCounter;
+    return _textureCounter;
   }
 
   @override
