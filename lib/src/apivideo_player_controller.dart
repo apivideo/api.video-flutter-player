@@ -50,11 +50,11 @@ class ApiVideoPlayerController {
     return _playerPlatform.dispose(_textureId);
   }
 
-  Future<void> seek(int position) async {
-    return _playerPlatform.seek(_textureId, position);
+  Future<void> seekTo(int position) async {
+    return _playerPlatform.seekTo(_textureId, position);
   }
 
-  Future<void> seekTo(int offSet) async {
-    return _playerPlatform.seekTo(_textureId, offSet);
+  Future<void> seek(int offSet) async {
+    return _playerPlatform.seek(_textureId, offSet);
   }
 }
