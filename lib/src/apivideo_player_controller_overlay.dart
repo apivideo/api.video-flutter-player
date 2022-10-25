@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import '../apivideo_player.dart';
@@ -18,106 +19,127 @@ class ApiVideoPlayerControllerOverlay extends StatefulWidget {
 class _ApiVideoPlayerControllerOverlayState
     extends State<ApiVideoPlayerControllerOverlay> {
   bool isPlaying = false;
+  bool isOverlayDisplayed = true;
+  late var timer = startTimeout();
 
-//TODO: remove this method to use controller's
   pause() {
     widget.controller.pause();
     setState(() {
       isPlaying = false;
     });
+    hideAndSeekOverlay();
   }
 
-//TODO: remove this method to use controller's
   play() {
     widget.controller.play();
     setState(() {
       isPlaying = true;
     });
+    hideAndSeekOverlay();
+  }
+
+  seek(Duration duration) {
+    widget.controller.seek(duration);
+    hideAndSeekOverlay();
+  }
+
+  // Hide and seek overlay
+  hideAndSeekOverlay() {
+    setState(() {
+      isOverlayDisplayed = !isOverlayDisplayed;
+    });
+    timer.cancel();
+    timer = startTimeout();
+  }
+
+  void handleTimeout() {
+    setState(() {
+      isOverlayDisplayed = false;
+    });
+  }
+
+  startTimeout() {
+    return Timer(const Duration(seconds: 5), handleTimeout);
   }
 
   @override
   Widget build(BuildContext context) => GestureDetector(
         behavior: HitTestBehavior.opaque,
-        // TODO: use method from controller
-        onTap: () => isPlaying ? pause() : play(),
+        onTap: () {
+          hideAndSeekOverlay();
+        },
         child: Stack(
           children: <Widget>[
-            buildPlayPause(),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  height: 30,
+                ),
+                controls(),
+                buildSlider(),
+              ],
+            ),
           ],
         ),
       );
 
-  Widget buildPlayPause() => isPlaying
-      ? Center(
+  Widget controls() => Visibility(
+        visible: isOverlayDisplayed,
+        child: Center(
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               IconButton(
                   onPressed: () {
-                    // TODO: seek backward
+                    seek(const Duration(seconds: -10));
                   },
-                  color: Colors.cyanAccent,
-                  constraints: const BoxConstraints(maxHeight: 36),
                   iconSize: 30,
                   icon:
                       const Icon(Icons.replay_10_rounded, color: Colors.white)),
+              buildBtnPlay(),
               IconButton(
                   onPressed: () {
-                    pause();
+                    seek(const Duration(seconds: 10));
                   },
-                  color: Colors.cyanAccent,
-                  constraints: const BoxConstraints(maxHeight: 36),
-                  iconSize: 60,
-                  // TODO: Change icon to api's one
-                  icon: const Icon(Icons.pause_circle_filled_rounded,
-                      color: Colors.white)),
-              IconButton(
-                  onPressed: () {
-                    // TODO: seek forward
-                  },
-                  color: Colors.cyanAccent,
-                  constraints: const BoxConstraints(maxHeight: 36),
                   iconSize: 30,
                   icon: const Icon(Icons.forward_10_rounded,
                       color: Colors.white)),
             ],
           ),
-        )
-      : Center(
+        ),
+      );
+
+  Widget buildBtnPlay() => IconButton(
+      onPressed: () {
+        isPlaying ? pause() : play();
+      },
+      iconSize: 60,
+      // TODO: Change icon to api's one
+      icon: isPlaying
+          ? const Icon(Icons.pause_circle_filled_rounded, color: Colors.white)
+          : const Icon(Icons.play_arrow_rounded, color: Colors.white));
+
+  Widget buildSlider() => Visibility(
+        visible: isOverlayDisplayed,
+        child: Container(
+          height: 60,
+          padding: const EdgeInsets.only(right: 5),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              IconButton(
-                  onPressed: () {
-                    // TODO: seek backward
+              Expanded(
+                child: Slider(
+                  value: 0,
+                  activeColor: Colors.orangeAccent,
+                  inactiveColor: Colors.grey,
+                  onChanged: (value) {
+                    seek(Duration(seconds: value.toInt()));
                   },
-                  color: Colors.cyanAccent,
-                  constraints: const BoxConstraints(maxHeight: 36),
-                  iconSize: 30,
-                  icon:
-                      const Icon(Icons.replay_10_rounded, color: Colors.white)),
-              IconButton(
-                  onPressed: () {
-                    play();
-                  },
-                  color: Colors.cyanAccent,
-                  constraints: const BoxConstraints(maxHeight: 36),
-                  iconSize: 60,
-                  // TODO: Change icon to api's one
-                  icon: const Icon(Icons.play_arrow_rounded,
-                      color: Colors.white)),
-              IconButton(
-                  onPressed: () {
-                    // TODO: seek forward
-                  },
-                  color: Colors.cyanAccent,
-                  constraints: const BoxConstraints(maxHeight: 36),
-                  iconSize: 30,
-                  icon: const Icon(Icons.forward_10_rounded,
-                      color: Colors.white)),
+                ),
+              ),
+              const Text('00:00', style: TextStyle(color: Colors.white)),
             ],
           ),
-        );
+        ),
+      );
 }
