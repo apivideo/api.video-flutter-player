@@ -36,7 +36,7 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
   }
 
   /// Return the duration of the video
-  Future<Duration> getDuration(int textureId) {
+  Future<int> getDuration(int textureId) {
     throw UnimplementedError('getDuration() has not been implemented.');
   }
 
@@ -60,8 +60,8 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('pause() has not been implemented.');
   }
 
-  /// Sets the video position to a [Duration] from the start.
-  Future<void> seek(int textureId, Duration position) {
+  /// Sets the video position to a time in milliseconds from the start.
+  Future<void> seek(int textureId, int position) {
     throw UnimplementedError('seek() has not been implemented.');
   }
 

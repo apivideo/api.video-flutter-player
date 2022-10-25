@@ -23,12 +23,11 @@ class ApiVideoPlayerController {
     return _playerPlatform.isPlaying(_textureId);
   }
 
-  Future<Duration> get currentTime async {
-    final milliseconds = await _playerPlatform.getCurrentTime(_textureId);
-    return Duration(milliseconds: milliseconds);
+  Future<int> get currentTime async {
+    return _playerPlatform.getCurrentTime(_textureId);
   }
 
-  Future<Duration> get duration async {
+  Future<int> get duration async {
     return _playerPlatform.getDuration(_textureId);
   }
 
@@ -51,7 +50,7 @@ class ApiVideoPlayerController {
     return _playerPlatform.dispose(_textureId);
   }
 
-  Future<void> seek(Duration duration) async {
+  Future<void> seek(int duration) async {
     return _playerPlatform.seek(_textureId, duration);
   }
 }
