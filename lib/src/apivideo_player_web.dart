@@ -60,7 +60,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
     void injectScript() {
       ScriptElement script = ScriptElement()
         ..innerText = '''
-            window.player = new PlayerSdk("#playerDiv", { id: "${_videoOptions!.videoId}", chromeless: true });
+            window.player = new PlayerSdk("#playerDiv", { id: "${_videoOptions!.videoId}", chromeless: true, live: ${_videoOptions!.videoType == VideoType.live}, });
           ''';
       document.body?.insertAdjacentElement('beforeend', script);
     }
