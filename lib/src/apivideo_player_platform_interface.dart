@@ -60,8 +60,13 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('pause() has not been implemented.');
   }
 
-  /// Sets the video position to a time in milliseconds from the start.
+  /// Sets the video position to a time in milliseconds from the current time.
   Future<void> seek(int textureId, int position) {
+    throw UnimplementedError('seek() has not been implemented.');
+  }
+
+  /// Sets the video position to a time in milliseconds from the start.
+  Future<void> seekTo(int textureId, int offset) {
     throw UnimplementedError('seek() has not been implemented.');
   }
 
