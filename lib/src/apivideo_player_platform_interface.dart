@@ -10,9 +10,6 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
   static final Object _token = Object();
 
   static ApiVideoPlayerPlatform _instance = _PlatformImplementation();
-  bool isPlaying = false;
-  Duration currentTime = const Duration();
-  Duration duration = const Duration();
 
   /// The default instance of [ApiVideoPlayerPlatform] to use.
   ///
@@ -25,6 +22,22 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
   static set instance(ApiVideoPlayerPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
+  }
+
+  /// Returns wether the video is playing or not
+  Future<bool> isPlaying(int textureId) {
+    throw UnimplementedError('isPlaying() has not been implemented.');
+  }
+
+  /// Return number of milliseconds from the beginning of the video to the
+  /// current time
+  Future<int> getCurrentTime(int textureId) {
+    throw UnimplementedError('getCurrentTime() has not been implemented.');
+  }
+
+  /// Return the duration of the video
+  Future<Duration> getDuration(int textureId) {
+    throw UnimplementedError('getDuration() has not been implemented.');
   }
 
   /// Creates the native player and returns the textureId

@@ -19,6 +19,19 @@ class ApiVideoPlayerController {
 
   ApiVideoPlayerController(this.videoOptions);
 
+  Future<bool> get isPlaying async {
+    return _playerPlatform.isPlaying(_textureId);
+  }
+
+  Future<Duration> get currentTime async {
+    final milliseconds = await _playerPlatform.getCurrentTime(_textureId);
+    return Duration(milliseconds: milliseconds);
+  }
+
+  Future<Duration> get duration async {
+    return _playerPlatform.getDuration(_textureId);
+  }
+
   Future<void> initialize() async {
     _textureId =
         await _playerPlatform.create(videoOptions) ?? kUninitializedTextureId;
@@ -36,5 +49,9 @@ class ApiVideoPlayerController {
 
   Future<void> dispose() async {
     return _playerPlatform.dispose(_textureId);
+  }
+
+  Future<void> seek(Duration duration) async {
+    return _playerPlatform.seek(_textureId, duration);
   }
 }
