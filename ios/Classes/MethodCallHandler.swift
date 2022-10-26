@@ -22,6 +22,47 @@ class MethodCallHandler {
                     }
                     let textureId = self?.controller.create(videoId: videoOptions[Keys.videoId] as! String, videoType: (videoOptions[Keys.videoType] as! String).toVideoType())
                     result([Keys.textureId: textureId])
+                case Keys.dispose:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                        return
+                    }
+                    self?.controller.dispose(textureId: Int64(textureId))
+                case Keys.isPlaying:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                        return
+                    }
+                    result(["isPlaying": self?.controller.isPlaying(textureId: Int64(textureId))])
+                case Keys.getCurrentTime:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                        return
+                    }
+                    result(["currentTime": self?.controller.getCurrentTime(textureId: Int64(textureId))])
+                case Keys.setCurrentTime:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int,
+                          let currentTime = args["currentTime"] as? Int
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id or current time", details: nil))
+                        return
+                    }
+                    self?.controller.setCurrentTime(textureId: Int64(textureId), currentTime: currentTime)
+                case Keys.getDuration:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                        return
+                    }
+                    result(["duration": self?.controller.getDuration(textureId: Int64(textureId))])
                 case Keys.play:
                     guard let args = call.arguments as? [String: Any],
                           let textureId = args[Keys.textureId] as? Int
@@ -38,14 +79,15 @@ class MethodCallHandler {
                         return
                     }
                     self?.controller.pause(textureId: Int64(textureId))
-                case Keys.dispose:
+                case Keys.seek:
                     guard let args = call.arguments as? [String: Any],
-                          let textureId = args[Keys.textureId] as? Int
+                          let textureId = args[Keys.textureId] as? Int,
+                          let offset = args["offset"] as? Int
                     else {
-                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id or offset", details: nil))
                         return
                     }
-                    self?.controller.dispose(textureId: Int64(textureId))
+                    self?.controller.seek(textureId: Int64(textureId), offset: offset)
                 default:
                     result(FlutterMethodNotImplemented)
                 }
@@ -67,9 +109,16 @@ enum Keys {
     static let live = "live"
 
     static let create = "create"
+    static let dispose = "dispose"
+
+    static let isPlaying = "isPlaying"
+    static let getCurrentTime = "getCurrentTime"
+    static let setCurrentTime = "setCurrentTime"
+    static let getDuration = "getDuration"
+
     static let play = "play"
     static let pause = "pause"
-    static let dispose = "dispose"
+    static let seek = "seek"
 }
 
 extension String {
