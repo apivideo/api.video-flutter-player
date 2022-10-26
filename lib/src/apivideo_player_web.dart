@@ -35,9 +35,9 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
-  Future<void> dispose(int textureId) {
+  Future<void> dispose(int textureId) async {
     // TODO
-    throw UnimplementedError('dispose() has not been implemented.');
+    return document.querySelector('apiVideoPlayerJsScript$textureId')?.remove();
   }
 
   @override
@@ -72,7 +72,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
         );
       ''';
       final ScriptElement script = ScriptElement()
-        ..id = 'apiVideoPlayerJsScript'
+        ..id = 'apiVideoPlayerJsScript$textureId'
         ..innerText = jsString;
       script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
       document.body?.insertAdjacentElement('beforeend', script);
