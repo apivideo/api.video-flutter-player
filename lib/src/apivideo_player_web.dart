@@ -78,12 +78,9 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       document.body?.insertAdjacentElement('beforeend', script);
     }
 
-    return AspectRatio(
-      aspectRatio: 1.0,
-      child: HtmlElementView(
-        viewType: 'playerDiv$textureId',
-        onPlatformViewCreated: (id) => injectScript(),
-      ),
+    return HtmlElementView(
+      viewType: 'playerDiv$textureId',
+      onPlatformViewCreated: (id) => injectScript(),
     );
   }
 }
