@@ -36,8 +36,10 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<void> dispose(int textureId) async {
-    // TODO
-    return document.querySelector('apiVideoPlayerJsScript$textureId')?.remove();
+    _videoOptions.remove(textureId);
+    document.querySelector('#playerDiv$textureId')?.remove();
+    document.querySelector('#apiVideoPlayerJsScript$textureId')?.remove();
+    return;
   }
 
   @override
