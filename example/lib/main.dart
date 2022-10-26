@@ -13,10 +13,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final List<String> videosId = [
-    'vi6f1aAj2xdDaPrHz8hrDiZC',
-    'vi3CjYlusQKz6JN7au0EmW9b'
-  ];
+  final ApiVideoPlayerController _controller = ApiVideoPlayerController(
+    VideoOptions(videoId: 'vi3CjYlusQKz6JN7au0EmW9b'),
+  );
 
   @override
   void initState() {
@@ -29,24 +28,39 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         body: Column(
           children: [
-            ...videosId.map((e) => buildPreview(
-                controller:
-                    ApiVideoPlayerController(VideoOptions(videoId: e)))),
+            buildPreview(controller: _controller),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.play_arrow),
+                  onPressed: () {
+                    _controller.play();
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.pause),
+                  onPressed: () {
+                    _controller.pause();
+                  },
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 
-  Future<int> initialize(ApiVideoPlayerController controller) async {
-    await controller.initialize();
+  Future<int> initialize() async {
+    await _controller.initialize();
     return 0;
   }
 
   Widget buildPreview({required ApiVideoPlayerController controller}) {
     // Wait for [LiveStreamController.create] to finish.
     return FutureBuilder<void>(
-        future: initialize(controller),
+        future: initialize(),
         builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
           if (!snapshot.hasData) {
             // while data is loading:
@@ -54,28 +68,7 @@ class _MyAppState extends State<MyApp> {
               child: CircularProgressIndicator(),
             );
           } else {
-            return Column(
-              children: [
-                ApiVideoPlayer(controller: controller),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.play_arrow),
-                      onPressed: () {
-                        controller.play();
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.pause),
-                      onPressed: () {
-                        controller.pause();
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            );
+            return ApiVideoPlayer(controller: controller);
           }
         });
   }
