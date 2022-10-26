@@ -48,6 +48,23 @@ class FlutterPlayerView: NSObject {
         return displayLink
     }
 
+    var isPlaying: Bool {
+        playerController.isPlaying()
+    }
+
+    var duration: CMTime {
+        playerController.duration
+    }
+
+    var currentTime: CMTime {
+        get {
+            playerController.currentTime
+        }
+        set {
+            playerController.seek(to: newValue)
+        }
+    }
+
     func play() {
         playerController.play()
         displayLink.isPaused = false
@@ -56,6 +73,11 @@ class FlutterPlayerView: NSObject {
     func pause() {
         playerController.pause()
         displayLink.isPaused = true
+    }
+
+    func seek(offset: CMTime) {
+        playerController.seek(offset: offset)
+        textureRegistry.textureFrameAvailable(textureId) // render frame of the new scene
     }
 
     func onTextureUnregistered() {
