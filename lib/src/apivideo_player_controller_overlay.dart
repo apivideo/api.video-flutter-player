@@ -19,25 +19,26 @@ class _ApiVideoPlayerControllerOverlayState
     extends State<ApiVideoPlayerControllerOverlay> {
   bool isPlaying = false;
 
+//TODO: remove this method to use controller's
   pause() {
     widget.controller.pause();
     setState(() {
       isPlaying = false;
     });
-    print("isPlaying pause : $isPlaying");
   }
 
+//TODO: remove this method to use controller's
   play() {
     widget.controller.play();
     setState(() {
       isPlaying = true;
     });
-    print("isPlaying play : $isPlaying");
   }
 
   @override
   Widget build(BuildContext context) => GestureDetector(
         behavior: HitTestBehavior.opaque,
+        // TODO: use method from controller
         onTap: () => isPlaying ? pause() : play(),
         child: Stack(
           children: <Widget>[
@@ -47,33 +48,75 @@ class _ApiVideoPlayerControllerOverlayState
       );
 
   Widget buildPlayPause() => isPlaying
-      ? Container(
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            // crossAxisAlignment: CrossAxisAlignment.center,
+      ? Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              IconButton(
+                  onPressed: () {
+                    // TODO: seek backward
+                  },
+                  color: Colors.cyanAccent,
+                  constraints: const BoxConstraints(maxHeight: 36),
+                  iconSize: 30,
+                  icon:
+                      const Icon(Icons.replay_10_rounded, color: Colors.white)),
               IconButton(
                   onPressed: () {
                     pause();
                   },
-                  icon: const Icon(Icons.pause_circle,
-                      color: Colors.white, size: 60))
+                  color: Colors.cyanAccent,
+                  constraints: const BoxConstraints(maxHeight: 36),
+                  iconSize: 60,
+                  // TODO: Change icon to api's one
+                  icon: const Icon(Icons.pause_circle_filled_rounded,
+                      color: Colors.white)),
+              IconButton(
+                  onPressed: () {
+                    // TODO: seek forward
+                  },
+                  color: Colors.cyanAccent,
+                  constraints: const BoxConstraints(maxHeight: 36),
+                  iconSize: 30,
+                  icon: const Icon(Icons.forward_10_rounded,
+                      color: Colors.white)),
             ],
           ),
         )
-      : Container(
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            // crossAxisAlignment: CrossAxisAlignment.center,
+      : Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              IconButton(
+                  onPressed: () {
+                    // TODO: seek backward
+                  },
+                  color: Colors.cyanAccent,
+                  constraints: const BoxConstraints(maxHeight: 36),
+                  iconSize: 30,
+                  icon:
+                      const Icon(Icons.replay_10_rounded, color: Colors.white)),
               IconButton(
                   onPressed: () {
                     play();
                   },
+                  color: Colors.cyanAccent,
+                  constraints: const BoxConstraints(maxHeight: 36),
+                  iconSize: 60,
+                  // TODO: Change icon to api's one
                   icon: const Icon(Icons.play_arrow_rounded,
-                      color: Colors.white, size: 60))
+                      color: Colors.white)),
+              IconButton(
+                  onPressed: () {
+                    // TODO: seek forward
+                  },
+                  color: Colors.cyanAccent,
+                  constraints: const BoxConstraints(maxHeight: 36),
+                  iconSize: 30,
+                  icon: const Icon(Icons.forward_10_rounded,
+                      color: Colors.white)),
             ],
           ),
         );
