@@ -16,21 +16,21 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   int _textureCounter = -1;
-  VideoOptions? _videoOptions;
+  final Map<int, VideoOptions> _videoOptions = {};
 
   @override
   Future<int?> create(VideoOptions videoOptions) async {
+    _textureCounter++;
+
     final DivElement videoElement = DivElement()
-      ..id = 'playerDiv'
+      ..id = 'playerDiv$_textureCounter'
       ..style.height = '100%'
       ..style.width = '100%';
 
-    _textureCounter++;
     platformViewRegistry.registerViewFactory(
         'playerDiv$_textureCounter', (int viewId) => videoElement);
 
-    _videoOptions = videoOptions;
-
+    _videoOptions[_textureCounter] = videoOptions;
     return _textureCounter;
   }
 
@@ -42,26 +42,39 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<void> play(int textureId) async {
-    ArgumentError.checkNotNull(js.context['player'], 'player');
-    js.JsObject.fromBrowserObject(js.context['player']).callMethod('play');
+    ArgumentError.checkNotNull(js.context['player$_textureCounter'], 'player');
+    js.JsObject.fromBrowserObject(js.context['player$_textureCounter'])
+        .callMethod('play');
   }
 
   @override
   Future<void> pause(int textureId) async {
-    ArgumentError.checkNotNull(js.context['player'], 'player');
-    js.JsObject.fromBrowserObject(js.context['player']).callMethod('pause');
+    ArgumentError.checkNotNull(js.context['player$_textureCounter'], 'player');
+    js.JsObject.fromBrowserObject(js.context['player$_textureCounter'])
+        .callMethod('pause');
   }
 
   @override
   Widget buildView(int textureId) {
-    if (_videoOptions == null) {
+    if (_videoOptions[textureId] == null) {
       throw ArgumentError('videos options must be provided');
     }
+
     void injectScript() {
-      ScriptElement script = ScriptElement()
-        ..innerText = '''
-            window.player = new PlayerSdk("#playerDiv", { id: "${_videoOptions!.videoId}", chromeless: true, live: ${_videoOptions!.videoType == VideoType.live}, });
-          ''';
+      final String jsString = '''
+        window.player$textureId = new PlayerSdk(
+          "#playerDiv$textureId",
+          { 
+            id: "${_videoOptions[textureId]!.videoId}",
+            chromeless: true,
+            live: ${_videoOptions[textureId]!.videoType == VideoType.live}, 
+          }
+        );
+      ''';
+      final ScriptElement script = ScriptElement()
+        ..id = 'apiVideoPlayerJsScript'
+        ..innerText = jsString;
+      script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
       document.body?.insertAdjacentElement('beforeend', script);
     }
 
