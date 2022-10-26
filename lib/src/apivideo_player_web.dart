@@ -42,15 +42,15 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<void> play(int textureId) async {
-    ArgumentError.checkNotNull(js.context['player$_textureCounter'], 'player');
-    js.JsObject.fromBrowserObject(js.context['player$_textureCounter'])
+    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
+    js.JsObject.fromBrowserObject(js.context['player$textureId'])
         .callMethod('play');
   }
 
   @override
   Future<void> pause(int textureId) async {
-    ArgumentError.checkNotNull(js.context['player$_textureCounter'], 'player');
-    js.JsObject.fromBrowserObject(js.context['player$_textureCounter'])
+    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
+    js.JsObject.fromBrowserObject(js.context['player$textureId'])
         .callMethod('pause');
   }
 
