@@ -20,3 +20,11 @@ fun String.toVideoType(): VideoType {
         throw InvalidParameterException("$this is an unknown video type")
     }
 }
+
+fun Int.msToFloat(): Float {
+    return this.toFloat() / 1000
+}
+
+fun Float.toMs(): Int {
+    return (this * 1000).toInt()
+}

@@ -28,8 +28,24 @@ class FlutterPlayerView(
         ApiVideoPlayerController(context, it, listener, surface = surface)
     } ?: ApiVideoPlayerController(context, null, listener, surface = surface)
 
+    val isPlaying: Boolean
+        get() = playerController.isPlaying
+
+    var currentTime: Float
+        get() = playerController.currentTime
+        set(value) {
+            playerController.currentTime = value
+        }
+
+    val duration: Float
+        get() = playerController.duration
+
     fun play() = playerController.play()
     fun pause() = playerController.pause()
+
+    fun seek(float: Float) {
+        playerController.seek(float)
+    }
 
     fun release() {
         playerController.stop()

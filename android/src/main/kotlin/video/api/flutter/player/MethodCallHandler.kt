@@ -24,7 +24,7 @@ class MethodCallHandler(
         when (call.method) {
             CREATE -> {
                 val videoOptions = try {
-                    ((call.arguments as Map<String, Any>)["videoOptions"] as Map<String, Any>).videoOptions
+                    ((call.arguments as Map<*, *>)["videoOptions"] as Map<String, Any>).videoOptions
                 } catch (e: Exception) {
                     result.error("invalid_parameter", "Invalid video options", e)
                     return
@@ -40,6 +40,45 @@ class MethodCallHandler(
                 reply["textureId"] = textureId
                 result.success(reply)
             }
+            DISPOSE -> {
+                ensureTextureId(call, result) {
+                    controller.dispose(it)
+                    result.success(null)
+                }
+            }
+            IS_PLAYING -> {
+                ensureTextureId(call, result) {
+                    val reply: MutableMap<String, Any> = HashMap()
+                    reply["isPlaying"] = controller.isPlaying(it)
+                    result.success(reply)
+                }
+            }
+            GET_CURRENT_TIME -> {
+                ensureTextureId(call, result) {
+                    val reply: MutableMap<String, Any> = HashMap()
+                    reply["currentTime"] = controller.getCurrentTime(it)
+                    result.success(reply)
+                }
+            }
+            SET_CURRENT_TIME -> {
+                val currentTime = try {
+                    ((call.arguments as Map<*, *>)["currentTime"] as Int)
+                } catch (e: Exception) {
+                    result.error("invalid_parameter", "Invalid current time", e)
+                    return
+                }
+                ensureTextureId(call, result) {
+                    controller.setCurrentTime(it, currentTime)
+                    result.success(null)
+                }
+            }
+            GET_DURATION -> {
+                ensureTextureId(call, result) {
+                    val reply: MutableMap<String, Any> = HashMap()
+                    reply["duration"] = controller.getDuration(it)
+                    result.success(reply)
+                }
+            }
             PLAY -> {
                 ensureTextureId(call, result) {
                     controller.play(it)
@@ -52,9 +91,15 @@ class MethodCallHandler(
                     result.success(null)
                 }
             }
-            DISPOSE -> {
+            SEEK -> {
+                val offset = try {
+                    ((call.arguments as Map<*, *>)["offset"] as Int)
+                } catch (e: Exception) {
+                    result.error("invalid_parameter", "Invalid offset", e)
+                    return
+                }
                 ensureTextureId(call, result) {
-                    controller.dispose(it)
+                    controller.seek(it, offset)
                     result.success(null)
                 }
             }
@@ -80,8 +125,15 @@ class MethodCallHandler(
         private const val TEXTURE_ID = "textureId"
 
         private const val CREATE = "create"
+        private const val DISPOSE = "dispose"
+
+        private const val IS_PLAYING = "isPlaying"
+        private const val GET_CURRENT_TIME = "getCurrentTime"
+        private const val SET_CURRENT_TIME = "setCurrentTime"
+        private const val GET_DURATION = "getDuration"
+
         private const val PLAY = "play"
         private const val PAUSE = "pause"
-        private const val DISPOSE = "dispose"
+        private const val SEEK = "seek"
     }
 }
