@@ -2,95 +2,85 @@ import 'dart:html';
 import 'dart:js' as js;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/shims/dart_ui.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 import 'apivideo_player_platform_interface.dart';
 import 'apivideo_types.dart';
 
 /// A web implementation of the ApiVideoPlayerPlatform of the ApiVideoPlayer plugin.
- class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
-   /// Registers this class as the default instance of [PathProviderPlatform].
-   static void registerWith(Registrar registrar) {
-     ApiVideoPlayerPlatform.instance = ApiVideoPlayerPlugin();
-   }
+class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
+  /// Registers this class as the default instance of [PathProviderPlatform].
+  static void registerWith(Registrar registrar) {
+    ApiVideoPlayerPlatform.instance = ApiVideoPlayerPlugin();
+  }
 
-   @override
-   Future<int?> create(VideoOptions videoOptions) {
-     // TODO
-     throw UnimplementedError('create() has not been implemented.');
-   }
+  int _textureCounter = -1;
+  final Map<int, VideoOptions> _videoOptions = {};
 
-   @override
-   Future<void> dispose(int textureId) {
-     // TODO
-     throw UnimplementedError('dispose() has not been implemented.');
-   }
+  @override
+  Future<int?> create(VideoOptions videoOptions) async {
+    _textureCounter++;
 
-   @override
-   Future<void> play(int textureId) {
-     // TODO
-     throw UnimplementedError('play() has not been implemented.');
-   }
+    final DivElement videoElement = DivElement()
+      ..id = 'playerDiv$_textureCounter'
+      ..style.height = '100%'
+      ..style.width = '100%';
 
-   @override
-   Future<void> pause(int textureId) {
-     // TODO
-     throw UnimplementedError('pause() has not been implemented.');
-   }
+    platformViewRegistry.registerViewFactory(
+        'playerDiv$_textureCounter', (int viewId) => videoElement);
 
-   @override
-   Widget buildView(int textureId) {
-     // TODO
-     throw UnimplementedError('buildView() has not been implemented.');
-   }
-}
-
-class ApiVideoPlayerWeb extends StatefulWidget {
-  // Constructs a ApiVideoPlayerWeb
-  const ApiVideoPlayerWeb({super.key});
-
- // static void registerWith(Registrar registrar) {
-    // ScriptElement script = ScriptElement()
-    //   ..innerText = '''
-    //       window.player = new PlayerSdk("#playerDiv", { id: "vi2z94GxBgbkBrTkspLuXuBZ" });
-    //     ''';
-    // document.body?.insertAdjacentElement('beforeend', script);
-  //  createScript();
- // }
-
-  static void createScript() {
-    ScriptElement script = ScriptElement()
-      ..innerText = '''
-          window.state = { name: 'api.video' };
-          // window.player = new PlayerSdk("#playerDiv", { id: "vi2z94GxBgbkBrTkspLuXuBZ" });
-        ''';
-    document.body?.insertAdjacentElement('beforeend', script);
-    var elem = querySelector('#playerDiv');
-    print(elem);
+    _videoOptions[_textureCounter] = videoOptions;
+    return _textureCounter;
   }
 
   @override
-  State<ApiVideoPlayerWeb> createState() => _ApiVideoPlayerWebState();
-}
-
-class _ApiVideoPlayerWebState extends State<ApiVideoPlayerWeb> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => ApiVideoPlayerWeb.createScript());
+  Future<void> dispose(int textureId) async {
+    // TODO
+    return document.querySelector('apiVideoPlayerJsScript$textureId')?.remove();
   }
 
   @override
-  Widget build(BuildContext context) {
-    var state = js.JsObject.fromBrowserObject(js.context['state']);
-    print(state['name']);
+  Future<void> play(int textureId) async {
+    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
+    js.JsObject.fromBrowserObject(js.context['player$textureId'])
+        .callMethod('play');
+  }
 
-    // WidgetsBinding.instance.addPostFrameCallback((_) => ApiVideoPlayerWeb.createScript);
-    String htmlData = '''
-      <div id="playerDiv">DIV</div>
-    ''';
-    return Html(data: htmlData);
+  @override
+  Future<void> pause(int textureId) async {
+    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
+    js.JsObject.fromBrowserObject(js.context['player$textureId'])
+        .callMethod('pause');
+  }
+
+  @override
+  Widget buildView(int textureId) {
+    if (_videoOptions[textureId] == null) {
+      throw ArgumentError('videos options must be provided');
+    }
+
+    void injectScript() {
+      final String jsString = '''
+        window.player$textureId = new PlayerSdk(
+          "#playerDiv$textureId",
+          { 
+            id: "${_videoOptions[textureId]!.videoId}",
+            chromeless: true,
+            live: ${_videoOptions[textureId]!.videoType == VideoType.live}, 
+          }
+        );
+      ''';
+      final ScriptElement script = ScriptElement()
+        ..id = 'apiVideoPlayerJsScript$textureId'
+        ..innerText = jsString;
+      script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
+      document.body?.insertAdjacentElement('beforeend', script);
+    }
+
+    return HtmlElementView(
+      viewType: 'playerDiv$textureId',
+      onPlatformViewCreated: (id) => injectScript(),
+    );
   }
 }
