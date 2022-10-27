@@ -62,6 +62,15 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
+  Future<void> setCurrentTime(int textureId, int currentTime) async {
+    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
+    js_controller.setCurrentTimeFromJs(
+      'player$textureId',
+      (currentTime ~/ 1000).toInt(),
+    );
+  }
+
+  @override
   Future<void> play(int textureId) async {
     ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
     js.JsObject.fromBrowserObject(js.context['player$textureId'])
@@ -89,8 +98,9 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
               if (!playerId) return;
               return await window[playerId].getCurrentTime();
             },
-            getNoTime: async function(number) {
-              return number;
+            setCurrentTime: async function(playerId, currentTime) {
+              if (!playerId) return;
+              return await window[playerId].setCurrentTime(currentTime);
             },
           };
         ''';
