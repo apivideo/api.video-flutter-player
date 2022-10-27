@@ -15,15 +15,17 @@ class ApiVideoMobilePlayer extends ApiVideoPlayerPlatform {
 
   @override
   Future<bool> isPlaying(int textureId) async {
-    final Map<dynamic, dynamic> reply = await _channel.invokeMapMethodWithTexture(
-        'isPlaying', TextureMessage(textureId: textureId)) as Map;
+    final Map<dynamic, dynamic> reply =
+        await _channel.invokeMapMethodWithTexture(
+            'isPlaying', TextureMessage(textureId: textureId)) as Map;
     return reply['isPlaying'] as bool;
   }
 
   @override
   Future<int> getCurrentTime(int textureId) async {
-    final Map<dynamic, dynamic> reply = await _channel.invokeMapMethodWithTexture(
-        'getCurrentTime', TextureMessage(textureId: textureId)) as Map;
+    final Map<dynamic, dynamic> reply =
+        await _channel.invokeMapMethodWithTexture(
+            'getCurrentTime', TextureMessage(textureId: textureId)) as Map;
     return reply['currentTime'] as int;
   }
 
@@ -38,21 +40,28 @@ class ApiVideoMobilePlayer extends ApiVideoPlayerPlatform {
 
   @override
   Future<int> getDuration(int textureId) async {
-    final Map<dynamic, dynamic> reply = await _channel.invokeMapMethodWithTexture(
-        'getDuration', TextureMessage(textureId: textureId)) as Map;
+    final Map<dynamic, dynamic> reply =
+        await _channel.invokeMapMethodWithTexture(
+            'getDuration', TextureMessage(textureId: textureId)) as Map;
     return reply['duration'] as int;
   }
 
   @override
-  Future<int?> create(VideoOptions videoOptions) async {
-    final Map<String, dynamic> creationParams = <String, dynamic>{
+  Future<int?> initialize() async {
+    final Map<String, dynamic>? reply =
+        await _channel.invokeMapMethod<String, dynamic>('initialize');
+    int textureId = reply!['textureId']! as int;
+    return textureId;
+  }
+
+  @override
+  Future<void> create(int textureId, VideoOptions videoOptions) {
+    final Map<String, dynamic> videoParams = <String, dynamic>{
       "videoOptions": videoOptions.toJson()
     };
 
-    final Map<String, dynamic>? reply = await _channel
-        .invokeMapMethod<String, dynamic>('create', creationParams);
-    int textureId = reply!['textureId']! as int;
-    return textureId;
+    return _channel.invokeMapMethodWithTexture<String, dynamic>(
+        'create', TextureMessage(textureId: textureId), videoParams);
   }
 
   @override
@@ -83,6 +92,31 @@ class ApiVideoMobilePlayer extends ApiVideoPlayerPlatform {
   @override
   Widget buildView(int textureId) {
     return Texture(textureId: textureId);
+  }
+
+  @override
+  Stream<PlayerEvent> playerEventsFor(int textureId) {
+    return _eventChannelFor(textureId)
+        .receiveBroadcastStream()
+        .map((dynamic map) {
+      final Map<dynamic, dynamic> event = map as Map<dynamic, dynamic>;
+      switch (event['type']) {
+        case 'ready':
+          return PlayerEvent(type: PlayerEventType.ready);
+        case 'played':
+          return PlayerEvent(type: PlayerEventType.played);
+        case 'paused':
+          return PlayerEvent(type: PlayerEventType.paused);
+        case 'ended':
+          return PlayerEvent(type: PlayerEventType.ended);
+        default:
+          return PlayerEvent(type: PlayerEventType.unknown);
+      }
+    });
+  }
+
+  EventChannel _eventChannelFor(int textureId) {
+    return EventChannel('video.api.player/events$textureId');
   }
 }
 

@@ -14,16 +14,23 @@ class FlutterPlayerController(
 ) : FlutterPlayerInterface {
     private val players = mutableMapOf<Long, FlutterPlayerView>()
 
-    override fun create(videoOptions: VideoOptions): Long {
+    override fun initialize(): Long {
         val player = FlutterPlayerView(
             applicationContext,
             messenger,
             textureRegistry,
-            videoOptions
+            null
         )
         players[player.textureId] = player
 
         return player.textureId
+    }
+
+    override fun create(textureId: Long, videoOptions: VideoOptions) {
+        players[textureId]?.let { it.videoOptions = videoOptions } ?: Log.e(
+            TAG,
+            "Unknown player $textureId"
+        )
     }
 
     override fun dispose(textureId: Long) {

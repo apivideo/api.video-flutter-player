@@ -3,7 +3,8 @@ package video.api.flutter.player
 import video.api.player.models.VideoOptions
 
 interface FlutterPlayerInterface {
-    fun create(videoOptions: VideoOptions): Long
+    fun initialize(): Long
+    fun create(textureId: Long, videoOptions: VideoOptions)
     fun dispose(textureId: Long)
     fun disposeAll()
 
