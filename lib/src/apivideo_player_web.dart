@@ -64,10 +64,21 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   @override
   Future<void> setCurrentTime(int textureId, int currentTime) async {
     ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
+    ArgumentError.checkNotNull(js.context['state'], 'state');
     js_controller.setCurrentTimeFromJs(
       'player$textureId',
       (currentTime ~/ 1000).toInt(),
     );
+  }
+
+  @override
+  Future<int> getDuration(int textureId) async {
+    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
+    ArgumentError.checkNotNull(js.context['state'], 'state');
+    final double duration = await promiseToFuture(
+      js_controller.getDurationFromJs('player$textureId'),
+    );
+    return int.parse((duration * 1000).toStringAsFixed(0));
   }
 
   @override
@@ -95,12 +106,16 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
         const String jsString = '''
           window.state = {
             getCurrentTime: async function(playerId) {
-              if (!playerId) return;
+              if (!playerId || !window[playerId]) return;
               return await window[playerId].getCurrentTime();
             },
             setCurrentTime: async function(playerId, currentTime) {
-              if (!playerId) return;
+              if (!playerId || !window[playerId]) return;
               return await window[playerId].setCurrentTime(currentTime);
+            },
+            getDuration: async function(playerId) {
+              if (!playerId || !window[playerId]) return;
+              return await window[playerId].getDuration();
             },
           };
         ''';
