@@ -1,6 +1,9 @@
 import 'dart:html';
 import 'dart:js' as js;
+import 'dart:js_util';
 
+import 'package:apivideo_player/src/javascript_controller.dart'
+    as js_controller;
 import 'package:flutter/material.dart';
 import 'package:flutter_html/shims/dart_ui.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
@@ -43,6 +46,22 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
+  Future<bool> isPlaying(int textureId) async {
+    // TODO: implement isPlaying
+    return false;
+  }
+
+  @override
+  Future<int> getCurrentTime(int textureId) async {
+    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
+    ArgumentError.checkNotNull(js.context['state'], 'state');
+    final currentTime = await promiseToFuture(
+      js_controller.getCurrentTimeFromJs('player$textureId'),
+    );
+    return int.parse((currentTime * 1000).toStringAsFixed(0));
+  }
+
+  @override
   Future<void> play(int textureId) async {
     ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
     js.JsObject.fromBrowserObject(js.context['player$textureId'])
@@ -62,7 +81,26 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       throw ArgumentError('videos options must be provided');
     }
 
-    void injectScript() {
+    void injectScripts() {
+      if (document.body?.querySelector('#playersState') == null) {
+        const String jsString = '''
+          window.state = {
+            getCurrentTime: async function(playerId) {
+              if (!playerId) return;
+              return await window[playerId].getCurrentTime();
+            },
+            getNoTime: async function(number) {
+              return number;
+            },
+          };
+        ''';
+        final ScriptElement script = ScriptElement()
+          ..id = 'playersState'
+          ..innerText = jsString;
+        script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
+        document.body?.insertAdjacentElement('beforeend', script);
+      }
+
       final String jsString = '''
         window.player$textureId = new PlayerSdk(
           "#playerDiv$textureId",
@@ -82,7 +120,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
     return HtmlElementView(
       viewType: 'playerDiv$textureId',
-      onPlatformViewCreated: (id) => injectScript(),
+      onPlatformViewCreated: (id) => injectScripts(),
     );
   }
 }
