@@ -44,6 +44,12 @@ class FlutterPlayerView(
             eventSink?.success(event)
         }
 
+        override fun onSeek() {
+            val event = mutableMapOf<String, Any>()
+            event["type"] = "seek"
+            eventSink?.success(event)
+        }
+
         override fun onError(error: Exception) {
             Log.e(TAG, "An error occurred: ${error.message}", error)
             eventSink?.error(error::class.java.name, error.message, error)

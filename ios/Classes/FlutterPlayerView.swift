@@ -46,6 +46,9 @@ class FlutterPlayerView: NSObject, FlutterStreamHandler {
         events.didPause = {
             self.eventSink?(["type": "paused"])
         }
+        events.didSeek = { from, to in
+            self.eventSink?(["type": "seek"])
+        }
         events.didEnd = {
             self.eventSink?(["type": "ended"])
         }
