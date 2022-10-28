@@ -29,23 +29,32 @@ class _MyAppState extends State<MyApp> {
         body: Column(
           children: [
             buildPreview(controller: _controller),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.play_arrow),
-                  onPressed: () {
-                    _controller.play();
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.pause),
-                  onPressed: () {
-                    _controller.pause();
-                  },
-                ),
-              ],
-            ),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              IconButton(
+                icon: const Icon(Icons.replay_10),
+                onPressed: () {
+                  _controller.seek(Duration(seconds: -10));
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.play_arrow),
+                onPressed: () {
+                  _controller.play();
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.pause),
+                onPressed: () {
+                  _controller.pause();
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.forward_10),
+                onPressed: () {
+                  _controller.seek(Duration(seconds: 10));
+                },
+              ),
+            ]),
           ],
         ),
       ),
