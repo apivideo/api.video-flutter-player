@@ -34,19 +34,6 @@ class MethodCallHandler(
                 reply["textureId"] = textureId
                 result.success(reply)
             }
-            CREATE -> {
-                val videoOptions = try {
-                    ((call.arguments as Map<*, *>)["videoOptions"] as Map<String, Any>).videoOptions
-                } catch (e: Exception) {
-                    result.error("invalid_parameter", "Invalid video options", e)
-                    return
-                }
-
-                ensureTextureId(call, result) {
-                    controller.create(it, videoOptions)
-                    result.success(null)
-                }
-            }
             DISPOSE -> {
                 ensureTextureId(call, result) {
                     controller.dispose(it)
@@ -84,6 +71,105 @@ class MethodCallHandler(
                     val reply: MutableMap<String, Any> = HashMap()
                     reply["duration"] = controller.getDuration(it)
                     result.success(reply)
+                }
+            }
+            GET_VIDEO_OPTIONS -> {
+                ensureTextureId(call, result) {
+                    val videoOptions =
+                        controller.getVideoOptions(it)!! // As it is mandatory to set a video option. This should never be null.
+                    val reply: MutableMap<String, Any> = HashMap()
+                    reply["videoId"] = videoOptions.videoId
+                    reply["videoType"] = videoOptions.videoType.toFlutterString()
+                    result.success(reply)
+                }
+            }
+            SET_VIDEO_OPTIONS -> {
+                val videoOptions = try {
+                    ((call.arguments as Map<*, *>)["videoOptions"] as Map<String, Any>).videoOptions
+                } catch (e: Exception) {
+                    result.error("invalid_parameter", "Invalid video options", e)
+                    return
+                }
+
+                ensureTextureId(call, result) {
+                    controller.setVideoOptions(it, videoOptions)
+                    result.success(null)
+                }
+            }
+            GET_AUTOPLAY -> {
+                ensureTextureId(call, result) {
+                    val reply: MutableMap<String, Any> = HashMap()
+                    reply["autoplay"] = controller.getAutoplay(it)
+                    result.success(reply)
+                }
+            }
+            SET_AUTOPLAY -> {
+                val autoplay = try {
+                    ((call.arguments as Map<*, *>)["autoplay"] as Boolean)
+                } catch (e: Exception) {
+                    result.error("invalid_parameter", "Invalid autoplay", e)
+                    return
+                }
+                ensureTextureId(call, result) {
+                    controller.setAutoplay(it, autoplay)
+                    result.success(null)
+                }
+            }
+            GET_IS_MUTED -> {
+                ensureTextureId(call, result) {
+                    val reply: MutableMap<String, Any> = HashMap()
+                    reply["isMuted"] = controller.getIsMuted(it)
+                    result.success(reply)
+                }
+            }
+            SET_IS_MUTED -> {
+                val isMuted = try {
+                    ((call.arguments as Map<*, *>)["isMuted"] as Boolean)
+                } catch (e: Exception) {
+                    result.error("invalid_parameter", "Invalid isMuted", e)
+                    return
+                }
+                ensureTextureId(call, result) {
+                    controller.setIsMuted(it, isMuted)
+                    result.success(null)
+                }
+            }
+            GET_IS_LOOPING -> {
+                ensureTextureId(call, result) {
+                    val reply: MutableMap<String, Any> = HashMap()
+                    reply["isLooping"] = controller.getIsLooping(it)
+                    result.success(reply)
+                }
+            }
+            SET_IS_LOOPING -> {
+                val isLooping = try {
+                    ((call.arguments as Map<*, *>)["isLooping"] as Boolean)
+                } catch (e: Exception) {
+                    result.error("invalid_parameter", "Invalid isLooping", e)
+                    return
+                }
+                ensureTextureId(call, result) {
+                    controller.setIsLooping(it, isLooping)
+                    result.success(null)
+                }
+            }
+            GET_VOLUME -> {
+                ensureTextureId(call, result) {
+                    val reply: MutableMap<String, Any> = HashMap()
+                    reply["volume"] = controller.getVolume(it).toDouble()
+                    result.success(reply)
+                }
+            }
+            SET_VOLUME -> {
+                val volume = try {
+                    ((call.arguments as Map<*, *>)["volume"] as Double).toFloat()
+                } catch (e: Exception) {
+                    result.error("invalid_parameter", "Invalid volume", e)
+                    return
+                }
+                ensureTextureId(call, result) {
+                    controller.setVolume(it, volume)
+                    result.success(null)
                 }
             }
             PLAY -> {
@@ -132,13 +218,22 @@ class MethodCallHandler(
         private const val TEXTURE_ID = "textureId"
 
         private const val INITIALIZE = "initialize"
-        private const val CREATE = "create"
         private const val DISPOSE = "dispose"
 
         private const val IS_PLAYING = "isPlaying"
         private const val GET_CURRENT_TIME = "getCurrentTime"
         private const val SET_CURRENT_TIME = "setCurrentTime"
         private const val GET_DURATION = "getDuration"
+        private const val GET_VIDEO_OPTIONS = "getVideoOptions"
+        private const val SET_VIDEO_OPTIONS = "setVideoOptions"
+        private const val GET_AUTOPLAY = "getAutoplay"
+        private const val SET_AUTOPLAY = "setAutoplay"
+        private const val GET_IS_LOOPING = "getIsLooping"
+        private const val SET_IS_LOOPING = "setIsLooping"
+        private const val GET_IS_MUTED = "getIsMuted"
+        private const val SET_IS_MUTED = "setIsMuted"
+        private const val GET_VOLUME = "getVolume"
+        private const val SET_VOLUME = "setVolume"
 
         private const val PLAY = "play"
         private const val PAUSE = "pause"

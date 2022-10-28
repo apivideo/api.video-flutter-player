@@ -81,6 +81,30 @@ class FlutterPlayerView(
             playerController.videoOptions = value
         }
 
+    var isAutoplay: Boolean
+        get() = playerController.autoplay
+        set(value) {
+            playerController.autoplay = value
+        }
+
+    var isMuted: Boolean
+        get() = playerController.isMuted
+        set(value) {
+            playerController.isMuted = value
+        }
+
+    var isLooping: Boolean
+        get() = playerController.isLooping
+        set(value) {
+            playerController.isLooping = value
+        }
+
+    var volume: Float
+        get() = playerController.volume
+        set(value) {
+            playerController.volume = value
+        }
+
     val isPlaying: Boolean
         get() = playerController.isPlaying
 
