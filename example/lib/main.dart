@@ -55,6 +55,23 @@ class _MyAppState extends State<MyApp> {
                 },
               ),
             ]),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.volume_off),
+                  onPressed: () {
+                    _controller.setIsMuted(true);
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.volume_up),
+                  onPressed: () {
+                    _controller.setIsMuted(false);
+                  },
+                ),
+              ],
+            ),
           ],
         ),
       ),
