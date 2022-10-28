@@ -12,12 +12,20 @@ class FlutterPlayerController {
         self.textureRegistry = textureRegistry
     }
 
-    func create(videoId: String, videoType: VideoType) -> Int64 {
-        let player = FlutterPlayerView(frame: .zero, binaryMessenger: binaryMessenger, textureRegistry: textureRegistry, videoId: videoId, videoType: videoType)
+    func initialize() -> Int64 {
+        let player = FlutterPlayerView(binaryMessenger: binaryMessenger, textureRegistry: textureRegistry)
 
         players[player.textureId] = player
 
         return player.textureId
+    }
+
+    func create(textureId: Int64, videoOptions: VideoOptions) {
+        guard let player = players[textureId] else {
+            print("Unknown player \(textureId)")
+            return
+        }
+        player.videoOptions = videoOptions
     }
 
     func dispose(textureId: Int64) {

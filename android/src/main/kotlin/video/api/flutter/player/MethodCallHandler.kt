@@ -22,6 +22,18 @@ class MethodCallHandler(
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
+            INITIALIZE -> {
+                val textureId = try {
+                    controller.initialize()
+                } catch (e: Exception) {
+                    result.error("failed_action", "Failed to initialize a new player", e)
+                    return
+                }
+
+                val reply: MutableMap<String, Any> = HashMap()
+                reply["textureId"] = textureId
+                result.success(reply)
+            }
             CREATE -> {
                 val videoOptions = try {
                     ((call.arguments as Map<*, *>)["videoOptions"] as Map<String, Any>).videoOptions
@@ -29,16 +41,11 @@ class MethodCallHandler(
                     result.error("invalid_parameter", "Invalid video options", e)
                     return
                 }
-                val textureId = try {
-                    controller.create(videoOptions)
-                } catch (e: Exception) {
-                    result.error("failed_action", "Failed to create a new player", e)
-                    return
-                }
 
-                val reply: MutableMap<String, Any> = HashMap()
-                reply["textureId"] = textureId
-                result.success(reply)
+                ensureTextureId(call, result) {
+                    controller.create(it, videoOptions)
+                    result.success(null)
+                }
             }
             DISPOSE -> {
                 ensureTextureId(call, result) {
@@ -124,6 +131,7 @@ class MethodCallHandler(
 
         private const val TEXTURE_ID = "textureId"
 
+        private const val INITIALIZE = "initialize"
         private const val CREATE = "create"
         private const val DISPOSE = "dispose"
 

@@ -3,35 +3,54 @@ import AVFoundation
 import AVKit
 import Foundation
 
-class FlutterPlayerView: NSObject {
+class FlutterPlayerView: NSObject, FlutterStreamHandler {
     private let playerTexture = PlayerFlutterTexture()
     private let textureRegistry: FlutterTextureRegistry
-    var textureId: Int64!
+    let textureId: Int64!
     private let frameUpdater: FrameUpdater
     private var displayLink: CADisplayLink!
     private let playerController: ApiVideoPlayerController
     private let playerLayer = AVPlayerLayer() // Only use to fix bugs according to flutter video_player plugin
 
+    private let eventChannel: FlutterEventChannel
+    private var eventSink: FlutterEventSink?
+
     private let events = PlayerEvents()
 
-    init(frame _: CGRect,
-         binaryMessenger _: FlutterBinaryMessenger,
+    init(binaryMessenger: FlutterBinaryMessenger,
          textureRegistry: FlutterTextureRegistry,
-         videoId: String,
-         videoType: VideoType)
+         videoOptions: VideoOptions? = nil)
     {
         self.textureRegistry = textureRegistry
-        playerController = ApiVideoPlayerController(videoId: videoId, videoType: videoType, playerLayer: playerLayer, events: events)
+        playerController = ApiVideoPlayerController(videoOptions: videoOptions, playerLayer: playerLayer, events: events)
         textureId = self.textureRegistry.register(playerTexture)
         frameUpdater = FrameUpdater(textureRegistry: self.textureRegistry, textureId: textureId)
         displayLink = FlutterPlayerView.createDisplayLink(frameUpdater: frameUpdater)
+
+        eventChannel = FlutterEventChannel(name: "video.api.player/events\(String(textureId))", binaryMessenger: binaryMessenger)
         super.init()
+        eventChannel.setStreamHandler(self)
+
         events.didPrepare = {
             self.playerController.addOutput(output: self.playerTexture.videoOutput)
             // Hack to load the first image. We don't need it in case of autoplay
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.textureRegistry.textureFrameAvailable(self.textureId)
             }
+
+            self.eventSink?(["type": "ready"])
+        }
+        events.didPlay = {
+            self.eventSink?(["type": "played"])
+        }
+        events.didPause = {
+            self.eventSink?(["type": "paused"])
+        }
+        events.didEnd = {
+            self.eventSink?(["type": "ended"])
+        }
+        events.didError = { error in
+            self.eventSink?(FlutterError(code: "error", message: error.localizedDescription, details: error))
         }
     }
 
@@ -48,8 +67,17 @@ class FlutterPlayerView: NSObject {
         return displayLink
     }
 
+    var videoOptions: VideoOptions? {
+        get {
+            playerController.videoOptions
+        }
+        set {
+            playerController.videoOptions = newValue
+        }
+    }
+
     var isPlaying: Bool {
-        playerController.isPlaying()
+        playerController.isPlaying
     }
 
     var duration: CMTime {
@@ -89,6 +117,17 @@ class FlutterPlayerView: NSObject {
         playerController.removeOutput(output: playerTexture.videoOutput)
         displayLink.invalidate()
         textureRegistry.unregisterTexture(textureId)
+        eventSink?(FlutterEndOfEventStream)
+    }
+
+    func onListen(withArguments _: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+        eventSink = events
+        return nil
+    }
+
+    func onCancel(withArguments _: Any?) -> FlutterError? {
+        eventSink = nil
+        return nil
     }
 }
 

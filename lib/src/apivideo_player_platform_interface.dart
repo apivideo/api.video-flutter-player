@@ -24,7 +24,7 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  /// Returns wether the video is playing or not
+  /// Returns whether the video is playing or not
   Future<bool> isPlaying(int textureId) {
     throw UnimplementedError('isPlaying() has not been implemented.');
   }
@@ -45,8 +45,14 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('getDuration() has not been implemented.');
   }
 
-  /// Creates the native player and returns the textureId
-  Future<int?> create(VideoOptions videoOptions) {
+  /// Creates the texture and registers the native events caller.
+  /// returns the texture id
+  Future<int?> initialize() {
+    throw UnimplementedError('initialize() has not been implemented.');
+  }
+
+  /// Creates the native player
+  Future<void> create(int textureId, VideoOptions videoOptions) {
     throw UnimplementedError('create() has not been implemented.');
   }
 
@@ -74,6 +80,37 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
   Widget buildView(int textureId) {
     throw UnimplementedError('buildView() has not been implemented.');
   }
+
+  /// Returns a Stream of [PlayerEvent]s.
+  Stream<PlayerEvent> playerEventsFor(int textureId) {
+    throw UnimplementedError('playerEventsFor() has not been implemented.');
+  }
 }
 
 class _PlatformImplementation extends ApiVideoPlayerPlatform {}
+
+class PlayerEvent {
+  /// Adds optional parameters here if needed
+
+  /// The [PlayerEventType]
+  final PlayerEventType type;
+
+  PlayerEvent({required this.type});
+}
+
+enum PlayerEventType {
+  /// The player is ready.
+  ready,
+
+  /// The playback just started.
+  played,
+
+  /// The playback has been paused.
+  paused,
+
+  /// The playback has been ended.
+  ended,
+
+  /// An unknown event has been received.
+  unknown,
+}

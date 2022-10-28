@@ -13,15 +13,19 @@ class MethodCallHandler {
         methodChannel
             .setMethodCallHandler { [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
                 switch call.method {
+                case Keys.initialize:
+                    let textureId = self?.controller.initialize()
+                    result([Keys.textureId: textureId])
                 case Keys.create:
                     guard let args = call.arguments as? [String: Any],
-                          let videoOptions = args["videoOptions"] as? [String: Any]
+                          let videoOptions = args["videoOptions"] as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int
                     else {
                         result(FlutterError(code: "invalid_parameter", message: "Failed to get arguments for create", details: nil))
                         return
                     }
-                    let textureId = self?.controller.create(videoId: videoOptions[Keys.videoId] as! String, videoType: (videoOptions[Keys.videoType] as! String).toVideoType())
-                    result([Keys.textureId: textureId])
+                    self?.controller.create(textureId: Int64(textureId), videoOptions: videoOptions.toVideoOptions())
+                    result(nil)
                 case Keys.dispose:
                     guard let args = call.arguments as? [String: Any],
                           let textureId = args[Keys.textureId] as? Int
@@ -30,6 +34,7 @@ class MethodCallHandler {
                         return
                     }
                     self?.controller.dispose(textureId: Int64(textureId))
+                    result(nil)
                 case Keys.isPlaying:
                     guard let args = call.arguments as? [String: Any],
                           let textureId = args[Keys.textureId] as? Int
@@ -55,6 +60,7 @@ class MethodCallHandler {
                         return
                     }
                     self?.controller.setCurrentTime(textureId: Int64(textureId), currentTime: currentTime)
+                    result(nil)
                 case Keys.getDuration:
                     guard let args = call.arguments as? [String: Any],
                           let textureId = args[Keys.textureId] as? Int
@@ -71,6 +77,7 @@ class MethodCallHandler {
                         return
                     }
                     self?.controller.play(textureId: Int64(textureId))
+                    result(nil)
                 case Keys.pause:
                     guard let args = call.arguments as? [String: Any],
                           let textureId = args[Keys.textureId] as? Int
@@ -79,6 +86,7 @@ class MethodCallHandler {
                         return
                     }
                     self?.controller.pause(textureId: Int64(textureId))
+                    result(nil)
                 case Keys.seek:
                     guard let args = call.arguments as? [String: Any],
                           let textureId = args[Keys.textureId] as? Int,
@@ -88,6 +96,7 @@ class MethodCallHandler {
                         return
                     }
                     self?.controller.seek(textureId: Int64(textureId), offset: offset)
+                    result(nil)
                 default:
                     result(FlutterMethodNotImplemented)
                 }
@@ -101,13 +110,12 @@ class MethodCallHandler {
 }
 
 enum Keys {
-    static let videoId = "videoId"
-    static let videoType = "videoType"
     static let textureId = "textureId"
 
     static let vod = "vod"
     static let live = "live"
 
+    static let initialize = "initialize"
     static let create = "create"
     static let dispose = "dispose"
 
@@ -131,5 +139,11 @@ extension String {
         default:
             return VideoType.vod
         }
+    }
+}
+
+extension Dictionary where Key == String {
+    func toVideoOptions() -> VideoOptions {
+        return VideoOptions(videoId: self["videoId"] as! String, videoType: (self["videoType"] as! String).toVideoType())
     }
 }
