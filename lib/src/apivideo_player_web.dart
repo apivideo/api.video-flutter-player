@@ -57,7 +57,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       textureId: textureId,
       jsMethod: () => js_controller.getCurrentTimeFromJs('player$textureId'),
     );
-    return int.parse((currentTime * 1000).toStringAsFixed(0));
+    return _secondsToMilliseconds(seconds: currentTime);
   }
 
   @override
@@ -77,7 +77,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       textureId: textureId,
       jsMethod: () => js_controller.getDurationFromJs('player$textureId'),
     );
-    return int.parse((duration * 1000).toStringAsFixed(0));
+    return _secondsToMilliseconds(seconds: duration);
   }
 
   @override
@@ -158,4 +158,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       jsMethod(),
     );
   }
+
+  int _secondsToMilliseconds({required double seconds}) =>
+      int.parse((seconds * 1000).toStringAsFixed(0));
 }
