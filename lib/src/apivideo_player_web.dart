@@ -53,30 +53,29 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<int> getCurrentTime(int textureId) async {
-    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
-    ArgumentError.checkNotNull(js.context['state'], 'state');
-    final currentTime = await promiseToFuture(
-      js_controller.getCurrentTimeFromJs('player$textureId'),
+    final currentTime = await _getPromiseFromJs<double>(
+      textureId: textureId,
+      jsMethod: () => js_controller.getCurrentTimeFromJs('player$textureId'),
     );
     return int.parse((currentTime * 1000).toStringAsFixed(0));
   }
 
   @override
   Future<void> setCurrentTime(int textureId, int currentTime) async {
-    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
-    ArgumentError.checkNotNull(js.context['state'], 'state');
-    js_controller.setCurrentTimeFromJs(
-      'player$textureId',
-      (currentTime ~/ 1000).toInt(),
+    _getPromiseFromJs<void>(
+      textureId: textureId,
+      jsMethod: () => js_controller.setCurrentTimeFromJs(
+        'player$textureId',
+        (currentTime ~/ 1000).toInt(),
+      ),
     );
   }
 
   @override
   Future<int> getDuration(int textureId) async {
-    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
-    ArgumentError.checkNotNull(js.context['state'], 'state');
-    final double duration = await promiseToFuture(
-      js_controller.getDurationFromJs('player$textureId'),
+    final duration = await _getPromiseFromJs<double>(
+      textureId: textureId,
+      jsMethod: () => js_controller.getDurationFromJs('player$textureId'),
     );
     return int.parse((duration * 1000).toStringAsFixed(0));
   }
@@ -146,6 +145,17 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
     return HtmlElementView(
       viewType: 'playerDiv$textureId',
       onPlatformViewCreated: (id) => injectScripts(),
+    );
+  }
+
+  Future<T> _getPromiseFromJs<T>({
+    required int textureId,
+    required Function jsMethod,
+  }) async {
+    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
+    ArgumentError.checkNotNull(js.context['state'], 'state');
+    return await promiseToFuture(
+      jsMethod(),
     );
   }
 }
