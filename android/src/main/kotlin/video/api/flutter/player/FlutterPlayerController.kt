@@ -14,12 +14,13 @@ class FlutterPlayerController(
 ) : FlutterPlayerInterface {
     private val players = mutableMapOf<Long, FlutterPlayerView>()
 
-    override fun initialize(): Long {
+    override fun initialize(autoplay: Boolean): Long {
         val player = FlutterPlayerView(
             applicationContext,
             messenger,
             textureRegistry,
-            null
+            null,
+            autoplay
         )
         players[player.textureId] = player
 

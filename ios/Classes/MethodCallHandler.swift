@@ -14,7 +14,13 @@ class MethodCallHandler {
             .setMethodCallHandler { [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
                 switch call.method {
                 case Keys.initialize:
-                    let textureId = self?.controller.initialize()
+                    guard let args = call.arguments as? [String: Any],
+                          let autoplay = args["autoplay"] as? Bool
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                        return
+                    }
+                    let textureId = self?.controller.initialize(autoplay: autoplay)
                     result([Keys.textureId: textureId])
                 case Keys.dispose:
                     guard let args = call.arguments as? [String: Any],

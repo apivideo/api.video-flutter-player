@@ -97,7 +97,7 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
 
   /// Creates the texture and registers the native events caller.
   /// returns the texture id
-  Future<int?> initialize() {
+  Future<int?> initialize(bool autoplay) {
     throw UnimplementedError('initialize() has not been implemented.');
   }
 

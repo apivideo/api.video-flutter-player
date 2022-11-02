@@ -127,9 +127,10 @@ class ApiVideoMobilePlayer extends ApiVideoPlayerPlatform {
   }
 
   @override
-  Future<int?> initialize() async {
+  Future<int?> initialize(bool autoplay) async {
+    final Map<String, dynamic> params = <String, dynamic>{"autoplay": autoplay};
     final Map<String, dynamic>? reply =
-        await _channel.invokeMapMethod<String, dynamic>('initialize');
+        await _channel.invokeMapMethod<String, dynamic>('initialize', params);
     int textureId = reply!['textureId']! as int;
     return textureId;
   }

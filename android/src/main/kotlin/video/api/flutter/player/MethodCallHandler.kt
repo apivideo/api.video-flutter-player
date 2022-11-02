@@ -23,8 +23,14 @@ class MethodCallHandler(
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             INITIALIZE -> {
+                val autoplay = try {
+                    ((call.arguments as Map<*, *>)["autoplay"] as Boolean)
+                } catch (e: Exception) {
+                    result.error("invalid_parameter", "Invalid autoplay", e)
+                    return
+                }
                 val textureId = try {
-                    controller.initialize()
+                    controller.initialize(autoplay)
                 } catch (e: Exception) {
                     result.error("failed_action", "Failed to initialize a new player", e)
                     return

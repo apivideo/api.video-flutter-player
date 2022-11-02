@@ -19,10 +19,11 @@ class FlutterPlayerView: NSObject, FlutterStreamHandler {
 
     init(binaryMessenger: FlutterBinaryMessenger,
          textureRegistry: FlutterTextureRegistry,
-         videoOptions: VideoOptions? = nil)
+         videoOptions: VideoOptions? = nil,
+         autoplay: Bool)
     {
         self.textureRegistry = textureRegistry
-        playerController = ApiVideoPlayerController(videoOptions: videoOptions, playerLayer: playerLayer, events: events)
+        playerController = ApiVideoPlayerController(videoOptions: videoOptions, playerLayer: playerLayer, autoplay: autoplay, events: events)
         textureId = self.textureRegistry.register(playerTexture)
         frameUpdater = FrameUpdater(textureRegistry: self.textureRegistry, textureId: textureId)
         displayLink = FlutterPlayerView.createDisplayLink(frameUpdater: frameUpdater)

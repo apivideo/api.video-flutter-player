@@ -14,7 +14,8 @@ class FlutterPlayerView(
     context: Context,
     messenger: BinaryMessenger,
     textureRegistry: TextureRegistry,
-    initialVideoOptions: VideoOptions? = null
+    initialVideoOptions: VideoOptions? = null,
+    autoplay: Boolean = false
 ) {
     private val surfaceTextureEntry = textureRegistry.createSurfaceTexture()
     val textureId = surfaceTextureEntry.id()
@@ -57,8 +58,8 @@ class FlutterPlayerView(
     }
 
     private val playerController = initialVideoOptions?.let {
-        ApiVideoPlayerController(context, it, listener, surface = surface)
-    } ?: ApiVideoPlayerController(context, null, listener, surface = surface)
+        ApiVideoPlayerController(context, it, listener = listener, surface = surface, initialAutoplay = autoplay)
+    } ?: ApiVideoPlayerController(context, null, listener = listener, surface = surface, initialAutoplay = autoplay)
     private var eventSink: EventSink? = null
     private val eventChannel = EventChannel(messenger, "video.api.player/events$textureId")
 

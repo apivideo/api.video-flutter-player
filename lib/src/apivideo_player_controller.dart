@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/src/apivideo_types.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import 'apivideo_player_platform_interface.dart';
@@ -12,7 +13,8 @@ ApiVideoPlayerPlatform get _playerPlatform {
 }
 
 class ApiVideoPlayerController {
-  VideoOptions _initialVideoOptions;
+  final VideoOptions _initialVideoOptions;
+  final bool _initialAutoplay;
 
   static const int kUninitializedTextureId = -1;
   int _textureId = kUninitializedTextureId;
@@ -26,12 +28,14 @@ class ApiVideoPlayerController {
 
   ApiVideoPlayerController({
     required VideoOptions videoOptions,
+    bool autoplay = false,
     VoidCallback? onReady,
     VoidCallback? onPlay,
     VoidCallback? onPause,
     VoidCallback? onEnd,
     Function(Object)? onError,
-  }) : _initialVideoOptions = videoOptions {
+  })  : _initialAutoplay = autoplay,
+        _initialVideoOptions = videoOptions {
     listeners.add(ApiVideoPlayerControllerListener(
         onReady: onReady,
         onPlay: onPlay,
@@ -42,8 +46,10 @@ class ApiVideoPlayerController {
 
   ApiVideoPlayerController.fromListener(
       {required VideoOptions videoOptions,
+      bool autoplay = false,
       ApiVideoPlayerControllerListener? listener})
-      : _initialVideoOptions = videoOptions {
+      : _initialAutoplay = autoplay,
+        _initialVideoOptions = videoOptions {
     if (listener != null) {
       listeners.add(listener);
     }
@@ -112,7 +118,7 @@ class ApiVideoPlayerController {
   }
 
   Future<void> initialize() async {
-    _textureId = await _playerPlatform.initialize() ?? kUninitializedTextureId;
+    _textureId = await _playerPlatform.initialize(_initialAutoplay) ?? kUninitializedTextureId;
 
     _eventSubscription = _playerPlatform
         .playerEventsFor(_textureId)
