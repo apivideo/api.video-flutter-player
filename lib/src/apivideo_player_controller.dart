@@ -138,6 +138,13 @@ class ApiVideoPlayerController {
           }
         }
         break;
+      case PlayerEventType.seek:
+        for (var listener in [...listeners]) {
+          if (listener.onSeek != null) {
+            listener.onSeek!();
+          }
+        }
+        break;
       case PlayerEventType.ended:
         for (var listener in [...listeners]) {
           if (listener.onEnd != null) {
@@ -156,9 +163,15 @@ class ApiVideoPlayerControllerListener {
   final VoidCallback? onReady;
   final VoidCallback? onPlay;
   final VoidCallback? onPause;
+  final VoidCallback? onSeek;
   final VoidCallback? onEnd;
   final Function(Object)? onError;
 
   ApiVideoPlayerControllerListener(
-      {this.onReady, this.onPlay, this.onPause, this.onEnd, this.onError});
+      {this.onReady,
+      this.onPlay,
+      this.onPause,
+      this.onSeek,
+      this.onEnd,
+      this.onError});
 }

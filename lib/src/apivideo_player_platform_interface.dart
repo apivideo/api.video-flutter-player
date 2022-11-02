@@ -108,6 +108,9 @@ enum PlayerEventType {
   /// The playback has been paused.
   paused,
 
+  /// The video has been seek.
+  seek,
+
   /// The playback has been ended.
   ended,
 
