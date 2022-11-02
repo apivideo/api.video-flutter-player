@@ -22,19 +22,21 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   final Map<int, VideoOptions> _videoOptions = {};
 
   @override
-  Future<int?> create(VideoOptions videoOptions) async {
-    _textureCounter++;
+  Future<int?> initialize() async {
+    return ++_textureCounter;
+  }
 
+  @override
+  Future<void> create(int textureId, VideoOptions videoOptions) async {
     final DivElement videoElement = DivElement()
-      ..id = 'playerDiv$_textureCounter'
+      ..id = 'playerDiv$textureId'
       ..style.height = '100%'
       ..style.width = '100%';
 
     platformViewRegistry.registerViewFactory(
-        'playerDiv$_textureCounter', (int viewId) => videoElement);
+        'playerDiv$textureId', (int viewId) => videoElement);
 
-    _videoOptions[_textureCounter] = videoOptions;
-    return _textureCounter;
+    _videoOptions[textureId] = videoOptions;
   }
 
   @override
@@ -92,6 +94,11 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
     ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
     js.JsObject.fromBrowserObject(js.context['player$textureId'])
         .callMethod('pause');
+  }
+
+  @override
+  Stream<PlayerEvent> playerEventsFor(int textureId) {
+    return Stream.empty();
   }
 
   @override
