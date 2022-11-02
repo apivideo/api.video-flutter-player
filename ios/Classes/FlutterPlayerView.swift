@@ -41,15 +41,18 @@ class FlutterPlayerView: NSObject, FlutterStreamHandler {
             self.eventSink?(["type": "ready"])
         }
         events.didPlay = {
+            self.displayLink.isPaused = false
             self.eventSink?(["type": "played"])
         }
         events.didPause = {
+            self.displayLink.isPaused = true
             self.eventSink?(["type": "paused"])
         }
-        events.didSeek = { from, to in
+        events.didSeek = { _, _ in
             self.eventSink?(["type": "seek"])
         }
         events.didEnd = {
+            self.displayLink.isPaused = true
             self.eventSink?(["type": "ended"])
         }
         events.didError = { error in
@@ -96,14 +99,48 @@ class FlutterPlayerView: NSObject, FlutterStreamHandler {
         }
     }
 
+    var autoplay: Bool {
+        get {
+            playerController.autoplay
+        }
+        set {
+            playerController.autoplay = newValue
+        }
+    }
+
+    var isMuted: Bool {
+        get {
+            playerController.isMuted
+        }
+        set {
+            playerController.isMuted = newValue
+        }
+    }
+
+    var volume: Float {
+        get {
+            playerController.volume
+        }
+        set {
+            playerController.volume = newValue
+        }
+    }
+
+    var isLooping: Bool {
+        get {
+            playerController.isLooping
+        }
+        set {
+            playerController.isLooping = newValue
+        }
+    }
+
     func play() {
         playerController.play()
-        displayLink.isPaused = false
     }
 
     func pause() {
         playerController.pause()
-        displayLink.isPaused = true
     }
 
     func seek(offset: CMTime) {

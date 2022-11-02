@@ -16,16 +16,6 @@ class MethodCallHandler {
                 case Keys.initialize:
                     let textureId = self?.controller.initialize()
                     result([Keys.textureId: textureId])
-                case Keys.create:
-                    guard let args = call.arguments as? [String: Any],
-                          let videoOptions = args["videoOptions"] as? [String: Any],
-                          let textureId = args[Keys.textureId] as? Int
-                    else {
-                        result(FlutterError(code: "invalid_parameter", message: "Failed to get arguments for create", details: nil))
-                        return
-                    }
-                    self?.controller.create(textureId: Int64(textureId), videoOptions: videoOptions.toVideoOptions())
-                    result(nil)
                 case Keys.dispose:
                     guard let args = call.arguments as? [String: Any],
                           let textureId = args[Keys.textureId] as? Int
@@ -69,6 +59,97 @@ class MethodCallHandler {
                         return
                     }
                     result(["duration": self?.controller.getDuration(textureId: Int64(textureId))])
+                case Keys.getVideoOptions:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                        return
+                    }
+                    let videoOptions = self?.controller.getVideoOptions(textureId: Int64(textureId)) // As it is mandatory to set a video option. This should never be null.
+                    result(["videoId": videoOptions!.videoId,
+                            "videoType": videoOptions!.videoType.toString()])
+                case Keys.setVideoOptions:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int,
+                          let videoOptions = args["videoOptions"] as? [String: Any]
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id or video options", details: nil))
+                        return
+                    }
+                    self?.controller.setVideoOptions(textureId: Int64(textureId), videoOptions: videoOptions.toVideoOptions())
+                    result(nil)
+                case Keys.getAutoplay:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                        return
+                    }
+                    result(["autoplay": self?.controller.getAutoplay(textureId: Int64(textureId))])
+                case Keys.setAutoplay:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int,
+                          let autoplay = args["autoplay"] as? Bool
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id or autoplay", details: nil))
+                        return
+                    }
+                    self?.controller.setAutoplay(textureId: Int64(textureId), autoplay: autoplay)
+                    result(nil)
+                case Keys.getIsMuted:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                        return
+                    }
+                    result(["isMuted": self?.controller.getIsMuted(textureId: Int64(textureId))])
+                case Keys.setIsMuted:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int,
+                          let isMuted = args["isMuted"] as? Bool
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id or is muted", details: nil))
+                        return
+                    }
+                    self?.controller.setIsMuted(textureId: Int64(textureId), isMuted: isMuted)
+                    result(nil)
+                case Keys.getIsLooping:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                        return
+                    }
+                    result(["isLooping": self?.controller.getIsLooping(textureId: Int64(textureId))])
+                case Keys.setIsLooping:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int,
+                          let isLooping = args["isLooping"] as? Bool
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id or is looping", details: nil))
+                        return
+                    }
+                    self?.controller.setIsLooping(textureId: Int64(textureId), isLooping: isLooping)
+                    result(nil)
+                case Keys.getVolume:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                        return
+                    }
+                    result(["volume": self?.controller.getVolume(textureId: Int64(textureId))])
+                case Keys.setVolume:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int,
+                          let volume = args["volume"] as? Double
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id or volume", details: nil))
+                        return
+                    }
+                    self?.controller.setVolume(textureId: Int64(textureId), volume: Float(volume))
                 case Keys.play:
                     guard let args = call.arguments as? [String: Any],
                           let textureId = args[Keys.textureId] as? Int
@@ -116,13 +197,22 @@ enum Keys {
     static let live = "live"
 
     static let initialize = "initialize"
-    static let create = "create"
     static let dispose = "dispose"
 
     static let isPlaying = "isPlaying"
     static let getCurrentTime = "getCurrentTime"
     static let setCurrentTime = "setCurrentTime"
     static let getDuration = "getDuration"
+    static let getVideoOptions = "getVideoOptions"
+    static let setVideoOptions = "setVideoOptions"
+    static let getAutoplay = "getAutoplay"
+    static let setAutoplay = "setAutoplay"
+    static let getIsMuted = "getIsMuted"
+    static let setIsMuted = "setIsMuted"
+    static let getIsLooping = "getIsLooping"
+    static let setIsLooping = "setIsLooping"
+    static let getVolume = "getVolume"
+    static let setVolume = "setVolume"
 
     static let play = "play"
     static let pause = "pause"
@@ -138,6 +228,19 @@ extension String {
             return VideoType.live
         default:
             return VideoType.vod
+        }
+    }
+}
+
+extension VideoType {
+    func toString() -> String {
+        switch self {
+        case VideoType.vod:
+            return Keys.vod
+        case VideoType.live:
+            return Keys.live
+        default:
+            return Keys.vod
         }
     }
 }
