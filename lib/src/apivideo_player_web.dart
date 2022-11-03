@@ -63,15 +63,8 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
-  Future<void> setCurrentTime(int textureId, int currentTime) async {
-    _getPromiseFromJs<void>(
-      textureId: textureId,
-      jsMethod: () => js_controller.setCurrentTimeFromJs(
-        'player$textureId',
-        (currentTime ~/ 1000).toInt(),
-      ),
-    );
-  }
+  Future<void> setCurrentTime(int textureId, int currentTime) async =>
+      _callJsMethod(textureId, 'setCurrentTime', [currentTime ~/ 1000]);
 
   @override
   Future<int> getDuration(int textureId) async {
@@ -83,18 +76,14 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
-  Future<void> play(int textureId) async {
-    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
-    js.JsObject.fromBrowserObject(js.context['player$textureId'])
-        .callMethod('play');
-  }
+  Future<void> play(int textureId) async => _callJsMethod(textureId, 'play');
 
   @override
-  Future<void> pause(int textureId) async {
-    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
-    js.JsObject.fromBrowserObject(js.context['player$textureId'])
-        .callMethod('pause');
-  }
+  Future<void> pause(int textureId) async => _callJsMethod(textureId, 'pause');
+
+  @override
+  Future<void> seek(int textureId, int offset) async =>
+      _callJsMethod(textureId, 'seek', [offset ~/ 1000]);
 
   @override
   Stream<PlayerEvent> playerEventsFor(int textureId) {
@@ -153,6 +142,16 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       viewType: 'playerDiv$textureId',
       onPlatformViewCreated: (id) => injectScripts(),
     );
+  }
+
+  Future<void> _callJsMethod(int textureId, String jsMethodName,
+      [List<dynamic>? args]) async {
+    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
+    js.JsObject.fromBrowserObject(js.context['player$textureId']).callMethod(
+      jsMethodName,
+      args,
+    );
+    return;
   }
 
   Future<T> _getPromiseFromJs<T>({
