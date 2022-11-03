@@ -45,9 +45,11 @@ class _ApiVideoPlayerControllerOverlayState
 
   // Hide and seek overlay
   hideAndSeekOverlay() {
-    setState(() {
-      isOverlayDisplayed = !isOverlayDisplayed;
-    });
+    if (!isOverlayDisplayed) {
+      setState(() {
+        isOverlayDisplayed = true;
+      });
+    }
     timer.cancel();
     timer = startTimeout();
   }
