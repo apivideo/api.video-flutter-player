@@ -21,6 +21,13 @@ class _ApiVideoPlayerControllerOverlayState
   bool isPlaying = false;
   bool isOverlayDisplayed = true;
   late var timer = startTimeout();
+  String remainingTimeText = "00:00";
+
+  @override
+  initState() {
+    super.initState();
+    remainingTime();
+  }
 
   pause() {
     widget.controller.pause();
@@ -62,6 +69,18 @@ class _ApiVideoPlayerControllerOverlayState
 
   startTimeout() {
     return Timer(const Duration(seconds: 5), handleTimeout);
+  }
+
+  //remaining time
+  remainingTime() async {
+    Duration duration = await widget.controller.duration;
+    print('duration --------  $duration');
+    var currentTime = await widget.controller.currentTime;
+
+    var remaining = duration - currentTime;
+    setState(() {
+      remainingTimeText = remaining.toString().split('.').first;
+    });
   }
 
   @override
@@ -139,7 +158,8 @@ class _ApiVideoPlayerControllerOverlayState
                   },
                 ),
               ),
-              const Text('00:00', style: TextStyle(color: Colors.white)),
+              Text(remainingTimeText,
+                  style: const TextStyle(color: Colors.white)),
             ],
           ),
         ),
