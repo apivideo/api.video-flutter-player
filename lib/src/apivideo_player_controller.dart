@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/src/apivideo_types.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import 'apivideo_player_platform_interface.dart';
@@ -12,7 +13,8 @@ ApiVideoPlayerPlatform get _playerPlatform {
 }
 
 class ApiVideoPlayerController {
-  VideoOptions videoOptions;
+  final VideoOptions _initialVideoOptions;
+  final bool _initialAutoplay;
 
   static const int kUninitializedTextureId = -1;
   int _textureId = kUninitializedTextureId;
@@ -25,13 +27,15 @@ class ApiVideoPlayerController {
   int get textureId => _textureId;
 
   ApiVideoPlayerController({
-    required this.videoOptions,
+    required VideoOptions videoOptions,
+    bool autoplay = false,
     VoidCallback? onReady,
     VoidCallback? onPlay,
     VoidCallback? onPause,
     VoidCallback? onEnd,
     Function(Object)? onError,
-  }) {
+  })  : _initialAutoplay = autoplay,
+        _initialVideoOptions = videoOptions {
     listeners.add(ApiVideoPlayerControllerListener(
         onReady: onReady,
         onPlay: onPlay,
@@ -41,14 +45,17 @@ class ApiVideoPlayerController {
   }
 
   ApiVideoPlayerController.fromListener(
-      {required this.videoOptions,
-      ApiVideoPlayerControllerListener? listener}) {
+      {required VideoOptions videoOptions,
+      bool autoplay = false,
+      ApiVideoPlayerControllerListener? listener})
+      : _initialAutoplay = autoplay,
+        _initialVideoOptions = videoOptions {
     if (listener != null) {
       listeners.add(listener);
     }
   }
 
-  Future<bool> get isPlaying async {
+  Future<bool> get isPlaying {
     return _playerPlatform.isPlaying(_textureId);
   }
 
@@ -57,7 +64,7 @@ class ApiVideoPlayerController {
     return Duration(milliseconds: milliseconds);
   }
 
-  Future<void> setCurrentTime(Duration currentTime) async {
+  Future<void> setCurrentTime(Duration currentTime) {
     return _playerPlatform.setCurrentTime(
         _textureId, currentTime.inMilliseconds);
   }
@@ -67,23 +74,66 @@ class ApiVideoPlayerController {
     return Duration(milliseconds: milliseconds);
   }
 
+  Future<VideoOptions> get videoOptions {
+    return _playerPlatform.getVideoOptions(_textureId);
+  }
+
+  Future<void> setVideoOptions(VideoOptions videoOptions) {
+    return _playerPlatform.setVideoOptions(_textureId, videoOptions);
+  }
+
+  Future<bool> get autoplay {
+    return _playerPlatform.getAutoplay(_textureId);
+  }
+
+  Future<void> setAutoplay(bool autoplay) {
+    return _playerPlatform.setAutoplay(_textureId, autoplay);
+  }
+
+  Future<bool> get isMuted {
+    return _playerPlatform.getIsMuted(_textureId);
+  }
+
+  Future<void> setIsMuted(bool isMuted) {
+    return _playerPlatform.setIsMuted(_textureId, isMuted);
+  }
+
+  Future<bool> get isLooping {
+    return _playerPlatform.getIsLooping(_textureId);
+  }
+
+  Future<void> setIsLooping(bool isLooping) {
+    return _playerPlatform.setIsLooping(_textureId, isLooping);
+  }
+
+  Future<double> get volume {
+    return _playerPlatform.getVolume(_textureId);
+  }
+
+  Future<void> setVolume(double volume) {
+    if (volume < 0 || volume > 100) {
+      throw ArgumentError('Volume must be between 0 and 100');
+    }
+    return _playerPlatform.setVolume(_textureId, volume);
+  }
+
   Future<void> initialize() async {
-    _textureId = await _playerPlatform.initialize() ?? kUninitializedTextureId;
+    _textureId = await _playerPlatform.initialize(_initialAutoplay) ?? kUninitializedTextureId;
 
     _eventSubscription = _playerPlatform
         .playerEventsFor(_textureId)
         .listen(_eventListener, onError: _errorListener);
 
-    await _playerPlatform.create(_textureId, videoOptions);
+    await _playerPlatform.create(_textureId, _initialVideoOptions);
 
     return;
   }
 
-  Future<void> play() async {
+  Future<void> play() {
     return _playerPlatform.play(_textureId);
   }
 
-  Future<void> pause() async {
+  Future<void> pause() {
     return _playerPlatform.pause(_textureId);
   }
 
@@ -94,7 +144,7 @@ class ApiVideoPlayerController {
     return;
   }
 
-  Future<void> seek(Duration offset) async {
+  Future<void> seek(Duration offset) {
     return _playerPlatform.seek(_textureId, offset.inMilliseconds);
   }
 

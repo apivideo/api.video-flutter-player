@@ -21,6 +21,14 @@ fun String.toVideoType(): VideoType {
     }
 }
 
+fun VideoType.toFlutterString(): String {
+    return when (this) {
+        VideoType.VOD -> "vod"
+        VideoType.LIVE -> "live"
+        else -> throw InvalidParameterException("$this is an unknown video type")
+    }
+}
+
 fun Int.msToFloat(): Float {
     return this.toFloat() / 1000
 }

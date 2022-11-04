@@ -29,7 +29,7 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('isPlaying() has not been implemented.');
   }
 
-  /// Return number of milliseconds from the beginning of the video to the
+  /// Returns number of milliseconds from the beginning of the video to the
   /// current time
   Future<int> getCurrentTime(int textureId) {
     throw UnimplementedError('getCurrentTime() has not been implemented.');
@@ -40,14 +40,64 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('setCurrentTime() has not been implemented.');
   }
 
-  /// Return the duration of the video
+  /// Returns the duration of the video
   Future<int> getDuration(int textureId) {
     throw UnimplementedError('getDuration() has not been implemented.');
   }
 
+  /// Returns the current video
+  Future<VideoOptions> getVideoOptions(int textureId) {
+    throw UnimplementedError('getVideoOptions() has not been implemented.');
+  }
+
+  /// Sets the video
+  Future<void> setVideoOptions(int textureId, VideoOptions videoOptions) {
+    throw UnimplementedError('setVideoOptions() has not been implemented.');
+  }
+
+  /// Gets the autoplay state
+  Future<bool> getAutoplay(int textureId) {
+    throw UnimplementedError('getAutoplay() has not been implemented.');
+  }
+
+  /// Sets the autoplay state
+  Future<void> setAutoplay(int textureId, bool autoplay) {
+    throw UnimplementedError('setAutoplay() has not been implemented.');
+  }
+
+  /// Gets the muted state
+  Future<bool> getIsMuted(int textureId) {
+    throw UnimplementedError('getIsMuted() has not been implemented.');
+  }
+
+  /// Sets the muted state
+  Future<void> setIsMuted(int textureId, bool isMuted) {
+    throw UnimplementedError('setIsMuted() has not been implemented.');
+  }
+
+  /// Gets the looping state
+  Future<bool> getIsLooping(int textureId) {
+    throw UnimplementedError('getIsLooping() has not been implemented.');
+  }
+
+  /// Sets the looping state
+  Future<void> setIsLooping(int textureId, bool isLooping) async {
+    throw UnimplementedError('setIsLooping() has not been implemented.');
+  }
+
+  /// Gets the volume
+  Future<double> getVolume(int textureId) {
+    throw UnimplementedError('getVolume() has not been implemented.');
+  }
+
+  /// Sets the volume from 0 to 100.
+  Future<void> setVolume(int textureId, double volume) {
+    throw UnimplementedError('setVolume() has not been implemented.');
+  }
+
   /// Creates the texture and registers the native events caller.
   /// returns the texture id
-  Future<int?> initialize() {
+  Future<int?> initialize(bool autoplay) {
     throw UnimplementedError('initialize() has not been implemented.');
   }
 

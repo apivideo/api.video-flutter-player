@@ -47,21 +47,97 @@ class ApiVideoMobilePlayer extends ApiVideoPlayerPlatform {
   }
 
   @override
-  Future<int?> initialize() async {
+  Future<VideoOptions> getVideoOptions(int textureId) async {
+    final Map<String, dynamic> reply =
+        await _channel.invokeMapMethodWithTexture<String, dynamic>(
+                'getVideoOptions', TextureMessage(textureId: textureId))
+            as Map<String, dynamic>;
+    return VideoOptions.fromJson(reply);
+  }
+
+  @override
+  Future<void> setVideoOptions(int textureId, VideoOptions videoOptions) {
+    final Map<String, dynamic> videoParams = <String, dynamic>{
+      "videoOptions": videoOptions.toJson()
+    };
+    return _channel.invokeMapMethodWithTexture<String, dynamic>(
+        'setVideoOptions', TextureMessage(textureId: textureId), videoParams);
+  }
+
+  @override
+  Future<bool> getAutoplay(int textureId) async {
+    final Map<dynamic, dynamic> reply =
+        await _channel.invokeMapMethodWithTexture(
+            'getAutoplay', TextureMessage(textureId: textureId)) as Map;
+    return reply['autoplay'] as bool;
+  }
+
+  @override
+  Future<void> setAutoplay(int textureId, bool autoplay) {
+    final Map<String, dynamic> params = <String, dynamic>{"autoplay": autoplay};
+    return _channel.invokeMapMethodWithTexture(
+        'setAutoplay', TextureMessage(textureId: textureId), params);
+  }
+
+  @override
+  Future<bool> getIsMuted(int textureId) async {
+    final Map<dynamic, dynamic> reply =
+        await _channel.invokeMapMethodWithTexture(
+            'getIsMuted', TextureMessage(textureId: textureId)) as Map;
+    return reply['isMuted'] as bool;
+  }
+
+  @override
+  Future<void> setIsMuted(int textureId, bool isMuted) {
+    final Map<String, dynamic> params = <String, dynamic>{"isMuted": isMuted};
+    return _channel.invokeMapMethodWithTexture(
+        'setIsMuted', TextureMessage(textureId: textureId), params);
+  }
+
+  @override
+  Future<bool> getIsLooping(int textureId) async {
+    final Map<dynamic, dynamic> reply =
+        await _channel.invokeMapMethodWithTexture(
+            'getIsLooping', TextureMessage(textureId: textureId)) as Map;
+    return reply['isLooping'] as bool;
+  }
+
+  @override
+  Future<void> setIsLooping(int textureId, bool isLooping) {
+    final Map<String, dynamic> params = <String, dynamic>{
+      "isLooping": isLooping
+    };
+    return _channel.invokeMapMethodWithTexture(
+        'setIsLooping', TextureMessage(textureId: textureId), params);
+  }
+
+  @override
+  Future<double> getVolume(int textureId) async {
+    final Map<dynamic, dynamic> reply =
+        await _channel.invokeMapMethodWithTexture(
+            'getVolume', TextureMessage(textureId: textureId)) as Map;
+    return reply['volume'] as double;
+  }
+
+  @override
+  Future<void> setVolume(int textureId, double volume) {
+    final Map<String, dynamic> params = <String, dynamic>{"volume": volume};
+    return _channel.invokeMapMethodWithTexture(
+        'setVolume', TextureMessage(textureId: textureId), params);
+  }
+
+  @override
+  Future<int?> initialize(bool autoplay) async {
+    final Map<String, dynamic> params = <String, dynamic>{"autoplay": autoplay};
     final Map<String, dynamic>? reply =
-        await _channel.invokeMapMethod<String, dynamic>('initialize');
+        await _channel.invokeMapMethod<String, dynamic>('initialize', params);
     int textureId = reply!['textureId']! as int;
     return textureId;
   }
 
   @override
   Future<void> create(int textureId, VideoOptions videoOptions) {
-    final Map<String, dynamic> videoParams = <String, dynamic>{
-      "videoOptions": videoOptions.toJson()
-    };
-
-    return _channel.invokeMapMethodWithTexture<String, dynamic>(
-        'create', TextureMessage(textureId: textureId), videoParams);
+    return setVideoOptions(textureId, videoOptions);
   }
 
   @override

@@ -14,23 +14,17 @@ class FlutterPlayerController(
 ) : FlutterPlayerInterface {
     private val players = mutableMapOf<Long, FlutterPlayerView>()
 
-    override fun initialize(): Long {
+    override fun initialize(autoplay: Boolean): Long {
         val player = FlutterPlayerView(
             applicationContext,
             messenger,
             textureRegistry,
-            null
+            null,
+            autoplay
         )
         players[player.textureId] = player
 
         return player.textureId
-    }
-
-    override fun create(textureId: Long, videoOptions: VideoOptions) {
-        players[textureId]?.let { it.videoOptions = videoOptions } ?: Log.e(
-            TAG,
-            "Unknown player $textureId"
-        )
     }
 
     override fun dispose(textureId: Long) {
@@ -69,6 +63,76 @@ class FlutterPlayerController(
             Log.e(TAG, "Unknown player $textureId")
             0
         }
+    }
+
+    override fun getVideoOptions(textureId: Long): VideoOptions? {
+        return players[textureId]?.videoOptions ?: run {
+            Log.e(TAG, "Unknown player $textureId")
+            null
+        }
+    }
+
+    override fun setVideoOptions(textureId: Long, videoOptions: VideoOptions) {
+        players[textureId]?.let { it.videoOptions = videoOptions } ?: Log.e(
+            TAG,
+            "Unknown player $textureId"
+        )
+    }
+
+    override fun getAutoplay(textureId: Long): Boolean {
+        return players[textureId]?.isAutoplay ?: run {
+            Log.e(TAG, "Unknown player $textureId")
+            false
+        }
+    }
+
+    override fun setAutoplay(textureId: Long, autoplay: Boolean) {
+        players[textureId]?.let { it.isAutoplay = autoplay } ?: Log.e(
+            TAG,
+            "Unknown player $textureId"
+        )
+    }
+
+    override fun getIsMuted(textureId: Long): Boolean {
+        return players[textureId]?.isMuted ?: run {
+            Log.e(TAG, "Unknown player $textureId")
+            false
+        }
+    }
+
+    override fun setIsMuted(textureId: Long, isMuted: Boolean) {
+        players[textureId]?.let { it.isMuted = isMuted } ?: Log.e(
+            TAG,
+            "Unknown player $textureId"
+        )
+    }
+
+    override fun getIsLooping(textureId: Long): Boolean {
+        return players[textureId]?.isLooping ?: run {
+            Log.e(TAG, "Unknown player $textureId")
+            false
+        }
+    }
+
+    override fun setIsLooping(textureId: Long, isLooping: Boolean) {
+        players[textureId]?.let { it.isLooping = isLooping } ?: Log.e(
+            TAG,
+            "Unknown player $textureId"
+        )
+    }
+
+    override fun getVolume(textureId: Long): Float {
+        return players[textureId]?.volume ?: run {
+            Log.e(TAG, "Unknown player $textureId")
+            0.0F
+        }
+    }
+
+    override fun setVolume(textureId: Long, volume: Float) {
+        players[textureId]?.let { it.volume = volume } ?: Log.e(
+            TAG,
+            "Unknown player $textureId"
+        )
     }
 
     override fun play(textureId: Long) {
