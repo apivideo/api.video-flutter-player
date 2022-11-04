@@ -20,9 +20,11 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   int _textureCounter = -1;
   final Map<int, VideoOptions> _videoOptions = {};
+  late bool _autoplay;
 
   @override
-  Future<int?> initialize() async {
+  Future<int?> initialize(bool autoplay) async {
+    _autoplay = autoplay;
     return ++_textureCounter;
   }
 
@@ -137,7 +139,8 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
           { 
             id: "${_videoOptions[textureId]!.videoId}",
             chromeless: true,
-            live: ${_videoOptions[textureId]!.videoType == VideoType.live}, 
+            live: ${_videoOptions[textureId]!.videoType == VideoType.live},
+            autoplay: $_autoplay,
           }
         );
       ''';
