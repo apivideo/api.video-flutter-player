@@ -106,6 +106,19 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       );
 
   @override
+  Future<bool> getAutoplay(int textureId) async => _autoplay;
+
+  @override
+  Future<void> setAutoplay(int textureId, bool autoplay) {
+    _autoplay = autoplay;
+    return _callJsMethod(
+      textureId: textureId,
+      jsMethodName: 'setAutoplay',
+      args: [autoplay],
+    );
+  }
+
+  @override
   Stream<PlayerEvent> playerEventsFor(int textureId) {
     return Stream.empty();
   }
