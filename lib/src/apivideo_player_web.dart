@@ -94,7 +94,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       textureId: textureId, jsMethodName: 'seek', args: [offset ~/ 1000]);
 
   @override
-  Future<bool> getIsMuted(int textureId) => _getPromiseFromJs(
+  Future<bool> getIsMuted(int textureId) => _getPromiseFromJs<bool>(
         textureId: textureId,
         jsMethod: () => js_controller.getMuted('player$textureId'),
       );
@@ -117,6 +117,19 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       args: [autoplay],
     );
   }
+
+  @override
+  Future<bool> getIsLooping(int textureId) => _getPromiseFromJs<bool>(
+        textureId: textureId,
+        jsMethod: () => js_controller.getLoop('player$textureId'),
+      );
+
+  @override
+  Future<void> setIsLooping(int textureId, bool isLooping) => _callJsMethod(
+        textureId: textureId,
+        jsMethodName: 'setLoop',
+        args: [isLooping],
+      );
 
   @override
   Stream<PlayerEvent> playerEventsFor(int textureId) {
@@ -152,6 +165,10 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
             getMuted: async function(playerId) {
               if (!playerId || !window[playerId]) return;
               return await window[playerId].getMuted();
+            },
+            getLoop: async function(playerId) {
+              if (!playerId || !window[playerId]) return;
+              return await window[playerId].getLoop();
             },
           };
         ''';
