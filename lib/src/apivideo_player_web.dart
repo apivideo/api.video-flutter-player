@@ -48,10 +48,10 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
-  Future<bool> isPlaying(int textureId) async {
-    // TODO: implement isPlaying
-    return false;
-  }
+  Future<bool> isPlaying(int textureId) async => await _getPromiseFromJs<bool>(
+        textureId: textureId,
+        jsMethod: () => js_controller.getPlayingFromJs('player$textureId'),
+      );
 
   @override
   Future<int> getCurrentTime(int textureId) async {
@@ -117,6 +117,10 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
             getDuration: async function(playerId) {
               if (!playerId || !window[playerId]) return;
               return await window[playerId].getDuration();
+            },
+            getPlaying: async function(playerId) {
+              if (!playerId || !window[playerId]) return;
+              return await window[playerId].getPlaying();
             },
           };
         ''';
