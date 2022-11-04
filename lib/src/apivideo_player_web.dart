@@ -50,6 +50,50 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
+  Future<VideoOptions> getVideoOptions(int textureId) async {
+    if (_videoOptions[textureId] == null) {
+      throw Exception('No video options found for this texture id: $textureId');
+    }
+    return _videoOptions[textureId]!;
+  }
+
+  @override
+  Future<void> setVideoOptions(int textureId, VideoOptions videoOptions) async {
+    // TODO: Implement method
+    return;
+    // if (document.querySelector('#apiVideoPlayerJsScript$textureId') == null) {
+    //   throw Exception('No video instanciated for this texture id: $textureId');
+    // }
+    // _videoOptions[textureId] = videoOptions;
+    // final String jsString = '''
+    //     window.player$textureId = new PlayerSdk(
+    //       "#playerDiv$textureId",
+    //       {
+    //         id: "${_videoOptions[textureId]!.videoId}",
+    //         chromeless: true,
+    //         live: ${_videoOptions[textureId]!.videoType == VideoType.live},
+    //         autoplay: $_autoplay,
+    //       }
+    //     );
+    //   ''';
+    // final ScriptElement script = ScriptElement()
+    //   ..id = 'apiVideoPlayerJsScript$textureId'
+    //   ..innerText = jsString;
+    // script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
+    // document.body?.insertAdjacentElement('beforeend', script);
+    // return _callJsMethod(
+    //   textureId: textureId,
+    //   jsMethodName: 'loadConfig',
+    //   args: [
+    //     {
+    //       'id': videoOptions.videoId,
+    //     }
+    //   ],
+    // );
+    // return;
+  }
+
+  @override
   Future<bool> isPlaying(int textureId) async => await _getPromiseFromJs<bool>(
         textureId: textureId,
         jsMethod: () => js_controller.getPlayingFromJs('player$textureId'),
