@@ -94,6 +94,19 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       textureId: textureId, jsMethodName: 'seek', args: [offset ~/ 1000]);
 
   @override
+  Future<double> getVolume(int textureId) => _getPromiseFromJs<double>(
+        textureId: textureId,
+        jsMethod: () => js_controller.getVolume('player$textureId'),
+      );
+
+  @override
+  Future<void> setVolume(int textureId, double volume) => _callJsMethod(
+        textureId: textureId,
+        jsMethodName: 'setVolume',
+        args: [volume],
+      );
+
+  @override
   Future<bool> getIsMuted(int textureId) => _getPromiseFromJs<bool>(
         textureId: textureId,
         jsMethod: () => js_controller.getMuted('player$textureId'),
@@ -169,6 +182,10 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
             getLoop: async function(playerId) {
               if (!playerId || !window[playerId]) return;
               return await window[playerId].getLoop();
+            },
+            getVolume: async function(playerId) {
+              if (!playerId || !window[playerId]) return;
+              return await window[playerId].getVolume();
             },
           };
         ''';

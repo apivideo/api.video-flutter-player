@@ -15,3 +15,5 @@ external bool getPlayingFromJs(String playerId);
 external bool getMuted(String playerId);
 @JS('state.getLoop')
 external bool getLoop(String playerId);
+@JS('state.getVolume')
+external double getVolume(String playerId);
