@@ -11,3 +11,5 @@ external void setCurrentTimeFromJs(String playerId, int currentTimeInSeconds);
 external int getDurationFromJs(String playerId);
 @JS('state.getPlaying')
 external int getPlayingFromJs(String playerId);
+@JS('state.getMuted')
+external int getMuted(String playerId);
