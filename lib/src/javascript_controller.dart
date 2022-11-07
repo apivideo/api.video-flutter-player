@@ -17,3 +17,5 @@ external bool getMuted(String playerId);
 external bool getLoop(String playerId);
 @JS('state.getVolume')
 external double getVolume(String playerId);
+@JS('state.loadConfig')
+external void loadConfig(String playerId, Object videoOptions);

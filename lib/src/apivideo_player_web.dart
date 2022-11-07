@@ -61,38 +61,11 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<void> setVideoOptions(int textureId, VideoOptions videoOptions) async {
-    // TODO: Implement method
+    js_controller.loadConfig(
+      'player$textureId',
+      mapToJsObject({'id': videoOptions.videoId}),
+    );
     return;
-    // if (document.querySelector('#apiVideoPlayerJsScript$textureId') == null) {
-    //   throw Exception('No video instanciated for this texture id: $textureId');
-    // }
-    // _videoOptions[textureId] = videoOptions;
-    // final String jsString = '''
-    //     window.player$textureId = new PlayerSdk(
-    //       "#playerDiv$textureId",
-    //       {
-    //         id: "${_videoOptions[textureId]!.videoId}",
-    //         chromeless: true,
-    //         live: ${_videoOptions[textureId]!.videoType == VideoType.live},
-    //         autoplay: $_autoplay,
-    //       }
-    //     );
-    //   ''';
-    // final ScriptElement script = ScriptElement()
-    //   ..id = 'apiVideoPlayerJsScript$textureId'
-    //   ..innerText = jsString;
-    // script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
-    // document.body?.insertAdjacentElement('beforeend', script);
-    // return _callJsMethod(
-    //   textureId: textureId,
-    //   jsMethodName: 'loadConfig',
-    //   args: [
-    //     {
-    //       'id': videoOptions.videoId,
-    //     }
-    //   ],
-    // );
-    // return;
   }
 
   @override
@@ -235,6 +208,11 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
               if (!playerId || !window[playerId]) return;
               return await window[playerId].getVolume();
             },
+            loadConfig: function(playerId, videoOptions) {
+              if (!playerId || !window[playerId]) return;
+              console.log(videoOptions);
+              window[playerId].loadConfig(videoOptions);
+            }
           };
         ''';
         final ScriptElement script = ScriptElement()
@@ -313,4 +291,17 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   /// Converts seconds into milliseconds.
   int _secondsToMilliseconds({required double seconds}) =>
       int.parse((seconds * 1000).toStringAsFixed(0));
+
+  /// Converts a [Map] to a [JS object]
+  Object mapToJsObject(Map map) {
+    var object = newObject();
+    map.forEach((k, v) {
+      if (v is Map) {
+        setProperty(object, k, mapToJsObject(v));
+      } else {
+        setProperty(object, k, v);
+      }
+    });
+    return object;
+  }
 }
