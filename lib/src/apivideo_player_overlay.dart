@@ -5,22 +5,20 @@ import 'package:flutter/widgets.dart';
 
 import '../apivideo_player.dart';
 
-class ApiVideoPlayerControllerOverlay extends StatefulWidget {
+class ApiVideoPlayerOverlay extends StatefulWidget {
   final ApiVideoPlayerController controller;
 
-  const ApiVideoPlayerControllerOverlay({
+  const ApiVideoPlayerOverlay({
     super.key,
     required this.controller,
   });
 
   @override
-  State<ApiVideoPlayerControllerOverlay> createState() =>
-      _ApiVideoPlayerControllerOverlayState();
+  State<ApiVideoPlayerOverlay> createState() => _ApiVideoPlayerOverlayState();
 }
 
-class _ApiVideoPlayerControllerOverlayState
-    extends State<ApiVideoPlayerControllerOverlay> {
-  _ApiVideoPlayerControllerOverlayState() {
+class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
+  _ApiVideoPlayerOverlayState() {
     _listener = ApiVideoPlayerControllerListener(
       onReady: () {
         setState(() {});
@@ -47,63 +45,75 @@ class _ApiVideoPlayerControllerOverlayState
   }
 
   bool isPlaying = false;
+
   late ApiVideoPlayerControllerListener _listener;
-  bool isOverlayDisplayed = true;
-  late var timer = startTimeout();
-  String remainingTimeText = "00:00";
+
+  bool isOverlayVisible = true;
+  Timer? overlayVisibilityTimer;
+
+  Duration remainingDuration = const Duration(seconds: 0);
 
   @override
   initState() {
     super.initState();
     widget.controller.addListener(_listener);
-    remainingTime();
+    _showOverlayForDuration();
+    _updateRemainingTime();
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_listener);
+    overlayVisibilityTimer?.cancel();
+    super.dispose();
   }
 
   pause() {
     widget.controller.pause();
-    hideAndSeekOverlay();
+    _showOverlayForDuration();
   }
 
   play() {
     widget.controller.play();
-    hideAndSeekOverlay();
+    _showOverlayForDuration();
   }
 
   seek(Duration duration) {
     widget.controller.seek(duration);
-    hideAndSeekOverlay();
+    _showOverlayForDuration();
   }
 
-  // Hide and seek overlay
-  hideAndSeekOverlay() {
-    if (!isOverlayDisplayed) {
-      setState(() {
-        isOverlayDisplayed = true;
-      });
+  void _showOverlayForDuration() {
+    if (!isOverlayVisible) {
+      showOverlay();
     }
-    timer.cancel();
-    timer = startTimeout();
+    overlayVisibilityTimer?.cancel();
+    overlayVisibilityTimer =
+        _createTimer(const Duration(seconds: 5), hideOverlay);
   }
 
-  void handleTimeout() {
+  void showOverlay() {
     setState(() {
-      isOverlayDisplayed = false;
+      isOverlayVisible = true;
     });
   }
 
-  startTimeout() {
-    return Timer(const Duration(seconds: 5), handleTimeout);
+  void hideOverlay() {
+    setState(() {
+      isOverlayVisible = false;
+    });
   }
 
-  //remaining time
-  remainingTime() async {
-    Duration duration = await widget.controller.duration;
-    print('duration --------  $duration');
-    var currentTime = await widget.controller.currentTime;
+  Timer _createTimer(Duration duration, Function() callback) {
+    return Timer(duration, callback);
+  }
 
-    var remaining = duration - currentTime;
+  void _updateRemainingTime() async {
+    Duration duration = await widget.controller.duration;
+    Duration currentTime = await widget.controller.currentTime;
+
     setState(() {
-      remainingTimeText = remaining.toString().split('.').first;
+      remainingDuration = duration - currentTime;
     });
   }
 
@@ -111,7 +121,7 @@ class _ApiVideoPlayerControllerOverlayState
   Widget build(BuildContext context) => GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
-          hideAndSeekOverlay();
+          _showOverlayForDuration();
         },
         child: Stack(
           children: <Widget>[
@@ -130,7 +140,7 @@ class _ApiVideoPlayerControllerOverlayState
       );
 
   Widget controls() => Visibility(
-        visible: isOverlayDisplayed,
+        visible: isOverlayVisible,
         child: Center(
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -168,7 +178,7 @@ class _ApiVideoPlayerControllerOverlayState
   }
 
   Widget buildSlider() => Visibility(
-        visible: isOverlayDisplayed,
+        visible: isOverlayVisible,
         child: Container(
           height: 60,
           padding: const EdgeInsets.only(right: 5),
@@ -184,7 +194,11 @@ class _ApiVideoPlayerControllerOverlayState
                   },
                 ),
               ),
-              Text(remainingTimeText,
+              Text(
+                  remainingDuration
+                      .toString()
+                      .split('.')
+                      .first, // TODO: have a better display
                   style: const TextStyle(color: Colors.white)),
             ],
           ),

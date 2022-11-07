@@ -1,4 +1,4 @@
-import 'package:apivideo_player/src/apivideo_player_controller_overlay.dart';
+import 'package:apivideo_player/src/apivideo_player_overlay.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'apivideo_player_controller.dart';
@@ -56,7 +56,7 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
         children: <Widget>[
           buildVideoPlayer(),
           Positioned.fill(
-              child: ApiVideoPlayerControllerOverlay(
+              child: ApiVideoPlayerOverlay(
                   controller: widget.controller)),
         ],
       );
