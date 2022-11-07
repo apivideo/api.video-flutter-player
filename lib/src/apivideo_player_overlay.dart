@@ -25,12 +25,12 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
       },
       onPlay: () {
         setState(() {
-          isPlaying = true;
+          _isPlaying = true;
         });
       },
       onPause: () {
         setState(() {
-          isPlaying = false;
+          _isPlaying = false;
         });
       },
       onSeek: () {
@@ -38,20 +38,20 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
       },
       onEnd: () {
         setState(() {
-          isPlaying = false;
+          _isPlaying = false;
         });
       },
     );
   }
 
-  bool isPlaying = false;
+  bool _isPlaying = false;
 
   late ApiVideoPlayerControllerListener _listener;
 
-  bool isOverlayVisible = true;
-  Timer? overlayVisibilityTimer;
+  bool _isOverlayVisible = true;
+  Timer? _overlayVisibilityTimer;
 
-  Duration remainingDuration = const Duration(seconds: 0);
+  Duration _remainingDuration = const Duration(seconds: 0);
 
   @override
   initState() {
@@ -64,7 +64,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
   @override
   void dispose() {
     widget.controller.removeListener(_listener);
-    overlayVisibilityTimer?.cancel();
+    _overlayVisibilityTimer?.cancel();
     super.dispose();
   }
 
@@ -84,23 +84,23 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
   }
 
   void _showOverlayForDuration() {
-    if (!isOverlayVisible) {
+    if (!_isOverlayVisible) {
       showOverlay();
     }
-    overlayVisibilityTimer?.cancel();
-    overlayVisibilityTimer =
+    _overlayVisibilityTimer?.cancel();
+    _overlayVisibilityTimer =
         _createTimer(const Duration(seconds: 5), hideOverlay);
   }
 
   void showOverlay() {
     setState(() {
-      isOverlayVisible = true;
+      _isOverlayVisible = true;
     });
   }
 
   void hideOverlay() {
     setState(() {
-      isOverlayVisible = false;
+      _isOverlayVisible = false;
     });
   }
 
@@ -113,7 +113,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
     Duration currentTime = await widget.controller.currentTime;
 
     setState(() {
-      remainingDuration = duration - currentTime;
+      _remainingDuration = duration - currentTime;
     });
   }
 
@@ -140,7 +140,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
       );
 
   Widget controls() => Visibility(
-        visible: isOverlayVisible,
+        visible: _isOverlayVisible,
         child: Center(
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -168,17 +168,17 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
   Widget buildBtnPlay() {
     return IconButton(
         onPressed: () {
-          isPlaying ? pause() : play();
+          _isPlaying ? pause() : play();
         },
         iconSize: 60,
         // TODO: Change icon to api's one
-        icon: isPlaying
+        icon: _isPlaying
             ? const Icon(Icons.pause_circle_filled_rounded, color: Colors.white)
             : const Icon(Icons.play_arrow_rounded, color: Colors.white));
   }
 
   Widget buildSlider() => Visibility(
-        visible: isOverlayVisible,
+        visible: _isOverlayVisible,
         child: Container(
           height: 60,
           padding: const EdgeInsets.only(right: 5),
@@ -195,7 +195,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
                 ),
               ),
               Text(
-                  remainingDuration
+                  _remainingDuration
                       .toString()
                       .split('.')
                       .first, // TODO: have a better display
