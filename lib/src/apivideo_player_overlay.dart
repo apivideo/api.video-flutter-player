@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -20,23 +21,26 @@ class ApiVideoPlayerOverlay extends StatefulWidget {
 class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
   _ApiVideoPlayerOverlayState() {
     _listener = ApiVideoPlayerControllerListener(
-      onReady: () {
-        setState(() {});
+      onReady: () async {
+        _updateDuration();
       },
       onPlay: () {
+        _startRemainingTimeUpdates();
         setState(() {
           _isPlaying = true;
         });
       },
       onPause: () {
+        _stopRemainingTimeUpdates();
         setState(() {
           _isPlaying = false;
         });
       },
       onSeek: () {
-        setState(() {});
+        _updateCurrentTime();
       },
       onEnd: () {
+        _stopRemainingTimeUpdates();
         setState(() {
           _isPlaying = false;
         });
@@ -48,38 +52,51 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
 
   late ApiVideoPlayerControllerListener _listener;
 
+  Timer? _timeSliderTimer;
+
   bool _isOverlayVisible = true;
   Timer? _overlayVisibilityTimer;
 
-  Duration _remainingDuration = const Duration(seconds: 0);
+  Duration _currentTime = const Duration(seconds: 0);
+  Duration _duration = const Duration(seconds: 0);
 
   @override
   initState() {
     super.initState();
     widget.controller.addListener(_listener);
     _showOverlayForDuration();
-    _updateRemainingTime();
+    _updateCurrentTime();
+    _updateDuration();
+    widget.controller.isPlaying.then((isPlaying) => {
+          if (isPlaying) {_onPlay()}
+        });
   }
 
   @override
   void dispose() {
     widget.controller.removeListener(_listener);
     _overlayVisibilityTimer?.cancel();
+    _stopRemainingTimeUpdates();
     super.dispose();
   }
 
-  pause() {
+  void pause() {
     widget.controller.pause();
     _showOverlayForDuration();
   }
 
-  play() {
+  void play() {
     widget.controller.play();
     _showOverlayForDuration();
   }
 
-  seek(Duration duration) {
+  void seek(Duration duration) {
     widget.controller.seek(duration);
+    _showOverlayForDuration();
+  }
+
+  void setCurrentTime(Duration duration) {
+    widget.controller.setCurrentTime(duration);
     _showOverlayForDuration();
   }
 
@@ -88,8 +105,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
       showOverlay();
     }
     _overlayVisibilityTimer?.cancel();
-    _overlayVisibilityTimer =
-        _createTimer(const Duration(seconds: 5), hideOverlay);
+    _overlayVisibilityTimer = Timer(const Duration(seconds: 5), hideOverlay);
   }
 
   void showOverlay() {
@@ -104,16 +120,38 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
     });
   }
 
-  Timer _createTimer(Duration duration, Function() callback) {
-    return Timer(duration, callback);
+  void _startRemainingTimeUpdates() {
+    _timeSliderTimer?.cancel();
+    _timeSliderTimer = Timer.periodic(
+      const Duration(milliseconds: 100),
+      (_) => _updateCurrentTime(),
+    );
   }
 
-  void _updateRemainingTime() async {
-    Duration duration = await widget.controller.duration;
+  void _stopRemainingTimeUpdates() {
+    _timeSliderTimer?.cancel();
+  }
+
+  void _onPlay() {
+    _startRemainingTimeUpdates();
+    setState(() {
+      _isPlaying = true;
+    });
+  }
+
+  void _updateCurrentTime() async {
     Duration currentTime = await widget.controller.currentTime;
 
     setState(() {
-      _remainingDuration = duration - currentTime;
+      _currentTime = currentTime;
+    });
+  }
+
+  void _updateDuration() async {
+    Duration duration = await widget.controller.duration;
+
+    setState(() {
+      _duration = duration;
     });
   }
 
@@ -186,22 +224,36 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
             children: [
               Expanded(
                 child: Slider(
-                  value: 0,
+                  value: min(
+                          _currentTime.inMilliseconds,
+                          _duration
+                              .inMilliseconds) // Ensure that the slider doesn't go over the duration
+                      .toDouble(),
+                  max: _duration.inMilliseconds.toDouble(),
                   activeColor: Colors.orangeAccent,
                   inactiveColor: Colors.grey,
                   onChanged: (value) {
-                    seek(Duration(seconds: value.toInt()));
+                    setCurrentTime(Duration(milliseconds: value.toInt()));
                   },
                 ),
               ),
-              Text(
-                  _remainingDuration
-                      .toString()
-                      .split('.')
-                      .first, // TODO: have a better display
+              Text((_duration - _currentTime).toPlayerString(),
                   style: const TextStyle(color: Colors.white)),
             ],
           ),
         ),
       );
+}
+
+extension DurationDisplay on Duration {
+  String toPlayerString() {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(inSeconds.remainder(60));
+    if (inHours > 0) {
+      return "$inHours:$twoDigitMinutes:$twoDigitSeconds";
+    } else {
+      return "$twoDigitMinutes:$twoDigitSeconds";
+    }
+  }
 }
