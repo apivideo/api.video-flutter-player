@@ -1,6 +1,8 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+
 import '../apivideo_player.dart';
 
 class ApiVideoPlayerControllerOverlay extends StatefulWidget {
@@ -18,7 +20,34 @@ class ApiVideoPlayerControllerOverlay extends StatefulWidget {
 
 class _ApiVideoPlayerControllerOverlayState
     extends State<ApiVideoPlayerControllerOverlay> {
+  _ApiVideoPlayerControllerOverlayState() {
+    _listener = ApiVideoPlayerControllerListener(
+      onReady: () {
+        setState(() {});
+      },
+      onPlay: () {
+        setState(() {
+          isPlaying = true;
+        });
+      },
+      onPause: () {
+        setState(() {
+          isPlaying = false;
+        });
+      },
+      onSeek: () {
+        setState(() {});
+      },
+      onEnd: () {
+        setState(() {
+          isPlaying = false;
+        });
+      },
+    );
+  }
+
   bool isPlaying = false;
+  late ApiVideoPlayerControllerListener _listener;
   bool isOverlayDisplayed = true;
   late var timer = startTimeout();
   String remainingTimeText = "00:00";
@@ -26,22 +55,17 @@ class _ApiVideoPlayerControllerOverlayState
   @override
   initState() {
     super.initState();
+    widget.controller.addListener(_listener);
     remainingTime();
   }
 
   pause() {
     widget.controller.pause();
-    setState(() {
-      isPlaying = false;
-    });
     hideAndSeekOverlay();
   }
 
   play() {
     widget.controller.play();
-    setState(() {
-      isPlaying = true;
-    });
     hideAndSeekOverlay();
   }
 
@@ -131,15 +155,17 @@ class _ApiVideoPlayerControllerOverlayState
         ),
       );
 
-  Widget buildBtnPlay() => IconButton(
-      onPressed: () {
-        isPlaying ? pause() : play();
-      },
-      iconSize: 60,
-      // TODO: Change icon to api's one
-      icon: isPlaying
-          ? const Icon(Icons.pause_circle_filled_rounded, color: Colors.white)
-          : const Icon(Icons.play_arrow_rounded, color: Colors.white));
+  Widget buildBtnPlay() {
+    return IconButton(
+        onPressed: () {
+          isPlaying ? pause() : play();
+        },
+        iconSize: 60,
+        // TODO: Change icon to api's one
+        icon: isPlaying
+            ? const Icon(Icons.pause_circle_filled_rounded, color: Colors.white)
+            : const Icon(Icons.play_arrow_rounded, color: Colors.white));
+  }
 
   Widget buildSlider() => Visibility(
         visible: isOverlayDisplayed,
