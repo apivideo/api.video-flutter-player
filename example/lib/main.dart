@@ -20,6 +20,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    _controller.initialize().then((_) => setState(() {}));
   }
 
   @override
@@ -28,7 +29,7 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         body: Column(
           children: [
-            buildPreview(controller: _controller),
+            ApiVideoPlayer(controller: _controller),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               IconButton(
                 icon: const Icon(Icons.replay_10),
@@ -76,26 +77,5 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
-  }
-
-  Future<int> initialize() async {
-    await _controller.initialize();
-    return 0;
-  }
-
-  Widget buildPreview({required ApiVideoPlayerController controller}) {
-    // Wait for [LiveStreamController.create] to finish.
-    return FutureBuilder<void>(
-        future: initialize(),
-        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-          if (!snapshot.hasData) {
-            // while data is loading:
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            return ApiVideoPlayer(controller: controller);
-          }
-        });
   }
 }
