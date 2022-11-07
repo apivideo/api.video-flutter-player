@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:html';
 import 'dart:js' as js;
 import 'dart:js_util';
@@ -19,8 +20,9 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   int _textureCounter = -1;
-  final Map<int, VideoOptions> _videoOptions = {};
   late bool _autoplay;
+  final Map<int, VideoOptions> _videoOptions = {};
+  final Map<int, StreamController<PlayerEvent>> _streamControllers = {};
 
   @override
   Future<int?> initialize(bool autoplay) async {
@@ -190,7 +192,9 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Stream<PlayerEvent> playerEventsFor(int textureId) {
-    return Stream.empty();
+    final streamController = StreamController<PlayerEvent>();
+    _streamControllers[textureId] = streamController;
+    return streamController.stream;
   }
 
   @override
@@ -256,6 +260,21 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
         ..innerText = jsString;
       script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
       document.body?.insertAdjacentElement('beforeend', script);
+
+      if (_streamControllers[textureId] == null) {
+        throw Exception('No stream controller for this texture id: $textureId');
+      }
+      for (var playerEvent in PlayerEventType.values) {
+        _callJsMethod(
+          textureId: textureId,
+          jsMethodName: 'addEventListener',
+          args: [
+            playerEvent.displayPlayerSdkName,
+            () => _streamControllers[textureId]!
+                .add(PlayerEvent(type: playerEvent)),
+          ],
+        );
+      }
     }
 
     return HtmlElementView(
@@ -264,6 +283,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
     );
   }
 
+  /// Calls a JS object method that returns void only.
   Future<void> _callJsMethod({
     required int textureId,
     required String jsMethodName,
@@ -277,6 +297,8 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
     return;
   }
 
+  /// Handle a JS [Promise] that returns a value other than void
+  /// and parse it into a Dart [Future].
   Future<T> _getPromiseFromJs<T>({
     required int textureId,
     required Function jsMethod,
@@ -288,6 +310,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
     );
   }
 
+  /// Converts seconds into milliseconds.
   int _secondsToMilliseconds({required double seconds}) =>
       int.parse((seconds * 1000).toStringAsFixed(0));
 }
