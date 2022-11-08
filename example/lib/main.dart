@@ -15,6 +15,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final ApiVideoPlayerController _controller = ApiVideoPlayerController(
     videoOptions: VideoOptions(videoId: 'vi3CjYlusQKz6JN7au0EmW9b'),
+      autoplay: true
   );
 
   @override
@@ -40,7 +41,7 @@ class _MyAppState extends State<MyApp> {
               IconButton(
                 icon: const Icon(Icons.replay_10),
                 onPressed: () {
-                  _controller.seek(Duration(seconds: -10));
+                  _controller.seek(const Duration(seconds: -10));
                 },
               ),
               IconButton(
@@ -58,7 +59,7 @@ class _MyAppState extends State<MyApp> {
               IconButton(
                 icon: const Icon(Icons.forward_10),
                 onPressed: () {
-                  _controller.seek(Duration(seconds: 10));
+                  _controller.seek(const Duration(seconds: 10));
                 },
               ),
             ]),
