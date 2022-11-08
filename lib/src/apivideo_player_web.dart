@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:html';
-import 'dart:js' as js;
-import 'dart:js_util';
 
 import 'package:apivideo_player/src/javascript_controller.dart'
     as js_controller;
+import 'package:apivideo_player/utils/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/shims/dart_ui.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
@@ -63,29 +62,33 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   Future<void> setVideoOptions(int textureId, VideoOptions videoOptions) async {
     js_controller.loadConfig(
       'player$textureId',
-      mapToJsObject({'id': videoOptions.videoId}),
+      {
+        'id': videoOptions.videoId,
+        'live': videoOptions.videoType == VideoType.live,
+      }.toJsObject(),
     );
     return;
   }
 
   @override
-  Future<bool> isPlaying(int textureId) async => await _getPromiseFromJs<bool>(
+  Future<bool> isPlaying(int textureId) async =>
+      await Utils.getPromiseFromJs<bool>(
         textureId: textureId,
         jsMethod: () => js_controller.getPlayingFromJs('player$textureId'),
       );
 
   @override
   Future<int> getCurrentTime(int textureId) async {
-    final currentTime = await _getPromiseFromJs<double>(
+    final currentTime = await Utils.getPromiseFromJs<double>(
       textureId: textureId,
       jsMethod: () => js_controller.getCurrentTimeFromJs('player$textureId'),
     );
-    return _secondsToMilliseconds(seconds: currentTime);
+    return Utils.secondsToMilliseconds(seconds: currentTime);
   }
 
   @override
   Future<void> setCurrentTime(int textureId, int currentTime) async =>
-      _callJsMethod(
+      Utils.callJsMethod(
         textureId: textureId,
         jsMethodName: 'setCurrentTime',
         args: [currentTime ~/ 1000],
@@ -93,46 +96,46 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<int> getDuration(int textureId) async {
-    final duration = await _getPromiseFromJs<double>(
+    final duration = await Utils.getPromiseFromJs<double>(
       textureId: textureId,
       jsMethod: () => js_controller.getDurationFromJs('player$textureId'),
     );
-    return _secondsToMilliseconds(seconds: duration);
+    return Utils.secondsToMilliseconds(seconds: duration);
   }
 
   @override
   Future<void> play(int textureId) async =>
-      _callJsMethod(textureId: textureId, jsMethodName: 'play');
+      Utils.callJsMethod(textureId: textureId, jsMethodName: 'play');
 
   @override
   Future<void> pause(int textureId) async =>
-      _callJsMethod(textureId: textureId, jsMethodName: 'pause');
+      Utils.callJsMethod(textureId: textureId, jsMethodName: 'pause');
 
   @override
-  Future<void> seek(int textureId, int offset) async => _callJsMethod(
+  Future<void> seek(int textureId, int offset) async => Utils.callJsMethod(
       textureId: textureId, jsMethodName: 'seek', args: [offset ~/ 1000]);
 
   @override
-  Future<double> getVolume(int textureId) => _getPromiseFromJs<double>(
+  Future<double> getVolume(int textureId) => Utils.getPromiseFromJs<double>(
         textureId: textureId,
         jsMethod: () => js_controller.getVolume('player$textureId'),
       );
 
   @override
-  Future<void> setVolume(int textureId, double volume) => _callJsMethod(
+  Future<void> setVolume(int textureId, double volume) => Utils.callJsMethod(
         textureId: textureId,
         jsMethodName: 'setVolume',
         args: [volume],
       );
 
   @override
-  Future<bool> getIsMuted(int textureId) => _getPromiseFromJs<bool>(
+  Future<bool> getIsMuted(int textureId) => Utils.getPromiseFromJs<bool>(
         textureId: textureId,
         jsMethod: () => js_controller.getMuted('player$textureId'),
       );
 
   @override
-  Future<void> setIsMuted(int textureId, bool isMuted) => _callJsMethod(
+  Future<void> setIsMuted(int textureId, bool isMuted) => Utils.callJsMethod(
         textureId: textureId,
         jsMethodName: isMuted ? 'mute' : 'unmute',
       );
@@ -143,7 +146,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   @override
   Future<void> setAutoplay(int textureId, bool autoplay) {
     _autoplay = autoplay;
-    return _callJsMethod(
+    return Utils.callJsMethod(
       textureId: textureId,
       jsMethodName: 'setAutoplay',
       args: [autoplay],
@@ -151,13 +154,14 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
-  Future<bool> getIsLooping(int textureId) => _getPromiseFromJs<bool>(
+  Future<bool> getIsLooping(int textureId) => Utils.getPromiseFromJs<bool>(
         textureId: textureId,
         jsMethod: () => js_controller.getLoop('player$textureId'),
       );
 
   @override
-  Future<void> setIsLooping(int textureId, bool isLooping) => _callJsMethod(
+  Future<void> setIsLooping(int textureId, bool isLooping) =>
+      Utils.callJsMethod(
         textureId: textureId,
         jsMethodName: 'setLoop',
         args: [isLooping],
@@ -243,7 +247,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
         throw Exception('No stream controller for this texture id: $textureId');
       }
       for (var playerEvent in PlayerEventType.values) {
-        _callJsMethod(
+        Utils.callJsMethod(
           textureId: textureId,
           jsMethodName: 'addEventListener',
           args: [
@@ -259,49 +263,5 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       viewType: 'playerDiv$textureId',
       onPlatformViewCreated: (id) => injectScripts(),
     );
-  }
-
-  /// Calls a JS object method that returns void only.
-  Future<void> _callJsMethod({
-    required int textureId,
-    required String jsMethodName,
-    List<dynamic>? args,
-  }) async {
-    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
-    js.JsObject.fromBrowserObject(js.context['player$textureId']).callMethod(
-      jsMethodName,
-      args,
-    );
-    return;
-  }
-
-  /// Handle a JS [Promise] that returns a value other than void
-  /// and parse it into a Dart [Future].
-  Future<T> _getPromiseFromJs<T>({
-    required int textureId,
-    required Function jsMethod,
-  }) async {
-    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
-    ArgumentError.checkNotNull(js.context['state'], 'state');
-    return await promiseToFuture(
-      jsMethod(),
-    );
-  }
-
-  /// Converts seconds into milliseconds.
-  int _secondsToMilliseconds({required double seconds}) =>
-      int.parse((seconds * 1000).toStringAsFixed(0));
-
-  /// Converts a [Map] to a [JS object]
-  Object mapToJsObject(Map map) {
-    var object = newObject();
-    map.forEach((k, v) {
-      if (v is Map) {
-        setProperty(object, k, mapToJsObject(v));
-      } else {
-        setProperty(object, k, v);
-      }
-    });
-    return object;
   }
 }

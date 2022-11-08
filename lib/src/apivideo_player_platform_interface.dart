@@ -167,22 +167,3 @@ enum PlayerEventType {
   /// An unknown event has been received.
   unknown,
 }
-
-extension SelectedPlayerEventType on PlayerEventType {
-  String get displayPlayerSdkName {
-    switch (this) {
-      case PlayerEventType.ready:
-        return 'ready';
-      case PlayerEventType.played:
-        return 'play';
-      case PlayerEventType.paused:
-        return 'pause';
-      case PlayerEventType.seek:
-        return 'seeking';
-      case PlayerEventType.ended:
-        return 'ended';
-      default:
-        return 'unknown';
-    }
-  }
-}
