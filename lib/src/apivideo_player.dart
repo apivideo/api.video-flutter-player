@@ -19,7 +19,7 @@ class ApiVideoPlayer extends StatefulWidget {
 
 class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
   _ApiVideoPlayerState() {
-    _listener = ApiVideoPlayerControllerListener(onReady: () {
+    _listener = ApiVideoPlayerWidgetListener(onTextureReady: () {
       final int newTextureId = widget.controller.textureId;
       if (newTextureId != _textureId) {
         setState(() {
@@ -29,19 +29,19 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
     });
   }
 
-  late ApiVideoPlayerControllerListener _listener;
+  late ApiVideoPlayerWidgetListener _listener;
   late int _textureId;
 
   @override
   void initState() {
     super.initState();
     _textureId = widget.controller.textureId;
-    widget.controller.addListener(_listener);
+    widget.controller.addWidgetListener(_listener);
   }
 
   @override
   void dispose() {
-    widget.controller.removeListener(_listener);
+    widget.controller.removeWidgetListener(_listener);
     super.dispose();
   }
 
@@ -56,8 +56,7 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
         children: <Widget>[
           buildVideoPlayer(),
           Positioned.fill(
-              child: ApiVideoPlayerOverlay(
-                  controller: widget.controller)),
+              child: ApiVideoPlayerOverlay(controller: widget.controller)),
         ],
       );
 

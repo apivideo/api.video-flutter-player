@@ -20,7 +20,7 @@ class ApiVideoPlayerOverlay extends StatefulWidget {
 
 class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
   _ApiVideoPlayerOverlayState() {
-    _listener = ApiVideoPlayerControllerListener(
+    _listener = ApiVideoPlayerEventsListener(
       onReady: () async {
         _updateDuration();
       },
@@ -50,7 +50,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
 
   bool _isPlaying = false;
 
-  late ApiVideoPlayerControllerListener _listener;
+  late ApiVideoPlayerEventsListener _listener;
 
   Timer? _timeSliderTimer;
 
@@ -63,7 +63,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
   @override
   initState() {
     super.initState();
-    widget.controller.addListener(_listener);
+    widget.controller.addEventsListener(_listener);
     _showOverlayForDuration();
     _updateCurrentTime();
     _updateDuration();
@@ -74,7 +74,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
 
   @override
   void dispose() {
-    widget.controller.removeListener(_listener);
+    widget.controller.removeEventsListener(_listener);
     _overlayVisibilityTimer?.cancel();
     _stopRemainingTimeUpdates();
     super.dispose();
