@@ -156,13 +156,17 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
   }
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          _showOverlayForDuration();
-        },
-        child: buildOverlay(),
-      );
+  Widget build(BuildContext context) => MouseRegion(
+    onEnter: (_) => showOverlay(),
+    onExit: (_) => _showOverlayForDuration(),
+    child: GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        _showOverlayForDuration();
+      },
+      child: buildOverlay(),
+    ),
+  );
 
   Widget buildOverlay() => Visibility(
       visible: _isOverlayVisible,
