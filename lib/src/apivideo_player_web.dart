@@ -19,13 +19,13 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   int _textureCounter = -1;
-  late bool _autoplay;
+  final Map<int, bool> _autoplay = {};
   final Map<int, VideoOptions> _videoOptions = {};
   final Map<int, StreamController<PlayerEvent>> _streamControllers = {};
 
   @override
   Future<int?> initialize(bool autoplay) async {
-    _autoplay = autoplay;
+    _autoplay[++_textureCounter] = autoplay;
     return ++_textureCounter;
   }
 
@@ -141,11 +141,18 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       );
 
   @override
-  Future<bool> getAutoplay(int textureId) async => _autoplay;
+  Future<bool> getAutoplay(int textureId) async {
+    if (_autoplay[textureId] == null) {
+      throw Exception(
+        'No autoplay property value found for this texture id: $textureId',
+      );
+    }
+    return _autoplay[textureId]!;
+  }
 
   @override
   Future<void> setAutoplay(int textureId, bool autoplay) {
-    _autoplay = autoplay;
+    _autoplay[textureId] = autoplay;
     return Utils.callJsMethod(
       textureId: textureId,
       jsMethodName: 'setAutoplay',
