@@ -20,7 +20,8 @@ class ApiVideoPlayerController {
   int _textureId = kUninitializedTextureId;
 
   StreamSubscription<dynamic>? _eventSubscription;
-  List<ApiVideoPlayerControllerListener> listeners = [];
+  List<ApiVideoPlayerEventsListener> eventsListeners = [];
+  List<ApiVideoPlayerWidgetListener> widgetListeners = [];
 
   /// This is just exposed for testing. Do not use it.
   @visibleForTesting
@@ -36,7 +37,7 @@ class ApiVideoPlayerController {
     Function(Object)? onError,
   })  : _initialAutoplay = autoplay,
         _initialVideoOptions = videoOptions {
-    listeners.add(ApiVideoPlayerControllerListener(
+    eventsListeners.add(ApiVideoPlayerEventsListener(
         onReady: onReady,
         onPlay: onPlay,
         onPause: onPause,
@@ -47,11 +48,11 @@ class ApiVideoPlayerController {
   ApiVideoPlayerController.fromListener(
       {required VideoOptions videoOptions,
       bool autoplay = false,
-      ApiVideoPlayerControllerListener? listener})
+      ApiVideoPlayerEventsListener? listener})
       : _initialAutoplay = autoplay,
         _initialVideoOptions = videoOptions {
     if (listener != null) {
-      listeners.add(listener);
+      eventsListeners.add(listener);
     }
   }
 
@@ -118,13 +119,20 @@ class ApiVideoPlayerController {
   }
 
   Future<void> initialize() async {
-    _textureId = await _playerPlatform.initialize(_initialAutoplay) ?? kUninitializedTextureId;
+    _textureId = await _playerPlatform.initialize(_initialAutoplay) ??
+        kUninitializedTextureId;
 
     _eventSubscription = _playerPlatform
         .playerEventsFor(_textureId)
         .listen(_eventListener, onError: _errorListener);
 
     await _playerPlatform.create(_textureId, _initialVideoOptions);
+
+     for (var listener in [...widgetListeners]) {
+      if (listener.onTextureReady != null) {
+        listener.onTextureReady!();
+      }
+    }
 
     return;
   }
@@ -139,7 +147,7 @@ class ApiVideoPlayerController {
 
   Future<void> dispose() async {
     await _eventSubscription?.cancel();
-    listeners.clear();
+    eventsListeners.clear();
     await _playerPlatform.dispose(_textureId);
     return;
   }
@@ -148,17 +156,29 @@ class ApiVideoPlayerController {
     return _playerPlatform.seek(_textureId, offset.inMilliseconds);
   }
 
-  void addListener(ApiVideoPlayerControllerListener listener) {
-    listeners.add(listener);
+  void addEventsListener(ApiVideoPlayerEventsListener listener) {
+    eventsListeners.add(listener);
   }
 
-  void removeListener(ApiVideoPlayerControllerListener listener) {
-    listeners.remove(listener);
+  void removeEventsListener(ApiVideoPlayerEventsListener listener) {
+    eventsListeners.remove(listener);
+  }
+
+  /// This is exposed for internal use only. Do not use it.
+  @visibleForTesting
+  void addWidgetListener(ApiVideoPlayerWidgetListener listener) {
+    widgetListeners.add(listener);
+  }
+
+  /// This is exposed for internal use only. Do not use it.
+  @visibleForTesting
+  void removeWidgetListener(ApiVideoPlayerWidgetListener listener) {
+    widgetListeners.remove(listener);
   }
 
   void _errorListener(Object obj) {
     final PlatformException e = obj as PlatformException;
-    for (var listener in [...listeners]) {
+    for (var listener in [...eventsListeners]) {
       if (listener.onError != null) {
         listener.onError!(e);
       }
@@ -168,35 +188,35 @@ class ApiVideoPlayerController {
   void _eventListener(PlayerEvent event) {
     switch (event.type) {
       case PlayerEventType.ready:
-        for (var listener in [...listeners]) {
+        for (var listener in [...eventsListeners]) {
           if (listener.onReady != null) {
             listener.onReady!();
           }
         }
         break;
       case PlayerEventType.played:
-        for (var listener in [...listeners]) {
+        for (var listener in [...eventsListeners]) {
           if (listener.onPlay != null) {
             listener.onPlay!();
           }
         }
         break;
       case PlayerEventType.paused:
-        for (var listener in [...listeners]) {
+        for (var listener in [...eventsListeners]) {
           if (listener.onPause != null) {
             listener.onPause!();
           }
         }
         break;
       case PlayerEventType.seek:
-        for (var listener in [...listeners]) {
+        for (var listener in [...eventsListeners]) {
           if (listener.onSeek != null) {
             listener.onSeek!();
           }
         }
         break;
       case PlayerEventType.ended:
-        for (var listener in [...listeners]) {
+        for (var listener in [...eventsListeners]) {
           if (listener.onEnd != null) {
             listener.onEnd!();
           }
@@ -209,7 +229,7 @@ class ApiVideoPlayerController {
   }
 }
 
-class ApiVideoPlayerControllerListener {
+class ApiVideoPlayerEventsListener {
   final VoidCallback? onReady;
   final VoidCallback? onPlay;
   final VoidCallback? onPause;
@@ -217,11 +237,17 @@ class ApiVideoPlayerControllerListener {
   final VoidCallback? onEnd;
   final Function(Object)? onError;
 
-  ApiVideoPlayerControllerListener(
+  ApiVideoPlayerEventsListener(
       {this.onReady,
       this.onPlay,
       this.onPause,
       this.onSeek,
       this.onEnd,
       this.onError});
+}
+
+class ApiVideoPlayerWidgetListener {
+  final VoidCallback? onTextureReady;
+
+  ApiVideoPlayerWidgetListener({this.onTextureReady});
 }

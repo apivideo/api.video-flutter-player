@@ -15,11 +15,19 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final ApiVideoPlayerController _controller = ApiVideoPlayerController(
     videoOptions: VideoOptions(videoId: 'vi3CjYlusQKz6JN7au0EmW9b'),
+      autoplay: true
   );
 
   @override
   void initState() {
     super.initState();
+    _controller.initialize().then((_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -28,12 +36,12 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         body: Column(
           children: [
-            buildPreview(controller: _controller),
+            ApiVideoPlayer(controller: _controller),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               IconButton(
                 icon: const Icon(Icons.replay_10),
                 onPressed: () {
-                  _controller.seek(Duration(seconds: -10));
+                  _controller.seek(const Duration(seconds: -10));
                 },
               ),
               IconButton(
@@ -51,7 +59,7 @@ class _MyAppState extends State<MyApp> {
               IconButton(
                 icon: const Icon(Icons.forward_10),
                 onPressed: () {
-                  _controller.seek(Duration(seconds: 10));
+                  _controller.seek(const Duration(seconds: 10));
                 },
               ),
             ]),
@@ -76,26 +84,5 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
-  }
-
-  Future<int> initialize() async {
-    await _controller.initialize();
-    return 0;
-  }
-
-  Widget buildPreview({required ApiVideoPlayerController controller}) {
-    // Wait for [LiveStreamController.create] to finish.
-    return FutureBuilder<void>(
-        future: initialize(),
-        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-          if (!snapshot.hasData) {
-            // while data is loading:
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            return ApiVideoPlayer(controller: controller);
-          }
-        });
   }
 }
