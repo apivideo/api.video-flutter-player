@@ -1,9 +1,9 @@
+import 'dart:async';
 import 'dart:html';
-import 'dart:js' as js;
-import 'dart:js_util';
 
 import 'package:apivideo_player/src/javascript_controller.dart'
     as js_controller;
+import 'package:apivideo_player/utils/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/shims/dart_ui.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
@@ -19,11 +19,15 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   int _textureCounter = -1;
+  final Map<int, bool> _autoplay = {};
   final Map<int, VideoOptions> _videoOptions = {};
+  final Map<int, StreamController<PlayerEvent>> _streamControllers = {};
 
   @override
-  Future<int?> initialize() async {
-    return ++_textureCounter;
+  Future<int?> initialize(bool autoplay) async {
+    final textureCounter = ++_textureCounter;
+    _autoplay[textureCounter] = autoplay;
+    return textureCounter;
   }
 
   @override
@@ -42,63 +46,142 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   @override
   Future<void> dispose(int textureId) async {
     _videoOptions.remove(textureId);
+    _streamControllers.remove(textureId);
     document.querySelector('#playerDiv$textureId')?.remove();
     document.querySelector('#apiVideoPlayerJsScript$textureId')?.remove();
     return;
   }
 
   @override
-  Future<bool> isPlaying(int textureId) async {
-    // TODO: implement isPlaying
-    return false;
+  Future<VideoOptions> getVideoOptions(int textureId) async {
+    if (_videoOptions[textureId] == null) {
+      throw Exception('No video options found for this texture id: $textureId');
+    }
+    return _videoOptions[textureId]!;
   }
+
+  @override
+  Future<void> setVideoOptions(int textureId, VideoOptions videoOptions) async {
+    _videoOptions[textureId] = videoOptions;
+    js_controller.loadConfig(
+      'player$textureId',
+      {
+        'id': videoOptions.videoId,
+        'live': videoOptions.videoType == VideoType.live,
+      }.toJsObject(),
+    );
+    return;
+  }
+
+  @override
+  Future<bool> isPlaying(int textureId) async =>
+      await Utils.getPromiseFromJs<bool>(
+        textureId: textureId,
+        jsMethod: () => js_controller.getPlayingFromJs('player$textureId'),
+      );
 
   @override
   Future<int> getCurrentTime(int textureId) async {
-    final currentTime = await _getPromiseFromJs<double>(
+    final currentTime = await Utils.getPromiseFromJs<double>(
       textureId: textureId,
       jsMethod: () => js_controller.getCurrentTimeFromJs('player$textureId'),
     );
-    return _secondsToMilliseconds(seconds: currentTime);
+    return Utils.secondsToMilliseconds(seconds: currentTime);
   }
 
   @override
-  Future<void> setCurrentTime(int textureId, int currentTime) async {
-    _getPromiseFromJs<void>(
-      textureId: textureId,
-      jsMethod: () => js_controller.setCurrentTimeFromJs(
-        'player$textureId',
-        (currentTime ~/ 1000).toInt(),
-      ),
-    );
-  }
+  Future<void> setCurrentTime(int textureId, int currentTime) async =>
+      Utils.callJsMethod(
+        textureId: textureId,
+        jsMethodName: 'setCurrentTime',
+        args: [currentTime ~/ 1000],
+      );
 
   @override
   Future<int> getDuration(int textureId) async {
-    final duration = await _getPromiseFromJs<double>(
+    final duration = await Utils.getPromiseFromJs<double>(
       textureId: textureId,
       jsMethod: () => js_controller.getDurationFromJs('player$textureId'),
     );
-    return _secondsToMilliseconds(seconds: duration);
+    return Utils.secondsToMilliseconds(seconds: duration);
   }
 
   @override
-  Future<void> play(int textureId) async {
-    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
-    js.JsObject.fromBrowserObject(js.context['player$textureId'])
-        .callMethod('play');
+  Future<void> play(int textureId) async =>
+      Utils.callJsMethod(textureId: textureId, jsMethodName: 'play');
+
+  @override
+  Future<void> pause(int textureId) async =>
+      Utils.callJsMethod(textureId: textureId, jsMethodName: 'pause');
+
+  @override
+  Future<void> seek(int textureId, int offset) async => Utils.callJsMethod(
+      textureId: textureId, jsMethodName: 'seek', args: [offset ~/ 1000]);
+
+  @override
+  Future<double> getVolume(int textureId) => Utils.getPromiseFromJs<double>(
+        textureId: textureId,
+        jsMethod: () => js_controller.getVolume('player$textureId'),
+      );
+
+  @override
+  Future<void> setVolume(int textureId, double volume) => Utils.callJsMethod(
+        textureId: textureId,
+        jsMethodName: 'setVolume',
+        args: [volume],
+      );
+
+  @override
+  Future<bool> getIsMuted(int textureId) => Utils.getPromiseFromJs<bool>(
+        textureId: textureId,
+        jsMethod: () => js_controller.getMuted('player$textureId'),
+      );
+
+  @override
+  Future<void> setIsMuted(int textureId, bool isMuted) => Utils.callJsMethod(
+        textureId: textureId,
+        jsMethodName: isMuted ? 'mute' : 'unmute',
+      );
+
+  @override
+  Future<bool> getAutoplay(int textureId) async {
+    if (_autoplay[textureId] == null) {
+      throw Exception(
+        'No autoplay property value found for this texture id: $textureId',
+      );
+    }
+    return _autoplay[textureId]!;
   }
 
   @override
-  Future<void> pause(int textureId) async {
-    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
-    js.JsObject.fromBrowserObject(js.context['player$textureId'])
-        .callMethod('pause');
+  Future<void> setAutoplay(int textureId, bool autoplay) {
+    _autoplay[textureId] = autoplay;
+    return Utils.callJsMethod(
+      textureId: textureId,
+      jsMethodName: 'setAutoplay',
+      args: [autoplay],
+    );
   }
+
+  @override
+  Future<bool> getIsLooping(int textureId) => Utils.getPromiseFromJs<bool>(
+        textureId: textureId,
+        jsMethod: () => js_controller.getLoop('player$textureId'),
+      );
+
+  @override
+  Future<void> setIsLooping(int textureId, bool isLooping) =>
+      Utils.callJsMethod(
+        textureId: textureId,
+        jsMethodName: 'setLoop',
+        args: [isLooping],
+      );
 
   @override
   Stream<PlayerEvent> playerEventsFor(int textureId) {
-    return Stream.empty();
+    final streamController = StreamController<PlayerEvent>();
+    _streamControllers[textureId] = streamController;
+    return streamController.stream;
   }
 
   @override
@@ -123,6 +206,27 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
               if (!playerId || !window[playerId]) return;
               return await window[playerId].getDuration();
             },
+            getPlaying: async function(playerId) {
+              if (!playerId || !window[playerId]) return;
+              return await window[playerId].getPlaying();
+            },
+            getMuted: async function(playerId) {
+              if (!playerId || !window[playerId]) return;
+              return await window[playerId].getMuted();
+            },
+            getLoop: async function(playerId) {
+              if (!playerId || !window[playerId]) return;
+              return await window[playerId].getLoop();
+            },
+            getVolume: async function(playerId) {
+              if (!playerId || !window[playerId]) return;
+              return await window[playerId].getVolume();
+            },
+            loadConfig: function(playerId, videoOptions) {
+              if (!playerId || !window[playerId]) return;
+              console.log(videoOptions);
+              window[playerId].loadConfig(videoOptions);
+            }
           };
         ''';
         final ScriptElement script = ScriptElement()
@@ -138,7 +242,8 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
           { 
             id: "${_videoOptions[textureId]!.videoId}",
             chromeless: true,
-            live: ${_videoOptions[textureId]!.videoType == VideoType.live}, 
+            live: ${_videoOptions[textureId]!.videoType == VideoType.live},
+            autoplay: $_autoplay,
           }
         );
       ''';
@@ -147,6 +252,21 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
         ..innerText = jsString;
       script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
       document.body?.insertAdjacentElement('beforeend', script);
+
+      if (_streamControllers[textureId] == null) {
+        throw Exception('No stream controller for this texture id: $textureId');
+      }
+      for (var playerEvent in PlayerEventType.values) {
+        Utils.callJsMethod(
+          textureId: textureId,
+          jsMethodName: 'addEventListener',
+          args: [
+            playerEvent.displayPlayerSdkName,
+            () => _streamControllers[textureId]!
+                .add(PlayerEvent(type: playerEvent)),
+          ],
+        );
+      }
     }
 
     return HtmlElementView(
@@ -154,18 +274,4 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       onPlatformViewCreated: (id) => injectScripts(),
     );
   }
-
-  Future<T> _getPromiseFromJs<T>({
-    required int textureId,
-    required Function jsMethod,
-  }) async {
-    ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
-    ArgumentError.checkNotNull(js.context['state'], 'state');
-    return await promiseToFuture(
-      jsMethod(),
-    );
-  }
-
-  int _secondsToMilliseconds({required double seconds}) =>
-      int.parse((seconds * 1000).toStringAsFixed(0));
 }
