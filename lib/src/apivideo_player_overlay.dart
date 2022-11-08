@@ -161,45 +161,41 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
         onTap: () {
           _showOverlayForDuration();
         },
-        child: Stack(
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  height: 30,
-                ),
-                controls(),
-                buildSlider(),
-              ],
-            ),
-          ],
-        ),
+        child: buildOverlay(),
       );
 
-  Widget controls() => Visibility(
-        visible: _isOverlayVisible,
-        child: Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                  onPressed: () {
-                    seek(const Duration(seconds: -10));
-                  },
-                  iconSize: 30,
-                  icon:
-                      const Icon(Icons.replay_10_rounded, color: Colors.white)),
-              buildBtnPlay(),
-              IconButton(
-                  onPressed: () {
-                    seek(const Duration(seconds: 10));
-                  },
-                  iconSize: 30,
-                  icon: const Icon(Icons.forward_10_rounded,
-                      color: Colors.white)),
-            ],
+  Widget buildOverlay() => Visibility(
+      visible: _isOverlayVisible,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            height: 30,
           ),
+          buildControls(),
+          buildSlider(),
+        ],
+      ));
+
+  Widget buildControls() => Center(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+                onPressed: () {
+                  seek(const Duration(seconds: -10));
+                },
+                iconSize: 30,
+                icon: const Icon(Icons.replay_10_rounded, color: Colors.white)),
+            buildBtnPlay(),
+            IconButton(
+                onPressed: () {
+                  seek(const Duration(seconds: 10));
+                },
+                iconSize: 30,
+                icon:
+                    const Icon(Icons.forward_10_rounded, color: Colors.white)),
+          ],
         ),
       );
 
@@ -215,32 +211,29 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
             : const Icon(Icons.play_arrow_rounded, color: Colors.white));
   }
 
-  Widget buildSlider() => Visibility(
-        visible: _isOverlayVisible,
-        child: Container(
-          height: 60,
-          padding: const EdgeInsets.only(right: 5),
-          child: Row(
-            children: [
-              Expanded(
-                child: Slider(
-                  value: min(
-                          _currentTime.inMilliseconds,
-                          _duration
-                              .inMilliseconds) // Ensure that the slider doesn't go over the duration
-                      .toDouble(),
-                  max: _duration.inMilliseconds.toDouble(),
-                  activeColor: Colors.orangeAccent,
-                  inactiveColor: Colors.grey,
-                  onChanged: (value) {
-                    setCurrentTime(Duration(milliseconds: value.toInt()));
-                  },
-                ),
+  Widget buildSlider() => Container(
+        height: 60,
+        padding: const EdgeInsets.only(right: 5),
+        child: Row(
+          children: [
+            Expanded(
+              child: Slider(
+                value: min(
+                        _currentTime.inMilliseconds,
+                        _duration
+                            .inMilliseconds) // Ensure that the slider doesn't go over the duration
+                    .toDouble(),
+                max: _duration.inMilliseconds.toDouble(),
+                activeColor: Colors.orangeAccent,
+                inactiveColor: Colors.grey,
+                onChanged: (value) {
+                  setCurrentTime(Duration(milliseconds: value.toInt()));
+                },
               ),
-              Text((_duration - _currentTime).toPlayerString(),
-                  style: const TextStyle(color: Colors.white)),
-            ],
-          ),
+            ),
+            Text((_duration - _currentTime).toPlayerString(),
+                style: const TextStyle(color: Colors.white)),
+          ],
         ),
       );
 }
