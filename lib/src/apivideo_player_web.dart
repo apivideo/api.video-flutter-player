@@ -25,8 +25,9 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<int?> initialize(bool autoplay) async {
-    _autoplay[++_textureCounter] = autoplay;
-    return ++_textureCounter;
+    final textureCounter = ++_textureCounter;
+    _autoplay[textureCounter] = autoplay;
+    return textureCounter;
   }
 
   @override
@@ -45,6 +46,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   @override
   Future<void> dispose(int textureId) async {
     _videoOptions.remove(textureId);
+    _streamControllers.remove(textureId);
     document.querySelector('#playerDiv$textureId')?.remove();
     document.querySelector('#apiVideoPlayerJsScript$textureId')?.remove();
     return;
@@ -60,6 +62,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<void> setVideoOptions(int textureId, VideoOptions videoOptions) async {
+    _videoOptions[textureId] = videoOptions;
     js_controller.loadConfig(
       'player$textureId',
       {
