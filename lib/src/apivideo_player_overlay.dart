@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 import '../apivideo_player.dart';
 
@@ -22,6 +23,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
   _ApiVideoPlayerOverlayState() {
     _listener = ApiVideoPlayerEventsListener(
       onReady: () async {
+        _updateCurrentTime();
         _updateDuration();
       },
       onPlay: () {
@@ -65,10 +67,13 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
     super.initState();
     widget.controller.addEventsListener(_listener);
     _showOverlayForDuration();
-    _updateCurrentTime();
-    _updateDuration();
     widget.controller.isPlaying.then((isPlaying) => {
-          if (isPlaying) {_onPlay()}
+          if (isPlaying)
+            {
+              _updateCurrentTime(),
+              _updateDuration(),
+              _onPlay(),
+            }
         });
   }
 
@@ -157,16 +162,16 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
 
   @override
   Widget build(BuildContext context) => MouseRegion(
-    onEnter: (_) => showOverlay(),
-    onExit: (_) => _showOverlayForDuration(),
-    child: GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        _showOverlayForDuration();
-      },
-      child: buildOverlay(),
-    ),
-  );
+        onEnter: (_) => showOverlay(),
+        onExit: (_) => _showOverlayForDuration(),
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            _showOverlayForDuration();
+          },
+          child: PointerInterceptor(child: buildOverlay()),
+        ),
+      );
 
   Widget buildOverlay() => Visibility(
       visible: _isOverlayVisible,

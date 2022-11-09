@@ -57,7 +57,7 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
         children: <Widget>[
           buildVideoPlayer(),
           Positioned.fill(
-              child: PointerInterceptor(child: ApiVideoPlayerOverlay(controller: widget.controller))),
+              child: ApiVideoPlayerOverlay(controller: widget.controller)),
         ],
       );
 
