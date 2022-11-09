@@ -23,6 +23,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
   _ApiVideoPlayerOverlayState() {
     _listener = ApiVideoPlayerEventsListener(
       onReady: () async {
+        _updateCurrentTime();
         _updateDuration();
       },
       onPlay: () {
@@ -66,10 +67,13 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
     super.initState();
     widget.controller.addEventsListener(_listener);
     _showOverlayForDuration();
-    _updateCurrentTime();
-    _updateDuration();
     widget.controller.isPlaying.then((isPlaying) => {
-          if (isPlaying) {_onPlay()}
+          if (isPlaying)
+            {
+              _updateCurrentTime(),
+              _updateDuration(),
+              _onPlay(),
+            }
         });
   }
 
