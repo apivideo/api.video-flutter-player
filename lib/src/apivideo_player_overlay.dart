@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 import '../apivideo_player.dart';
 
@@ -157,16 +158,16 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
 
   @override
   Widget build(BuildContext context) => MouseRegion(
-    onEnter: (_) => showOverlay(),
-    onExit: (_) => _showOverlayForDuration(),
-    child: GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        _showOverlayForDuration();
-      },
-      child: buildOverlay(),
-    ),
-  );
+        onEnter: (_) => showOverlay(),
+        onExit: (_) => _showOverlayForDuration(),
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            _showOverlayForDuration();
+          },
+          child: PointerInterceptor(child: buildOverlay()),
+        ),
+      );
 
   Widget buildOverlay() => Visibility(
       visible: _isOverlayVisible,
