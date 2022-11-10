@@ -181,6 +181,10 @@ extension Int {
 
 extension CMTime {
     func toMs() -> Int {
+        let seconds = self.seconds
+        guard !(seconds.isNaN || seconds.isInfinite) else {
+            return 0
+        }
         return Int(seconds * 1000)
     }
 }
