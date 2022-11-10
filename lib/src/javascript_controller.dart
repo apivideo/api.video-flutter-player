@@ -1,7 +1,7 @@
 @JS('window')
 library script.js;
 
-import 'dart:ffi';
+import 'dart:ui';
 
 import 'package:js/js.dart';
 

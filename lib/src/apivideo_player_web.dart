@@ -178,11 +178,14 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       );
 
   @override
-  Future<Size?> getVideoSize(int textureId) => Utils.getPromiseFromJs<Size?>(
-    textureId: textureId,
-    jsMethod: () => js_controller.getVideoSize('player$textureId'),
-  );
+  Future<Size?> getVideoSize(int textureId) async {
+    final size = await Utils.getPromiseFromJs<dynamic>(
+      textureId: textureId,
+      jsMethod: () => js_controller.getVideoSize('player$textureId'),
+    );
 
+    return Size(size.width, size.height);
+  }
 
   @override
   Stream<PlayerEvent> playerEventsFor(int textureId) {
