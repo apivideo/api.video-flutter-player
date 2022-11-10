@@ -19,13 +19,20 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   int _textureCounter = -1;
+  final Map<int, bool> _isCreated = {};
   final Map<int, bool> _autoplay = {};
   final Map<int, VideoOptions> _videoOptions = {};
   final Map<int, StreamController<PlayerEvent>> _streamControllers = {};
 
   @override
+  Future<bool> isCreated(int textureId) async {
+    return _isCreated[textureId] ?? false;
+  }
+
+  @override
   Future<int?> initialize(bool autoplay) async {
     final textureCounter = ++_textureCounter;
+    _isCreated[textureCounter] = false;
     _autoplay[textureCounter] = autoplay;
     return textureCounter;
   }
@@ -45,6 +52,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<void> dispose(int textureId) async {
+    _isCreated.remove(textureId);
     _videoOptions.remove(textureId);
     _streamControllers.remove(textureId);
     document.querySelector('#playerDiv$textureId')?.remove();
@@ -281,6 +289,8 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
           ],
         );
       }
+
+      _isCreated[textureId] = true;
     }
 
     return HtmlElementView(

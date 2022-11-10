@@ -12,6 +12,10 @@ class FlutterPlayerController {
         self.textureRegistry = textureRegistry
     }
 
+    func isCreated(textureId: Int64) -> Bool {
+        return players[textureId] != nil
+    }
+    
     func initialize(autoplay: Bool) -> Int64 {
         let player = FlutterPlayerView(binaryMessenger: binaryMessenger, textureRegistry: textureRegistry, autoplay: autoplay)
 

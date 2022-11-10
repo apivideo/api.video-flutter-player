@@ -24,6 +24,11 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  /// Returns [true] if the platform element has been created.
+  Future<bool> isCreated(int textureId) {
+    throw UnimplementedError('isCreated() has not been implemented.');
+  }
+
   /// Returns whether the video is playing or not
   Future<bool> isPlaying(int textureId) {
     throw UnimplementedError('isPlaying() has not been implemented.');

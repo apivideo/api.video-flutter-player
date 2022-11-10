@@ -41,11 +41,10 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
   void initState() {
     super.initState();
     _textureId = widget.controller.textureId;
-    // In case controller is already initialized
-    if (widget.controller.textureId !=
-        ApiVideoPlayerController.kUninitializedTextureId) {
-      _updateAspectRatio();
-    }
+    // In case controller is already created
+    widget.controller.isCreated.then((value) => {
+          if (value) {_updateAspectRatio()}
+        });
     widget.controller.addWidgetListener(_widgetListener);
     widget.controller.addEventsListener(_eventsListener);
   }

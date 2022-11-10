@@ -56,6 +56,8 @@ class ApiVideoPlayerController {
     }
   }
 
+  Future<bool> get isCreated => _playerPlatform.isCreated(_textureId);
+
   Future<bool> get isPlaying {
     return _playerPlatform.isPlaying(_textureId);
   }

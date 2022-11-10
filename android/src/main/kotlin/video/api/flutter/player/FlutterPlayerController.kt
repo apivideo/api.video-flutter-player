@@ -15,6 +15,10 @@ class FlutterPlayerController(
 ) : FlutterPlayerInterface {
     private val players = mutableMapOf<Long, FlutterPlayerView>()
 
+    override fun isCreated(textureId: Long): Boolean {
+        return players.containsKey(textureId)
+    }
+
     override fun initialize(autoplay: Boolean): Long {
         val player = FlutterPlayerView(
             applicationContext,

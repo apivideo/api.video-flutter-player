@@ -22,6 +22,13 @@ class MethodCallHandler(
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
+            IS_CREATED -> {
+                ensureTextureId(call, result) {
+                    val reply: MutableMap<String, Any> = HashMap()
+                    reply["isCreated"] = controller.isCreated(it)
+                    result.success(reply)
+                }
+            }
             INITIALIZE -> {
                 val autoplay = try {
                     ((call.arguments as Map<*, *>)["autoplay"] as Boolean)
@@ -234,6 +241,7 @@ class MethodCallHandler(
 
         private const val TEXTURE_ID = "textureId"
 
+        private const val IS_CREATED = "isCreated"
         private const val INITIALIZE = "initialize"
         private const val DISPOSE = "dispose"
 

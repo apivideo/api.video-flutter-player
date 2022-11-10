@@ -4,6 +4,7 @@ import android.util.Size
 import video.api.player.models.VideoOptions
 
 interface FlutterPlayerInterface {
+    fun isCreated(textureId: Long): Boolean
     fun initialize(autoplay: Boolean): Long
     fun dispose(textureId: Long)
     fun disposeAll()

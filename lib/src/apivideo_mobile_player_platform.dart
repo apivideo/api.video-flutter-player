@@ -14,6 +14,14 @@ class ApiVideoMobilePlayer extends ApiVideoPlayerPlatform {
   }
 
   @override
+  Future<bool> isCreated(int textureId) async {
+    final Map<dynamic, dynamic> reply =
+        await _channel.invokeMapMethodWithTexture(
+            'isCreated', TextureMessage(textureId: textureId)) as Map;
+    return reply['isCreated'] as bool;
+  }
+
+  @override
   Future<bool> isPlaying(int textureId) async {
     final Map<dynamic, dynamic> reply =
         await _channel.invokeMapMethodWithTexture(
