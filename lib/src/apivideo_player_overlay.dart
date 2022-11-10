@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:apivideo_player/src/presentation/apivideo_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -214,10 +215,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
           _isPlaying ? pause() : play();
         },
         iconSize: 60,
-        // TODO: Change icon to api's one
         icon: _isPlaying
-            ? const Icon(Icons.pause_circle_filled_rounded, color: Colors.white)
-            : const Icon(Icons.play_arrow_rounded, color: Colors.white));
+            ? const Icon(ApiVideoIcons.pause_primary, color: Colors.white)
+            : const Icon(ApiVideoIcons.play_primary, color: Colors.white));
   }
 
   Widget buildSlider() => Container(
