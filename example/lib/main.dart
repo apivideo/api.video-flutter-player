@@ -13,7 +13,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool firstBuild = true;
   final TextEditingController _textEditingController =
       TextEditingController(text: '');
   ApiVideoPlayerController? _controller;
@@ -40,19 +39,18 @@ class _MyAppState extends State<MyApp> {
                   ),
                   controller: _textEditingController,
                   onSubmitted: (value) async {
-                    if (firstBuild) {
+                    if (_controller == null) {
                       setState(() {
                         _controller = ApiVideoPlayerController(
                           videoOptions: VideoOptions(videoId: value),
+                          onReady: () => setState(() {
+                            _duration = 'Get duration';
+                          }),
                         );
                       });
-                      firstBuild = false;
                       return;
                     }
                     _controller?.setVideoOptions(VideoOptions(videoId: value));
-                    setState(() {
-                      _duration = 'Get duration';
-                    });
                   },
                 ),
               ),
@@ -83,7 +81,7 @@ class PlayerWidget extends StatefulWidget {
 
   final ApiVideoPlayerController controller;
   final String duration;
-  final Function(String duration) setDuration;
+  final void Function(String duration) setDuration;
 
   @override
   State<PlayerWidget> createState() => _PlayerWidgetState();
@@ -176,9 +174,9 @@ class _PlayerWidgetState extends State<PlayerWidget> {
             textAlign: TextAlign.center,
           ),
           onPressed: () async {
-            final duration = await widget.controller.duration;
+            final Duration duration = await widget.controller.duration;
             widget.setDuration(
-              'Your video has a duration of ${duration.inHours.toString()} hours, ${duration.inMinutes.toString()} minutes, ${duration.inSeconds.toString()} seconds and ${duration.inMilliseconds.toString()} milliseconds',
+              'Duration: $duration',
             );
           },
         ),
