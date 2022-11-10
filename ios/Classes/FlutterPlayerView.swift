@@ -136,6 +136,15 @@ class FlutterPlayerView: NSObject, FlutterStreamHandler {
         }
     }
 
+    var videoSize: CGSize? {
+        let videoSize = playerController.videoSize
+        if videoSize.width != 0, videoSize.height != 0 {
+            return videoSize
+        } else {
+            return nil
+        }
+    }
+
     func play() {
         playerController.play()
     }

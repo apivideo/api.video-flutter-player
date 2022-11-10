@@ -95,6 +95,11 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('setVolume() has not been implemented.');
   }
 
+  /// Gets the video size
+  Future<Size?> getVideoSize(int textureId) {
+    throw UnimplementedError('getVideoSize() has not been implemented.');
+  }
+
   /// Creates the texture and registers the native events caller.
   /// returns the texture id
   Future<int?> initialize(bool autoplay) {

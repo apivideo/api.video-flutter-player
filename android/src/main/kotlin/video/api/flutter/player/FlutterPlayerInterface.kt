@@ -1,5 +1,6 @@
 package video.api.flutter.player
 
+import android.util.Size
 import video.api.player.models.VideoOptions
 
 interface FlutterPlayerInterface {
@@ -21,6 +22,7 @@ interface FlutterPlayerInterface {
     fun setIsLooping(textureId: Long, isLooping: Boolean)
     fun getVolume(textureId: Long): Float
     fun setVolume(textureId: Long, volume: Float)
+    fun getVideoSize(textureId: Long): Size?
 
     fun play(textureId: Long)
     fun pause(textureId: Long)

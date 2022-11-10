@@ -2,6 +2,7 @@ package video.api.flutter.player
 
 import android.content.Context
 import android.util.Log
+import android.util.Size
 import android.view.Surface
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
@@ -58,8 +59,20 @@ class FlutterPlayerView(
     }
 
     private val playerController = initialVideoOptions?.let {
-        ApiVideoPlayerController(context, it, listener = listener, surface = surface, initialAutoplay = autoplay)
-    } ?: ApiVideoPlayerController(context, null, listener = listener, surface = surface, initialAutoplay = autoplay)
+        ApiVideoPlayerController(
+            context,
+            it,
+            listener = listener,
+            surface = surface,
+            initialAutoplay = autoplay
+        )
+    } ?: ApiVideoPlayerController(
+        context,
+        null,
+        listener = listener,
+        surface = surface,
+        initialAutoplay = autoplay
+    )
     private var eventSink: EventSink? = null
     private val eventChannel = EventChannel(messenger, "video.api.player/events$textureId")
 
@@ -117,6 +130,9 @@ class FlutterPlayerView(
 
     val duration: Float
         get() = playerController.duration
+
+    val videoSize: Size?
+        get() = playerController.videoSize
 
     fun play() = playerController.play()
     fun pause() = playerController.pause()

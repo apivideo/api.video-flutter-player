@@ -148,6 +148,14 @@ class FlutterPlayerController {
         player.volume = volume
     }
 
+    func getVideoSize(textureId: Int64) -> CGSize? {
+        guard let player = players[textureId] else {
+            print("Unknown player \(textureId)")
+            return nil
+        }
+        return player.videoSize
+    }
+
     func play(textureId: Int64) {
         guard let player = players[textureId] else {
             print("Unknown player \(textureId)")

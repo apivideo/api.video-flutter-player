@@ -127,6 +127,17 @@ class ApiVideoMobilePlayer extends ApiVideoPlayerPlatform {
   }
 
   @override
+  Future<Size?> getVideoSize(int textureId) async {
+    final Map<dynamic, dynamic> reply =
+        await _channel.invokeMapMethodWithTexture(
+            'getVideoSize', TextureMessage(textureId: textureId)) as Map;
+    if (reply.containsKey("width") && reply.containsKey("height")) {
+      return Size(reply["width"] as double, reply["height"] as double);
+    }
+    return null;
+  }
+
+  @override
   Future<int?> initialize(bool autoplay) async {
     final Map<String, dynamic> params = <String, dynamic>{"autoplay": autoplay};
     final Map<String, dynamic>? reply =

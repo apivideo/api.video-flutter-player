@@ -118,6 +118,10 @@ class ApiVideoPlayerController {
     return _playerPlatform.setVolume(_textureId, volume);
   }
 
+  Future<Size?> get videoSize {
+    return _playerPlatform.getVideoSize(_textureId);
+  }
+
   Future<void> initialize() async {
     _textureId = await _playerPlatform.initialize(_initialAutoplay) ??
         kUninitializedTextureId;

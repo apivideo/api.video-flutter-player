@@ -178,6 +178,17 @@ class MethodCallHandler(
                     result.success(null)
                 }
             }
+            GET_VIDEO_SIZE -> {
+                ensureTextureId(call, result) {
+                    val videoSize = controller.getVideoSize(it)
+                    val reply: MutableMap<String, Any> = HashMap()
+                    videoSize?.let { size ->
+                        reply["width"] = size.width.toDouble()
+                        reply["height"] = size.height.toDouble()
+                    }
+                    result.success(reply)
+                }
+            }
             PLAY -> {
                 ensureTextureId(call, result) {
                     controller.play(it)
@@ -240,6 +251,7 @@ class MethodCallHandler(
         private const val SET_IS_MUTED = "setIsMuted"
         private const val GET_VOLUME = "getVolume"
         private const val SET_VOLUME = "setVolume"
+        private const val GET_VIDEO_SIZE = "getVideoSize"
 
         private const val PLAY = "play"
         private const val PAUSE = "pause"

@@ -2,6 +2,7 @@ package video.api.flutter.player
 
 import android.content.Context
 import android.util.Log
+import android.util.Size
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.view.TextureRegistry
 import video.api.player.models.VideoOptions
@@ -133,6 +134,13 @@ class FlutterPlayerController(
             TAG,
             "Unknown player $textureId"
         )
+    }
+
+    override fun getVideoSize(textureId: Long): Size? {
+        return players[textureId]?.videoSize ?: run {
+            Log.e(TAG, "Unknown player $textureId")
+            null
+        }
     }
 
     override fun play(textureId: Long) {

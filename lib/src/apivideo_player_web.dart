@@ -178,6 +178,13 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       );
 
   @override
+  Future<Size?> getVideoSize(int textureId) => Utils.getPromiseFromJs<Size?>(
+    textureId: textureId,
+    jsMethod: () => js_controller.getVideoSize('player$textureId'),
+  );
+
+
+  @override
   Stream<PlayerEvent> playerEventsFor(int textureId) {
     final streamController = StreamController<PlayerEvent>();
     _streamControllers[textureId] = streamController;
@@ -221,6 +228,10 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
             getVolume: async function(playerId) {
               if (!playerId || !window[playerId]) return;
               return await window[playerId].getVolume();
+            },
+            getVideoSize: async function(playerId) {
+              if (!playerId || !window[playerId]) return;
+              return await window[playerId].getVideoSize();
             },
             loadConfig: function(playerId, videoOptions) {
               if (!playerId || !window[playerId]) return;
