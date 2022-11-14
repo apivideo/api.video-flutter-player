@@ -1,6 +1,8 @@
 @JS('window')
 library script.js;
 
+import 'dart:ui';
+
 import 'package:js/js.dart';
 
 @JS('state.getCurrentTime')
@@ -17,5 +19,7 @@ external bool getMuted(String playerId);
 external bool getLoop(String playerId);
 @JS('state.getVolume')
 external double getVolume(String playerId);
+@JS('state.getVideoSize')
+external Size? getVideoSize(String playerId);
 @JS('state.loadConfig')
 external void loadConfig(String playerId, Object videoOptions);

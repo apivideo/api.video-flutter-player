@@ -12,6 +12,10 @@ class FlutterPlayerController {
         self.textureRegistry = textureRegistry
     }
 
+    func isCreated(textureId: Int64) -> Bool {
+        return players[textureId] != nil
+    }
+    
     func initialize(autoplay: Bool) -> Int64 {
         let player = FlutterPlayerView(binaryMessenger: binaryMessenger, textureRegistry: textureRegistry, autoplay: autoplay)
 
@@ -148,6 +152,14 @@ class FlutterPlayerController {
         player.volume = volume
     }
 
+    func getVideoSize(textureId: Int64) -> CGSize? {
+        guard let player = players[textureId] else {
+            print("Unknown player \(textureId)")
+            return nil
+        }
+        return player.videoSize
+    }
+
     func play(textureId: Int64) {
         guard let player = players[textureId] else {
             print("Unknown player \(textureId)")
@@ -181,6 +193,10 @@ extension Int {
 
 extension CMTime {
     func toMs() -> Int {
+        let seconds = self.seconds
+        guard !(seconds.isNaN || seconds.isInfinite) else {
+            return 0
+        }
         return Int(seconds * 1000)
     }
 }

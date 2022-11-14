@@ -56,6 +56,8 @@ class ApiVideoPlayerController {
     }
   }
 
+  Future<bool> get isCreated => _playerPlatform.isCreated(_textureId);
+
   Future<bool> get isPlaying {
     return _playerPlatform.isPlaying(_textureId);
   }
@@ -116,6 +118,10 @@ class ApiVideoPlayerController {
       throw ArgumentError('Volume must be between 0 and 100');
     }
     return _playerPlatform.setVolume(_textureId, volume);
+  }
+
+  Future<Size?> get videoSize {
+    return _playerPlatform.getVideoSize(_textureId);
   }
 
   Future<void> initialize() async {

@@ -1,8 +1,10 @@
 package video.api.flutter.player
 
+import android.util.Size
 import video.api.player.models.VideoOptions
 
 interface FlutterPlayerInterface {
+    fun isCreated(textureId: Long): Boolean
     fun initialize(autoplay: Boolean): Long
     fun dispose(textureId: Long)
     fun disposeAll()
@@ -21,6 +23,7 @@ interface FlutterPlayerInterface {
     fun setIsLooping(textureId: Long, isLooping: Boolean)
     fun getVolume(textureId: Long): Float
     fun setVolume(textureId: Long, volume: Float)
+    fun getVideoSize(textureId: Long): Size?
 
     fun play(textureId: Long)
     fun pause(textureId: Long)

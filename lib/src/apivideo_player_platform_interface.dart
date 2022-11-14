@@ -24,6 +24,11 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  /// Returns [true] if the platform element has been created.
+  Future<bool> isCreated(int textureId) {
+    throw UnimplementedError('isCreated() has not been implemented.');
+  }
+
   /// Returns whether the video is playing or not
   Future<bool> isPlaying(int textureId) {
     throw UnimplementedError('isPlaying() has not been implemented.');
@@ -93,6 +98,11 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
   /// Sets the volume from 0 to 100.
   Future<void> setVolume(int textureId, double volume) {
     throw UnimplementedError('setVolume() has not been implemented.');
+  }
+
+  /// Gets the video size
+  Future<Size?> getVideoSize(int textureId) {
+    throw UnimplementedError('getVideoSize() has not been implemented.');
   }
 
   /// Creates the texture and registers the native events caller.

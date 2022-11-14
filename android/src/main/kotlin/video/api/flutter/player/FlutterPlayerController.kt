@@ -2,6 +2,7 @@ package video.api.flutter.player
 
 import android.content.Context
 import android.util.Log
+import android.util.Size
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.view.TextureRegistry
 import video.api.player.models.VideoOptions
@@ -13,6 +14,10 @@ class FlutterPlayerController(
     private val applicationContext: Context
 ) : FlutterPlayerInterface {
     private val players = mutableMapOf<Long, FlutterPlayerView>()
+
+    override fun isCreated(textureId: Long): Boolean {
+        return players.containsKey(textureId)
+    }
 
     override fun initialize(autoplay: Boolean): Long {
         val player = FlutterPlayerView(
@@ -133,6 +138,13 @@ class FlutterPlayerController(
             TAG,
             "Unknown player $textureId"
         )
+    }
+
+    override fun getVideoSize(textureId: Long): Size? {
+        return players[textureId]?.videoSize ?: run {
+            Log.e(TAG, "Unknown player $textureId")
+            null
+        }
     }
 
     override fun play(textureId: Long) {

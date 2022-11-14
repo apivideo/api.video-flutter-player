@@ -19,13 +19,20 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   int _textureCounter = -1;
+  final Map<int, bool> _isCreated = {};
   final Map<int, bool> _autoplay = {};
   final Map<int, VideoOptions> _videoOptions = {};
   final Map<int, StreamController<PlayerEvent>> _streamControllers = {};
 
   @override
+  Future<bool> isCreated(int textureId) async {
+    return _isCreated[textureId] ?? false;
+  }
+
+  @override
   Future<int?> initialize(bool autoplay) async {
     final textureCounter = ++_textureCounter;
+    _isCreated[textureCounter] = false;
     _autoplay[textureCounter] = autoplay;
     return textureCounter;
   }
@@ -45,6 +52,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<void> dispose(int textureId) async {
+    _isCreated.remove(textureId);
     _videoOptions.remove(textureId);
     _streamControllers.remove(textureId);
     document.querySelector('#playerDiv$textureId')?.remove();
@@ -178,6 +186,16 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       );
 
   @override
+  Future<Size?> getVideoSize(int textureId) async {
+    final size = await Utils.getPromiseFromJs<dynamic>(
+      textureId: textureId,
+      jsMethod: () => js_controller.getVideoSize('player$textureId'),
+    );
+
+    return Size(size.width, size.height);
+  }
+
+  @override
   Stream<PlayerEvent> playerEventsFor(int textureId) {
     final streamController = StreamController<PlayerEvent>();
     _streamControllers[textureId] = streamController;
@@ -221,6 +239,10 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
             getVolume: async function(playerId) {
               if (!playerId || !window[playerId]) return;
               return await window[playerId].getVolume();
+            },
+            getVideoSize: async function(playerId) {
+              if (!playerId || !window[playerId]) return;
+              return await window[playerId].getVideoSize();
             },
             loadConfig: function(playerId, videoOptions) {
               if (!playerId || !window[playerId]) return;
@@ -267,6 +289,8 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
           ],
         );
       }
+
+      _isCreated[textureId] = true;
     }
 
     return HtmlElementView(

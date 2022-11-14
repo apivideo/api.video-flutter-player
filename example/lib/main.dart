@@ -103,7 +103,10 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        ApiVideoPlayer(controller: widget.controller),
+        SizedBox(
+            width: 400.0,
+            height: 300.0,
+            child: ApiVideoPlayer(controller: widget.controller)),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           IconButton(
             icon: const Icon(Icons.replay_10),

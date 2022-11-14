@@ -1,6 +1,5 @@
 import 'package:apivideo_player/src/apivideo_player_overlay.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 import 'apivideo_player_controller.dart';
 import 'apivideo_player_platform_interface.dart';
@@ -20,7 +19,7 @@ class ApiVideoPlayer extends StatefulWidget {
 
 class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
   _ApiVideoPlayerState() {
-    _listener = ApiVideoPlayerWidgetListener(onTextureReady: () {
+    _widgetListener = ApiVideoPlayerWidgetListener(onTextureReady: () {
       final int newTextureId = widget.controller.textureId;
       if (newTextureId != _textureId) {
         setState(() {
@@ -28,21 +27,32 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
         });
       }
     });
+    _eventsListener = ApiVideoPlayerEventsListener(onReady: () async {
+      _updateAspectRatio();
+    });
   }
 
-  late ApiVideoPlayerWidgetListener _listener;
+  late ApiVideoPlayerEventsListener _eventsListener;
+  late ApiVideoPlayerWidgetListener _widgetListener;
   late int _textureId;
+  double _aspectRatio = 1.0;
 
   @override
   void initState() {
     super.initState();
     _textureId = widget.controller.textureId;
-    widget.controller.addWidgetListener(_listener);
+    // In case controller is already created
+    widget.controller.isCreated.then((value) => {
+          if (value) {_updateAspectRatio()}
+        });
+    widget.controller.addWidgetListener(_widgetListener);
+    widget.controller.addEventsListener(_eventsListener);
   }
 
   @override
   void dispose() {
-    widget.controller.removeWidgetListener(_listener);
+    widget.controller.removeWidgetListener(_widgetListener);
+    widget.controller.removeEventsListener(_eventsListener);
     super.dispose();
   }
 
@@ -50,20 +60,46 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
   Widget build(BuildContext context) {
     return _textureId == ApiVideoPlayerController.kUninitializedTextureId
         ? Container()
-        : buildVideo();
+        : buildPlayer();
   }
 
-  Widget buildVideo() => Stack(
-        children: <Widget>[
-          buildVideoPlayer(),
-          Positioned.fill(
-              child: ApiVideoPlayerOverlay(controller: widget.controller)),
-        ],
+  Widget buildPlayer() => Center(
+        child: AspectRatio(
+            aspectRatio: _aspectRatio,
+            child: Stack(
+              children: <Widget>[
+                _playerPlatform.buildView(_textureId),
+                Positioned.fill(
+                    child:
+                        ApiVideoPlayerOverlay(controller: widget.controller)),
+              ],
+            )),
       );
 
-  Widget buildVideoPlayer() => SizedBox(
-        width: 400.0,
-        height: 300.0,
-        child: _playerPlatform.buildView(_textureId),
-      );
+  void _updateAspectRatio() async {
+    final size = await widget.controller.videoSize;
+
+    double newAspectRatio;
+    if (size != null) {
+      newAspectRatio = size.aspectRatio;
+    } else {
+      newAspectRatio = 1.0;
+    }
+
+    if (newAspectRatio != _aspectRatio) {
+      setState(() {
+        _aspectRatio = newAspectRatio;
+      });
+    }
+  }
+}
+
+extension AspectRationSize on Size {
+  double get aspectRatio {
+    final double aspectRatio = width / height;
+    if (aspectRatio <= 0) {
+      return 1.0;
+    }
+    return aspectRatio;
+  }
 }

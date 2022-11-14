@@ -14,6 +14,14 @@ class ApiVideoMobilePlayer extends ApiVideoPlayerPlatform {
   }
 
   @override
+  Future<bool> isCreated(int textureId) async {
+    final Map<dynamic, dynamic> reply =
+        await _channel.invokeMapMethodWithTexture(
+            'isCreated', TextureMessage(textureId: textureId)) as Map;
+    return reply['isCreated'] as bool;
+  }
+
+  @override
   Future<bool> isPlaying(int textureId) async {
     final Map<dynamic, dynamic> reply =
         await _channel.invokeMapMethodWithTexture(
@@ -124,6 +132,17 @@ class ApiVideoMobilePlayer extends ApiVideoPlayerPlatform {
     final Map<String, dynamic> params = <String, dynamic>{"volume": volume};
     return _channel.invokeMapMethodWithTexture(
         'setVolume', TextureMessage(textureId: textureId), params);
+  }
+
+  @override
+  Future<Size?> getVideoSize(int textureId) async {
+    final Map<dynamic, dynamic> reply =
+        await _channel.invokeMapMethodWithTexture(
+            'getVideoSize', TextureMessage(textureId: textureId)) as Map;
+    if (reply.containsKey("width") && reply.containsKey("height")) {
+      return Size(reply["width"] as double, reply["height"] as double);
+    }
+    return null;
   }
 
   @override

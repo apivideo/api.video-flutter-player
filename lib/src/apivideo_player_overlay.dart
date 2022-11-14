@@ -68,12 +68,15 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
     super.initState();
     widget.controller.addEventsListener(_listener);
     _showOverlayForDuration();
-    widget.controller.isPlaying.then((isPlaying) => {
-          if (isPlaying)
+    // In case controller is already created
+    widget.controller.isCreated.then((value) => {
+          if (value)
             {
               _updateCurrentTime(),
               _updateDuration(),
-              _onPlay(),
+              widget.controller.isPlaying.then((isPlaying) => {
+                    if (isPlaying) {_onPlay()}
+                  })
             }
         });
   }

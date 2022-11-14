@@ -13,6 +13,14 @@ class MethodCallHandler {
         methodChannel
             .setMethodCallHandler { [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
                 switch call.method {
+                case Keys.isCreated:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                        return
+                    }
+                    result(["isCreated": self?.controller.isCreated(textureId: Int64(textureId))])
                 case Keys.initialize:
                     guard let args = call.arguments as? [String: Any],
                           let autoplay = args["autoplay"] as? Bool
@@ -156,6 +164,18 @@ class MethodCallHandler {
                         return
                     }
                     self?.controller.setVolume(textureId: Int64(textureId), volume: Float(volume))
+                case Keys.getVideoSize:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                        return
+                    }
+                    guard let videoSize = self?.controller.getVideoSize(textureId: Int64(textureId)) else {
+                        result([String: Any]())
+                        return
+                    }
+                    result(["width": videoSize.width, "height": videoSize.height])
                 case Keys.play:
                     guard let args = call.arguments as? [String: Any],
                           let textureId = args[Keys.textureId] as? Int
@@ -202,6 +222,7 @@ enum Keys {
     static let vod = "vod"
     static let live = "live"
 
+    static let isCreated = "isCreated"
     static let initialize = "initialize"
     static let dispose = "dispose"
 
@@ -219,6 +240,7 @@ enum Keys {
     static let setIsLooping = "setIsLooping"
     static let getVolume = "getVolume"
     static let setVolume = "setVolume"
+    static let getVideoSize = "getVideoSize"
 
     static let play = "play"
     static let pause = "pause"
