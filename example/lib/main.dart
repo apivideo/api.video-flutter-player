@@ -13,76 +13,180 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final ApiVideoPlayerController _controller = ApiVideoPlayerController(
-    videoOptions: VideoOptions(videoId: 'vi3CjYlusQKz6JN7au0EmW9b'),
-      autoplay: true
-  );
+  final TextEditingController _textEditingController =
+      TextEditingController(text: '');
+  ApiVideoPlayerController? _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller.initialize().then((_) => setState(() {}));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: Column(
-          children: [
-            ApiVideoPlayer(controller: _controller),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              IconButton(
-                icon: const Icon(Icons.replay_10),
-                onPressed: () {
-                  _controller.seek(const Duration(seconds: -10));
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.play_arrow),
-                onPressed: () {
-                  _controller.play();
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.pause),
-                onPressed: () {
-                  _controller.pause();
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.forward_10),
-                onPressed: () {
-                  _controller.seek(const Duration(seconds: 10));
-                },
-              ),
-            ]),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.volume_off),
-                  onPressed: () {
-                    _controller.setIsMuted(true);
+      home: Builder(builder: (context) {
+        return Scaffold(
+          body: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: TextField(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Enter a video id',
+                  ),
+                  controller: _textEditingController,
+                  onSubmitted: (value) async {
+                    if (_controller == null) {
+                      setState(() {
+                        _controller = ApiVideoPlayerController(
+                          videoOptions: VideoOptions(videoId: value),
+                        );
+                      });
+                    } else {
+                      _controller
+                          ?.setVideoOptions(VideoOptions(videoId: value));
+                    }
                   },
                 ),
-                IconButton(
-                  icon: const Icon(Icons.volume_up),
-                  onPressed: () {
-                    _controller.setIsMuted(false);
+              ),
+              _controller != null
+                  ? PlayerWidget(
+                      controller: _controller!,
+                    )
+                  : const SizedBox.shrink(),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+}
+
+class PlayerWidget extends StatefulWidget {
+  const PlayerWidget({
+    super.key,
+    required this.controller,
+  });
+
+  final ApiVideoPlayerController controller;
+
+  @override
+  State<PlayerWidget> createState() => _PlayerWidgetState();
+}
+
+class _PlayerWidgetState extends State<PlayerWidget> {
+  String _currentTime = 'Get current time';
+  String _duration = 'Get duration';
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.initialize();
+    widget.controller.addEventsListener(ApiVideoPlayerEventsListener(
+      onReady: () {
+        setState(() {
+          _duration = 'Get duration';
+        });
+      },
+    ));
+  }
+
+  @override
+  void dispose() {
+    widget.controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        ApiVideoPlayer(controller: widget.controller),
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          IconButton(
+            icon: const Icon(Icons.replay_10),
+            onPressed: () {
+              widget.controller.seek(const Duration(seconds: -10));
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.play_arrow),
+            onPressed: () {
+              widget.controller.play();
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.pause),
+            onPressed: () {
+              widget.controller.pause();
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.forward_10),
+            onPressed: () {
+              widget.controller.seek(const Duration(seconds: 10));
+            },
+          ),
+        ]),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.volume_off),
+              onPressed: () {
+                widget.controller.setIsMuted(true);
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.volume_up),
+              onPressed: () {
+                widget.controller.setIsMuted(false);
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.loop),
+              onPressed: () {
+                widget.controller.isLooping.then(
+                  (bool value) {
+                    widget.controller.setIsLooping(!value);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Your video is ${value ? 'not on loop anymore' : 'on loop'}.',
+                        ),
+                        backgroundColor: Colors.blueAccent,
+                      ),
+                    );
                   },
-                ),
-              ],
+                );
+              },
             ),
           ],
         ),
-      ),
+        TextButton(
+          child: Text(
+            _duration,
+            textAlign: TextAlign.center,
+          ),
+          onPressed: () async {
+            final Duration duration = await widget.controller.duration;
+            setState(() {
+              _duration = 'Duration: $duration';
+            });
+          },
+        ),
+        TextButton(
+          child: Text(_currentTime),
+          onPressed: () async {
+            final Duration currentTime = await widget.controller.currentTime;
+            setState(() {
+              _currentTime = 'Get current time: $currentTime';
+            });
+          },
+        ),
+      ],
     );
   }
 }
