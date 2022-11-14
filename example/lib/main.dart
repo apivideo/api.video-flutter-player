@@ -16,7 +16,6 @@ class _MyAppState extends State<MyApp> {
   final TextEditingController _textEditingController =
       TextEditingController(text: '');
   ApiVideoPlayerController? _controller;
-  String _duration = 'Get duration';
 
   @override
   void initState() {
@@ -43,24 +42,18 @@ class _MyAppState extends State<MyApp> {
                       setState(() {
                         _controller = ApiVideoPlayerController(
                           videoOptions: VideoOptions(videoId: value),
-                          onReady: () => setState(() {
-                            _duration = 'Get duration';
-                          }),
                         );
                       });
-                      return;
+                    } else {
+                      _controller
+                          ?.setVideoOptions(VideoOptions(videoId: value));
                     }
-                    _controller?.setVideoOptions(VideoOptions(videoId: value));
                   },
                 ),
               ),
               _controller != null
                   ? PlayerWidget(
                       controller: _controller!,
-                      duration: _duration,
-                      setDuration: (String duration) => setState(() {
-                        _duration = duration;
-                      }),
                     )
                   : const SizedBox.shrink(),
             ],
@@ -75,13 +68,9 @@ class PlayerWidget extends StatefulWidget {
   const PlayerWidget({
     super.key,
     required this.controller,
-    required this.duration,
-    required this.setDuration,
   });
 
   final ApiVideoPlayerController controller;
-  final String duration;
-  final void Function(String duration) setDuration;
 
   @override
   State<PlayerWidget> createState() => _PlayerWidgetState();
@@ -89,11 +78,19 @@ class PlayerWidget extends StatefulWidget {
 
 class _PlayerWidgetState extends State<PlayerWidget> {
   String _currentTime = 'Get current time';
+  String _duration = 'Get duration';
 
   @override
   void initState() {
     super.initState();
     widget.controller.initialize();
+    widget.controller.addEventsListener(ApiVideoPlayerEventsListener(
+      onReady: () {
+        setState(() {
+          _duration = 'Get duration';
+        });
+      },
+    ));
   }
 
   @override
@@ -170,14 +167,14 @@ class _PlayerWidgetState extends State<PlayerWidget> {
         ),
         TextButton(
           child: Text(
-            widget.duration,
+            _duration,
             textAlign: TextAlign.center,
           ),
           onPressed: () async {
             final Duration duration = await widget.controller.duration;
-            widget.setDuration(
-              'Duration: $duration',
-            );
+            setState(() {
+              _duration = 'Duration: $duration';
+            });
           },
         ),
         TextButton(
