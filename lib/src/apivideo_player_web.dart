@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'dart:html';
 
@@ -19,26 +20,27 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   int _textureCounter = -1;
-  final Map<int, bool> _isCreated = {};
-  final Map<int, bool> _autoplay = {};
-  final Map<int, VideoOptions> _videoOptions = {};
-  final Map<int, StreamController<PlayerEvent>> _streamControllers = {};
+  final Map<int, Player> _players = {};
 
   @override
   Future<bool> isCreated(int textureId) async {
-    return _isCreated[textureId] ?? false;
+    return _players[textureId]?.isCreated ?? false;
   }
 
   @override
   Future<int?> initialize(bool autoplay) async {
     final textureCounter = ++_textureCounter;
-    _isCreated[textureCounter] = false;
-    _autoplay[textureCounter] = autoplay;
+    _players[textureCounter] = Player(isCreated: false, autoplay: autoplay);
     return textureCounter;
   }
 
   @override
   Future<void> create(int textureId, VideoOptions videoOptions) async {
+    if (_players[textureId] == null) {
+      throw Exception(
+        'No player found for this texture id: $textureId. Cannot create the HTML element.',
+      );
+    }
     final DivElement videoElement = DivElement()
       ..id = 'playerDiv$textureId'
       ..style.height = '100%'
@@ -47,14 +49,12 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
     platformViewRegistry.registerViewFactory(
         'playerDiv$textureId', (int viewId) => videoElement);
 
-    _videoOptions[textureId] = videoOptions;
+    _players[textureId]!.videoOptions = videoOptions;
   }
 
   @override
   Future<void> dispose(int textureId) async {
-    _isCreated.remove(textureId);
-    _videoOptions.remove(textureId);
-    _streamControllers.remove(textureId);
+    _players.remove(textureId);
     document.querySelector('#playerDiv$textureId')?.remove();
     document.querySelector('#apiVideoPlayerJsScript$textureId')?.remove();
     return;
@@ -62,15 +62,23 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<VideoOptions> getVideoOptions(int textureId) async {
-    if (_videoOptions[textureId] == null) {
-      throw Exception('No video options found for this texture id: $textureId');
+    if (_players[textureId] == null ||
+        _players[textureId]?.videoOptions == null) {
+      throw Exception(
+        'No player or video options found for this texture id: $textureId. Cannot get video options.',
+      );
     }
-    return _videoOptions[textureId]!;
+    return _players[textureId]!.videoOptions!;
   }
 
   @override
   Future<void> setVideoOptions(int textureId, VideoOptions videoOptions) async {
-    _videoOptions[textureId] = videoOptions;
+    if (_players[textureId] == null) {
+      throw Exception(
+        'No player found for this texture id: $textureId. Cannot set video options.',
+      );
+    }
+    _players[textureId]!.videoOptions = videoOptions;
     js_controller.loadConfig(
       'player$textureId',
       {
@@ -153,17 +161,22 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<bool> getAutoplay(int textureId) async {
-    if (_autoplay[textureId] == null) {
+    if (_players[textureId] == null) {
       throw Exception(
-        'No autoplay property value found for this texture id: $textureId',
+        'No player found for this texture id: $textureId. Cannot get autoplay value.',
       );
     }
-    return _autoplay[textureId]!;
+    return _players[textureId]!.autoplay;
   }
 
   @override
   Future<void> setAutoplay(int textureId, bool autoplay) {
-    _autoplay[textureId] = autoplay;
+    if (_players[textureId] == null) {
+      throw Exception(
+        'No player found for this texture id: $textureId. Cannot set autoplay value',
+      );
+    }
+    _players[textureId]!.autoplay = autoplay;
     return Utils.callJsMethod(
       textureId: textureId,
       jsMethodName: 'setAutoplay',
@@ -197,15 +210,27 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Stream<PlayerEvent> playerEventsFor(int textureId) {
+    if (_players[textureId] == null) {
+      throw Exception(
+        'No player found for this texture id: $textureId. Cannot set player events.',
+      );
+    }
     final streamController = StreamController<PlayerEvent>();
-    _streamControllers[textureId] = streamController;
+    _players[textureId]!.playerEvents = streamController;
     return streamController.stream;
   }
 
   @override
   Widget buildView(int textureId) {
-    if (_videoOptions[textureId] == null) {
-      throw ArgumentError('videos options must be provided');
+    if (_players[textureId] == null) {
+      throw ArgumentError(
+        'No player found for this texture id: $textureId. Cannot build view.',
+      );
+    }
+    if (_players[textureId]!.videoOptions == null) {
+      throw ArgumentError(
+        'No video options found for this texture id: $textureId. Cannot build view.',
+      );
     }
 
     void injectScripts() {
@@ -262,10 +287,10 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
         window.player$textureId = new PlayerSdk(
           "#playerDiv$textureId",
           { 
-            id: "${_videoOptions[textureId]!.videoId}",
+            id: "${_players[textureId]!.videoOptions!.videoId}",
             chromeless: true,
-            live: ${_videoOptions[textureId]!.videoType == VideoType.live},
-            autoplay: $_autoplay,
+            live: ${_players[textureId]!.videoOptions!.videoType == VideoType.live},
+            autoplay: ${_players[textureId]!.autoplay},
           }
         );
       ''';
@@ -275,8 +300,8 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
       document.body?.insertAdjacentElement('beforeend', script);
 
-      if (_streamControllers[textureId] == null) {
-        throw Exception('No stream controller for this texture id: $textureId');
+      if (_players[textureId]!.playerEvents == null) {
+        throw Exception('No player events for this texture id: $textureId.');
       }
       for (var playerEvent in PlayerEventType.values) {
         Utils.callJsMethod(
@@ -284,13 +309,14 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
           jsMethodName: 'addEventListener',
           args: [
             playerEvent.displayPlayerSdkName,
-            () => _streamControllers[textureId]!
+            () => _players[textureId]!
+                .playerEvents!
                 .add(PlayerEvent(type: playerEvent)),
           ],
         );
       }
 
-      _isCreated[textureId] = true;
+      _players[textureId]!.isCreated = true;
     }
 
     return HtmlElementView(
@@ -298,4 +324,17 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       onPlatformViewCreated: (id) => injectScripts(),
     );
   }
+}
+
+class Player {
+  Player({
+    this.autoplay = false,
+    this.isCreated = false,
+    this.videoOptions,
+    this.playerEvents,
+  });
+  bool autoplay;
+  bool isCreated;
+  VideoOptions? videoOptions;
+  StreamController<PlayerEvent>? playerEvents;
 }
