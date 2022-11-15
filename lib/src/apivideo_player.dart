@@ -78,14 +78,7 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
 
   void _updateAspectRatio() async {
     final size = await widget.controller.videoSize;
-
-    double newAspectRatio;
-    if (size != null) {
-      newAspectRatio = size.aspectRatio;
-    } else {
-      newAspectRatio = 1.0;
-    }
-
+    final double newAspectRatio = size?.aspectRatio ?? 1.0;
     if (newAspectRatio != _aspectRatio) {
       setState(() {
         _aspectRatio = newAspectRatio;
@@ -94,7 +87,7 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
   }
 }
 
-extension AspectRationSize on Size {
+extension AspectRatioSize on Size {
   double get aspectRatio {
     final double aspectRatio = width / height;
     if (aspectRatio <= 0) {
