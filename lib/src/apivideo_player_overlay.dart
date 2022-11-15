@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:apivideo_player/src/presentation/apivideo_icons.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -58,10 +59,12 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
   Timer? _timeSliderTimer;
 
   bool _isOverlayVisible = true;
+  bool _isWebVolumeSliderVisible = false;
   Timer? _overlayVisibilityTimer;
 
   Duration _currentTime = const Duration(seconds: 0);
   Duration _duration = const Duration(seconds: 0);
+  double _volume = 0.0;
 
   @override
   initState() {
@@ -74,6 +77,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
             {
               _updateCurrentTime(),
               _updateDuration(),
+              _updateVolume(),
               widget.controller.isPlaying.then((isPlaying) => {
                     if (isPlaying) {_onPlay()}
                   })
@@ -109,6 +113,12 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
     _showOverlayForDuration();
   }
 
+  void setVolume(double volume) {
+    print(volume);
+    widget.controller.setVolume(volume);
+    _showOverlayForDuration();
+  }
+
   void _showOverlayForDuration() {
     if (!_isOverlayVisible) {
       showOverlay();
@@ -126,6 +136,18 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
   void hideOverlay() {
     setState(() {
       _isOverlayVisible = false;
+    });
+  }
+
+  void showWebVolumeSlider() {
+    setState(() {
+      _isWebVolumeSliderVisible = true;
+    });
+  }
+
+  void hideWebVolumeSlider() {
+    setState(() {
+      _isWebVolumeSliderVisible = false;
     });
   }
 
@@ -164,6 +186,14 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
     });
   }
 
+  void _updateVolume() async {
+    double volume = await widget.controller.volume;
+
+    setState(() {
+      _volume = volume;
+    });
+  }
+
   @override
   Widget build(BuildContext context) => MouseRegion(
         onEnter: (_) => showOverlay(),
@@ -182,9 +212,35 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            height: 30,
-          ),
+          kIsWeb
+              ? const SizedBox.shrink()
+              : Container(
+                  height: 30,
+                ),
+          kIsWeb
+              ? Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: MouseRegion(
+                    onEnter: (_) => showWebVolumeSlider(),
+                    onExit: (_) => hideWebVolumeSlider(),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Icon(
+                          Icons.volume_up,
+                          color: Colors.white,
+                        ),
+                        _isWebVolumeSliderVisible
+                            ? Slider(
+                                value: _volume,
+                                onChanged: (value) => setVolume(value),
+                              )
+                            : const SizedBox.shrink(),
+                      ],
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
           buildControls(),
           buildSlider(),
         ],
@@ -199,15 +255,20 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
                   seek(const Duration(seconds: -10));
                 },
                 iconSize: 30,
-                icon: const Icon(Icons.replay_10_rounded, color: Colors.white)),
+                icon: const Icon(
+                  Icons.replay_10_rounded,
+                  color: Colors.white,
+                )),
             buildBtnPlay(),
             IconButton(
                 onPressed: () {
                   seek(const Duration(seconds: 10));
                 },
                 iconSize: 30,
-                icon:
-                    const Icon(Icons.forward_10_rounded, color: Colors.white)),
+                icon: const Icon(
+                  Icons.forward_10_rounded,
+                  color: Colors.white,
+                )),
           ],
         ),
       );
@@ -231,10 +292,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
             Expanded(
               child: Slider(
                 value: min(
-                        _currentTime.inMilliseconds,
-                        _duration
-                            .inMilliseconds) // Ensure that the slider doesn't go over the duration
-                    .toDouble(),
+                  _currentTime.inMilliseconds,
+                  _duration.inMilliseconds,
+                ).toDouble(), // Ensure that the slider doesn't go over the duration
                 max: _duration.inMilliseconds.toDouble(),
                 activeColor: Colors.orangeAccent,
                 inactiveColor: Colors.grey,
