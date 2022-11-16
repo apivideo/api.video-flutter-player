@@ -45,6 +45,11 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       },
       onSeek: () {
         _updateCurrentTime();
+        if (_currentTime < _duration) {
+          setState(() {
+            _didEnd = false;
+          });
+        }
       },
       onEnd: () {
         _stopRemainingTimeUpdates();
