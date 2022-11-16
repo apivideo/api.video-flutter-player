@@ -20,7 +20,8 @@ class ApiVideoPlayerOverlay extends StatefulWidget {
   State<ApiVideoPlayerOverlay> createState() => _ApiVideoPlayerOverlayState();
 }
 
-class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
+class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
+    with TickerProviderStateMixin {
   _ApiVideoPlayerOverlayState() {
     _listener = ApiVideoPlayerEventsListener(
       onReady: () async {
@@ -58,12 +59,14 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
   Timer? _timeSliderTimer;
 
   bool _isOverlayVisible = true;
-  bool _isWebVolumeSliderVisible = false;
   Timer? _overlayVisibilityTimer;
 
   Duration _currentTime = const Duration(seconds: 0);
   Duration _duration = const Duration(seconds: 0);
   double _volume = 0.0;
+
+  late AnimationController expandController;
+  late Animation<double> animation;
 
   @override
   initState() {
@@ -82,6 +85,15 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
                   })
             }
         });
+
+    expandController = AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+    );
+    animation = CurvedAnimation(
+      parent: expandController,
+      curve: Curves.fastLinearToSlowEaseIn,
+    );
   }
 
   @override
@@ -138,18 +150,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
     });
   }
 
-  void showWebVolumeSlider() {
-    setState(() {
-      _isWebVolumeSliderVisible = true;
-    });
-  }
-
-  void hideWebVolumeSlider() {
-    setState(() {
-      _isWebVolumeSliderVisible = false;
-    });
-  }
-
   void _startRemainingTimeUpdates() {
     _timeSliderTimer?.cancel();
     _timeSliderTimer = Timer.periodic(
@@ -188,6 +188,14 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
     setState(() {
       _volume = volume;
     });
+  }
+
+  void _toggleExpand({required bool open}) {
+    if (open) {
+      expandController.forward();
+    } else {
+      expandController.animateBack(0, duration: const Duration(seconds: 1));
+    }
   }
 
   @override
@@ -283,8 +291,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
       );
 
   Widget buildVolumeSlider() => MouseRegion(
-        onEnter: (_) => showWebVolumeSlider(),
-        onExit: (_) => hideWebVolumeSlider(),
+        onEnter: (_) => _toggleExpand(open: true),
+        onExit: (_) => _toggleExpand(open: false),
         child: Padding(
           padding: const EdgeInsets.only(right: 10),
           child: Row(
@@ -297,26 +305,28 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
                 ),
                 onPressed: () => setVolume(_volume > 0 ? 0 : 1),
               ),
-              _isWebVolumeSliderVisible
-                  ? SizedBox(
-                      height: 30.0,
-                      width: 120.0,
-                      child: SliderTheme(
-                        data: SliderThemeData(
-                            activeTrackColor: Colors.white,
-                            trackHeight: 2.0,
-                            thumbColor: Colors.white,
-                            overlayShape: SliderComponentShape.noOverlay,
-                            thumbShape: const RoundSliderThumbShape(
-                              enabledThumbRadius: 6.0,
-                            )),
-                        child: Slider(
-                          value: _volume,
-                          onChanged: (value) => setVolume(value),
-                        ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
+              SizeTransition(
+                sizeFactor: animation,
+                axis: Axis.horizontal,
+                child: SizedBox(
+                  height: 30.0,
+                  width: 120.0,
+                  child: SliderTheme(
+                    data: SliderThemeData(
+                        activeTrackColor: Colors.white,
+                        trackHeight: 2.0,
+                        thumbColor: Colors.white,
+                        overlayShape: SliderComponentShape.noOverlay,
+                        thumbShape: const RoundSliderThumbShape(
+                          enabledThumbRadius: 6.0,
+                        )),
+                    child: Slider(
+                      value: _volume,
+                      onChanged: (value) => setVolume(value),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
