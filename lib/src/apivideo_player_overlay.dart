@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:apivideo_player/src/presentation/apivideo_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 import '../apivideo_player.dart';
@@ -72,8 +71,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
     widget.controller.addEventsListener(_listener);
     _showOverlayForDuration();
     // In case controller is already created
-    widget.controller.isCreated.then((value) => {
-          if (value)
+    widget.controller.isCreated.then((bool isCreated) => {
+          if (isCreated)
             {
               _updateCurrentTime(),
               _updateDuration(),
@@ -113,9 +112,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
     _showOverlayForDuration();
   }
 
-  void setVolume(double volume) {
-    print(volume);
-    widget.controller.setVolume(volume);
+  void setVolume(double volume) async {
+    await widget.controller.setVolume(volume);
+    _updateVolume();
     _showOverlayForDuration();
   }
 
@@ -172,7 +171,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
 
   void _updateCurrentTime() async {
     Duration currentTime = await widget.controller.currentTime;
-
     setState(() {
       _currentTime = currentTime;
     });
@@ -180,7 +178,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
 
   void _updateDuration() async {
     Duration duration = await widget.controller.duration;
-
     setState(() {
       _duration = duration;
     });
@@ -188,7 +185,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
 
   void _updateVolume() async {
     double volume = await widget.controller.volume;
-
     setState(() {
       _volume = volume;
     });
@@ -217,30 +213,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
               : Container(
                   height: 30,
                 ),
-          kIsWeb
-              ? Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: MouseRegion(
-                    onEnter: (_) => showWebVolumeSlider(),
-                    onExit: (_) => hideWebVolumeSlider(),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        const Icon(
-                          Icons.volume_up,
-                          color: Colors.white,
-                        ),
-                        _isWebVolumeSliderVisible
-                            ? Slider(
-                                value: _volume,
-                                onChanged: (value) => setVolume(value),
-                              )
-                            : const SizedBox.shrink(),
-                      ],
-                    ),
-                  ),
-                )
-              : const SizedBox.shrink(),
+          kIsWeb ? buildVolumeSlider() : const SizedBox.shrink(),
           buildControls(),
           buildSlider(),
         ],
@@ -306,6 +279,46 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
             Text((_duration - _currentTime).toPlayerString(),
                 style: const TextStyle(color: Colors.white)),
           ],
+        ),
+      );
+
+  Widget buildVolumeSlider() => MouseRegion(
+        onEnter: (_) => showWebVolumeSlider(),
+        onExit: (_) => hideWebVolumeSlider(),
+        child: Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                icon: Icon(
+                  _volume > 0 ? Icons.volume_up : Icons.volume_off,
+                  color: Colors.white,
+                ),
+                onPressed: () => setVolume(_volume > 0 ? 0 : 1),
+              ),
+              _isWebVolumeSliderVisible
+                  ? SizedBox(
+                      height: 30.0,
+                      width: 120.0,
+                      child: SliderTheme(
+                        data: SliderThemeData(
+                            activeTrackColor: Colors.white,
+                            trackHeight: 2.0,
+                            thumbColor: Colors.white,
+                            overlayShape: SliderComponentShape.noOverlay,
+                            thumbShape: const RoundSliderThumbShape(
+                              enabledThumbRadius: 6.0,
+                            )),
+                        child: Slider(
+                          value: _volume,
+                          onChanged: (value) => setVolume(value),
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ],
+          ),
         ),
       );
 }

@@ -49,7 +49,9 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
     platformViewRegistry.registerViewFactory(
         'playerDiv$textureId', (int viewId) => videoElement);
 
-    _players[textureId]!.videoOptions = videoOptions;
+    _players[textureId]!
+      ..videoOptions = videoOptions
+      ..isCreated = true;
   }
 
   @override
@@ -315,8 +317,6 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
           ],
         );
       }
-
-      _players[textureId]!.isCreated = true;
     }
 
     return HtmlElementView(

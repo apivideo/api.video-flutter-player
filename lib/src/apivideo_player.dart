@@ -42,8 +42,8 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
     super.initState();
     _textureId = widget.controller.textureId;
     // In case controller is already created
-    widget.controller.isCreated.then((value) => {
-          if (value) {_updateAspectRatio()}
+    widget.controller.isCreated.then((bool isCreated) => {
+          if (isCreated) {_updateAspectRatio()}
         });
     widget.controller.addWidgetListener(_widgetListener);
     widget.controller.addEventsListener(_eventsListener);
