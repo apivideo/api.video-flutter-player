@@ -55,7 +55,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       },
     );
   }
-
   bool _isPlaying = false;
   bool _didEnd = false;
 
@@ -121,8 +120,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     _showOverlayForDuration();
   }
 
-  void replay() {
-    setCurrentTime(const Duration(seconds: 0));
+  Future<void> replay() async {
+    await setCurrentTime(const Duration(seconds: 0));
     play();
     _showOverlayForDuration();
   }
