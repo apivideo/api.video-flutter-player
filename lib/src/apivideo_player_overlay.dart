@@ -125,10 +125,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     _showOverlayForDuration();
   }
 
-  Future<void> replay() async {
-    await setCurrentTime(const Duration(seconds: 0));
+  void replay() async {
+    await widget.controller.setCurrentTime(const Duration(seconds: 0));
     play();
-    _showOverlayForDuration();
   }
 
   void seek(Duration duration) {
