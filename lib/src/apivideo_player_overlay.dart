@@ -64,6 +64,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   Duration _currentTime = const Duration(seconds: 0);
   Duration _duration = const Duration(seconds: 0);
   double _volume = 0.0;
+  bool _isMuted = false;
 
   late AnimationController expandController;
   late Animation<double> animation;
@@ -80,6 +81,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
               _updateCurrentTime(),
               _updateDuration(),
               _updateVolume(),
+              _updateMuted(),
               widget.controller.isPlaying.then((isPlaying) => {
                     if (isPlaying) {_onPlay()}
                   })
@@ -130,6 +132,13 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   void setVolume(double volume) async {
     await widget.controller.setVolume(volume);
     _updateVolume();
+    _showOverlayForDuration();
+  }
+
+  void setMuted() async {
+    final bool muted = await widget.controller.isMuted;
+    await widget.controller.setIsMuted(!muted);
+    _updateMuted();
     _showOverlayForDuration();
   }
 
@@ -193,7 +202,14 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     });
   }
 
-  void _toggleExpand({required bool open}) {
+  void _updateMuted() async {
+    bool muted = await widget.controller.isMuted;
+    setState(() {
+      _isMuted = muted;
+    });
+  }
+
+  void _animateExpand({required bool open}) {
     if (open) {
       expandController.forward();
     } else {
@@ -295,8 +311,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
               height: 10,
             ),
             MouseRegion(
-              onEnter: (_) => _toggleExpand(open: true),
-              onExit: (_) => _toggleExpand(open: false),
+              onEnter: (_) => _animateExpand(open: true),
+              onExit: (_) => _animateExpand(open: false),
               child: Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: Row(
@@ -304,17 +320,19 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                   children: [
                     IconButton(
                       icon: Icon(
-                        _volume > 0 ? Icons.volume_up : Icons.volume_off,
+                        _volume <= 0 || _isMuted
+                            ? Icons.volume_off
+                            : Icons.volume_up,
                         color: Colors.white,
                       ),
-                      onPressed: () => setVolume(_volume > 0 ? 0 : 1),
+                      onPressed: () => setMuted(),
                     ),
                     SizeTransition(
                       sizeFactor: animation,
                       axis: Axis.horizontal,
                       child: SizedBox(
                         height: 30.0,
-                        width: 120.0,
+                        width: 80.0,
                         child: SliderTheme(
                           data: SliderThemeData(
                               activeTrackColor: Colors.white,
@@ -325,7 +343,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                                 enabledThumbRadius: 6.0,
                               )),
                           child: Slider(
-                            value: _volume,
+                            value: _isMuted ? 0 : _volume,
                             onChanged: (value) => setVolume(value),
                           ),
                         ),
