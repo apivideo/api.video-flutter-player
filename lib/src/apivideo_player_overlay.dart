@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:apivideo_player/src/presentation/apivideo_icons.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 import '../apivideo_player.dart';
@@ -20,7 +20,8 @@ class ApiVideoPlayerOverlay extends StatefulWidget {
   State<ApiVideoPlayerOverlay> createState() => _ApiVideoPlayerOverlayState();
 }
 
-class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
+class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
+    with TickerProviderStateMixin {
   _ApiVideoPlayerOverlayState() {
     _listener = ApiVideoPlayerEventsListener(
       onReady: () async {
@@ -62,6 +63,11 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
 
   Duration _currentTime = const Duration(seconds: 0);
   Duration _duration = const Duration(seconds: 0);
+  double _volume = 0.0;
+  bool _isMuted = false;
+
+  late AnimationController expandController;
+  late Animation<double> animation;
 
   @override
   initState() {
@@ -69,16 +75,27 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
     widget.controller.addEventsListener(_listener);
     _showOverlayForDuration();
     // In case controller is already created
-    widget.controller.isCreated.then((value) => {
-          if (value)
+    widget.controller.isCreated.then((bool isCreated) => {
+          if (isCreated)
             {
               _updateCurrentTime(),
               _updateDuration(),
+              _updateVolume(),
+              _updateMuted(),
               widget.controller.isPlaying.then((isPlaying) => {
                     if (isPlaying) {_onPlay()}
                   })
             }
         });
+
+    expandController = AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+    );
+    animation = CurvedAnimation(
+      parent: expandController,
+      curve: Curves.fastLinearToSlowEaseIn,
+    );
   }
 
   @override
@@ -104,8 +121,24 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
     _showOverlayForDuration();
   }
 
-  void setCurrentTime(Duration duration) {
-    widget.controller.setCurrentTime(duration);
+  void setCurrentTime(Duration duration) async {
+    await widget.controller.setCurrentTime(duration);
+    setState(() {
+      _currentTime = duration;
+    });
+    _showOverlayForDuration();
+  }
+
+  void setVolume(double volume) async {
+    await widget.controller.setVolume(volume);
+    _updateVolume();
+    _showOverlayForDuration();
+  }
+
+  void toggleMuted() async {
+    final bool muted = await widget.controller.isMuted;
+    await widget.controller.setIsMuted(!muted);
+    _updateMuted();
     _showOverlayForDuration();
   }
 
@@ -150,7 +183,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
 
   void _updateCurrentTime() async {
     Duration currentTime = await widget.controller.currentTime;
-
     setState(() {
       _currentTime = currentTime;
     });
@@ -158,10 +190,31 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
 
   void _updateDuration() async {
     Duration duration = await widget.controller.duration;
-
     setState(() {
       _duration = duration;
     });
+  }
+
+  void _updateVolume() async {
+    double volume = await widget.controller.volume;
+    setState(() {
+      _volume = volume;
+    });
+  }
+
+  void _updateMuted() async {
+    bool muted = await widget.controller.isMuted;
+    setState(() {
+      _isMuted = muted;
+    });
+  }
+
+  void _animateExpand({required bool open}) {
+    if (open) {
+      expandController.forward();
+    } else {
+      expandController.animateBack(0, duration: const Duration(seconds: 1));
+    }
   }
 
   @override
@@ -182,9 +235,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            height: 30,
-          ),
+          buildVolumeSlider(),
           buildControls(),
           buildSlider(),
         ],
@@ -199,15 +250,20 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
                   seek(const Duration(seconds: -10));
                 },
                 iconSize: 30,
-                icon: const Icon(Icons.replay_10_rounded, color: Colors.white)),
+                icon: const Icon(
+                  Icons.replay_10_rounded,
+                  color: Colors.white,
+                )),
             buildBtnPlay(),
             IconButton(
                 onPressed: () {
                   seek(const Duration(seconds: 10));
                 },
                 iconSize: 30,
-                icon:
-                    const Icon(Icons.forward_10_rounded, color: Colors.white)),
+                icon: const Icon(
+                  Icons.forward_10_rounded,
+                  color: Colors.white,
+                )),
           ],
         ),
       );
@@ -231,10 +287,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
             Expanded(
               child: Slider(
                 value: min(
-                        _currentTime.inMilliseconds,
-                        _duration
-                            .inMilliseconds) // Ensure that the slider doesn't go over the duration
-                    .toDouble(),
+                  _currentTime.inMilliseconds,
+                  _duration.inMilliseconds,
+                ).toDouble(), // Ensure that the slider doesn't go over the duration
                 max: _duration.inMilliseconds.toDouble(),
                 activeColor: Colors.orangeAccent,
                 inactiveColor: Colors.grey,
@@ -248,6 +303,59 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
           ],
         ),
       );
+
+  Widget buildVolumeSlider() => kIsWeb
+      ? Column(
+          children: [
+            const SizedBox(
+              height: 10,
+            ),
+            MouseRegion(
+              onEnter: (_) => _animateExpand(open: true),
+              onExit: (_) => _animateExpand(open: false),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        _volume <= 0 || _isMuted
+                            ? Icons.volume_off
+                            : Icons.volume_up,
+                        color: Colors.white,
+                      ),
+                      onPressed: () => toggleMuted(),
+                    ),
+                    SizeTransition(
+                      sizeFactor: animation,
+                      axis: Axis.horizontal,
+                      child: SizedBox(
+                        height: 30.0,
+                        width: 80.0,
+                        child: SliderTheme(
+                          data: SliderThemeData(
+                              activeTrackColor: Colors.white,
+                              trackHeight: 2.0,
+                              thumbColor: Colors.white,
+                              overlayShape: SliderComponentShape.noOverlay,
+                              thumbShape: const RoundSliderThumbShape(
+                                enabledThumbRadius: 6.0,
+                              )),
+                          child: Slider(
+                            value: _isMuted ? 0 : _volume,
+                            onChanged: (value) => setVolume(value),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        )
+      : const SizedBox(height: 30);
 }
 
 extension DurationDisplay on Duration {

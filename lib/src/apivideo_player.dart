@@ -42,8 +42,8 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
     super.initState();
     _textureId = widget.controller.textureId;
     // In case controller is already created
-    widget.controller.isCreated.then((value) => {
-          if (value) {_updateAspectRatio()}
+    widget.controller.isCreated.then((bool isCreated) => {
+          if (isCreated) {_updateAspectRatio()}
         });
     widget.controller.addWidgetListener(_widgetListener);
     widget.controller.addEventsListener(_eventsListener);
@@ -78,28 +78,11 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
 
   void _updateAspectRatio() async {
     final size = await widget.controller.videoSize;
-
-    double newAspectRatio;
-    if (size != null) {
-      newAspectRatio = size.aspectRatio;
-    } else {
-      newAspectRatio = 1.0;
-    }
-
+    final double newAspectRatio = size?.aspectRatio ?? 1.0;
     if (newAspectRatio != _aspectRatio) {
       setState(() {
         _aspectRatio = newAspectRatio;
       });
     }
-  }
-}
-
-extension AspectRationSize on Size {
-  double get aspectRatio {
-    final double aspectRatio = width / height;
-    if (aspectRatio <= 0) {
-      return 1.0;
-    }
-    return aspectRatio;
   }
 }
