@@ -219,12 +219,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          kIsWeb
-              ? const SizedBox.shrink()
-              : Container(
-                  height: 30,
-                ),
-          kIsWeb ? buildVolumeSlider() : const SizedBox.shrink(),
+          buildVolumeSlider(),
           buildControls(),
           buildSlider(),
         ],
@@ -293,47 +288,56 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         ),
       );
 
-  Widget buildVolumeSlider() => MouseRegion(
-        onEnter: (_) => _toggleExpand(open: true),
-        onExit: (_) => _toggleExpand(open: false),
-        child: Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                icon: Icon(
-                  _volume > 0 ? Icons.volume_up : Icons.volume_off,
-                  color: Colors.white,
-                ),
-                onPressed: () => setVolume(_volume > 0 ? 0 : 1),
-              ),
-              SizeTransition(
-                sizeFactor: animation,
-                axis: Axis.horizontal,
-                child: SizedBox(
-                  height: 30.0,
-                  width: 120.0,
-                  child: SliderTheme(
-                    data: SliderThemeData(
-                        activeTrackColor: Colors.white,
-                        trackHeight: 2.0,
-                        thumbColor: Colors.white,
-                        overlayShape: SliderComponentShape.noOverlay,
-                        thumbShape: const RoundSliderThumbShape(
-                          enabledThumbRadius: 6.0,
-                        )),
-                    child: Slider(
-                      value: _volume,
-                      onChanged: (value) => setVolume(value),
+  Widget buildVolumeSlider() => kIsWeb
+      ? Column(
+          children: [
+            const SizedBox(
+              height: 10,
+            ),
+            MouseRegion(
+              onEnter: (_) => _toggleExpand(open: true),
+              onExit: (_) => _toggleExpand(open: false),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        _volume > 0 ? Icons.volume_up : Icons.volume_off,
+                        color: Colors.white,
+                      ),
+                      onPressed: () => setVolume(_volume > 0 ? 0 : 1),
                     ),
-                  ),
+                    SizeTransition(
+                      sizeFactor: animation,
+                      axis: Axis.horizontal,
+                      child: SizedBox(
+                        height: 30.0,
+                        width: 120.0,
+                        child: SliderTheme(
+                          data: SliderThemeData(
+                              activeTrackColor: Colors.white,
+                              trackHeight: 2.0,
+                              thumbColor: Colors.white,
+                              overlayShape: SliderComponentShape.noOverlay,
+                              thumbShape: const RoundSliderThumbShape(
+                                enabledThumbRadius: 6.0,
+                              )),
+                          child: Slider(
+                            value: _volume,
+                            onChanged: (value) => setVolume(value),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      );
+            ),
+          ],
+        )
+      : const SizedBox(height: 30);
 }
 
 extension DurationDisplay on Duration {
