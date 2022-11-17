@@ -79,6 +79,7 @@ class PlayerWidget extends StatefulWidget {
 class _PlayerWidgetState extends State<PlayerWidget> {
   String _currentTime = 'Get current time';
   String _duration = 'Get duration';
+  bool _hideControls = false;
 
   @override
   void initState() {
@@ -104,9 +105,13 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     return Column(
       children: <Widget>[
         SizedBox(
-            width: 400.0,
-            height: 300.0,
-            child: ApiVideoPlayer(controller: widget.controller)),
+          width: 400.0,
+          height: 300.0,
+          child: ApiVideoPlayer(
+            controller: widget.controller,
+            hideControls: _hideControls,
+          ),
+        ),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           IconButton(
             icon: const Icon(Icons.replay_10),
@@ -189,6 +194,12 @@ class _PlayerWidgetState extends State<PlayerWidget> {
             });
           },
         ),
+        TextButton(
+          child: Text('${_hideControls ? 'Show' : 'Hide'} controls'),
+          onPressed: () => setState(() {
+            _hideControls = !_hideControls;
+          }),
+        )
       ],
     );
   }

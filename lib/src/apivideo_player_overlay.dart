@@ -10,10 +10,12 @@ import '../apivideo_player.dart';
 
 class ApiVideoPlayerOverlay extends StatefulWidget {
   final ApiVideoPlayerController controller;
+  final bool hideControls;
 
   const ApiVideoPlayerOverlay({
     super.key,
     required this.controller,
+    this.hideControls = false,
   });
 
   @override
@@ -231,7 +233,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       );
 
   Widget buildOverlay() => Visibility(
-      visible: _isOverlayVisible,
+      visible: _isOverlayVisible && !widget.hideControls,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
