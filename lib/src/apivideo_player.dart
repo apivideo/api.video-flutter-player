@@ -86,13 +86,3 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
     }
   }
 }
-
-extension AspectRatioSize on Size {
-  double get aspectRatio {
-    final double aspectRatio = width / height;
-    if (aspectRatio <= 0) {
-      return 1.0;
-    }
-    return aspectRatio;
-  }
-}
