@@ -30,7 +30,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   @override
   Future<int?> initialize(bool autoplay) async {
     final textureCounter = ++_textureCounter;
-    _players[textureCounter] = Player(isCreated: false, autoplay: autoplay);
+    _players[textureCounter] = Player(autoplay: autoplay);
     return textureCounter;
   }
 
