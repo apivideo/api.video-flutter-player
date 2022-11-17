@@ -135,7 +135,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     _showOverlayForDuration();
   }
 
-  void setMuted() async {
+  void toggleMuted() async {
     final bool muted = await widget.controller.isMuted;
     await widget.controller.setIsMuted(!muted);
     _updateMuted();
@@ -325,7 +325,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                             : Icons.volume_up,
                         color: Colors.white,
                       ),
-                      onPressed: () => setMuted(),
+                      onPressed: () => toggleMuted(),
                     ),
                     SizeTransition(
                       sizeFactor: animation,
