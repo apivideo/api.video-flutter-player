@@ -9,14 +9,16 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import '../apivideo_player.dart';
 
 class ApiVideoPlayerOverlay extends StatefulWidget {
-  final ApiVideoPlayerController controller;
-  final bool hideControls;
-
   const ApiVideoPlayerOverlay({
     super.key,
     required this.controller,
     this.hideControls = false,
+    this.playerTheme,
   });
+
+  final ApiVideoPlayerController controller;
+  final bool hideControls;
+  final PlayerTheme? playerTheme;
 
   @override
   State<ApiVideoPlayerOverlay> createState() => _ApiVideoPlayerOverlayState();
@@ -80,6 +82,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   late AnimationController expandController;
   late Animation<double> animation;
 
+  late PlayerTheme _playerTheme;
+
   @override
   initState() {
     super.initState();
@@ -107,6 +111,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       parent: expandController,
       curve: Curves.fastLinearToSlowEaseIn,
     );
+
+    _playerTheme = widget.playerTheme ?? PlayerTheme();
   }
 
   @override
@@ -317,8 +323,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                   _duration.inMilliseconds,
                 ).toDouble(), // Ensure that the slider doesn't go over the duration
                 max: _duration.inMilliseconds.toDouble(),
-                activeColor: ApiVideoColors.orange,
-                inactiveColor: Colors.grey,
+                activeColor: _playerTheme.activeTimeSliderColor,
+                inactiveColor: _playerTheme.inactiveTimeSliderColor,
                 onChanged: (value) {
                   setCurrentTime(Duration(milliseconds: value.toInt()));
                 },
@@ -361,7 +367,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                         width: 80.0,
                         child: SliderTheme(
                           data: SliderThemeData(
-                              activeTrackColor: Colors.white,
+                              activeTrackColor:
+                                  _playerTheme.activeVolumeSliderColor,
                               trackHeight: 2.0,
                               thumbColor: Colors.white,
                               overlayShape: SliderComponentShape.noOverlay,
@@ -369,6 +376,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                                 enabledThumbRadius: 6.0,
                               )),
                           child: Slider(
+                            activeColor: _playerTheme.activeVolumeSliderColor,
+                            inactiveColor:
+                                _playerTheme.inactiveVolumeSliderColor,
                             value: _isMuted ? 0 : _volume,
                             onChanged: (value) => setVolume(value),
                           ),

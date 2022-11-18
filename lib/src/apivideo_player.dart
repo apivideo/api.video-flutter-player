@@ -1,5 +1,6 @@
 import 'package:apivideo_player/src/apivideo_player_overlay.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import 'apivideo_player_controller.dart';
 import 'apivideo_player_platform_interface.dart';
@@ -13,10 +14,12 @@ class ApiVideoPlayer extends StatefulWidget {
     super.key,
     required this.controller,
     this.hideControls = false,
+    this.playerTheme,
   });
 
   final ApiVideoPlayerController controller;
   final bool hideControls;
+  final PlayerTheme? playerTheme;
 
   @override
   State<ApiVideoPlayer> createState() => _ApiVideoPlayerState();
@@ -78,6 +81,7 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
                   child: ApiVideoPlayerOverlay(
                     controller: widget.controller,
                     hideControls: widget.hideControls,
+                    playerTheme: widget.playerTheme,
                   ),
                 ),
               ],
@@ -93,4 +97,20 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
       });
     }
   }
+}
+
+class PlayerTheme {
+  PlayerTheme({
+    this.controlsColor = Colors.white,
+    this.activeTimeSliderColor = ApiVideoColors.orange,
+    this.inactiveTimeSliderColor = Colors.grey,
+    this.activeVolumeSliderColor = Colors.white,
+    this.inactiveVolumeSliderColor = Colors.grey,
+  });
+
+  Color? controlsColor;
+  Color? activeTimeSliderColor;
+  Color? inactiveTimeSliderColor;
+  Color? activeVolumeSliderColor;
+  Color? inactiveVolumeSliderColor;
 }
