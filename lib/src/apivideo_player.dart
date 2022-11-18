@@ -9,9 +9,14 @@ ApiVideoPlayerPlatform get _playerPlatform {
 }
 
 class ApiVideoPlayer extends StatefulWidget {
-  const ApiVideoPlayer({super.key, required this.controller});
+  const ApiVideoPlayer({
+    super.key,
+    required this.controller,
+    this.hideControls = false,
+  });
 
   final ApiVideoPlayerController controller;
+  final bool hideControls;
 
   @override
   State<ApiVideoPlayer> createState() => _ApiVideoPlayerState();
@@ -70,8 +75,11 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
               children: <Widget>[
                 _playerPlatform.buildView(_textureId),
                 Positioned.fill(
-                    child:
-                        ApiVideoPlayerOverlay(controller: widget.controller)),
+                  child: ApiVideoPlayerOverlay(
+                    controller: widget.controller,
+                    hideControls: widget.hideControls,
+                  ),
+                ),
               ],
             )),
       );
