@@ -27,36 +27,38 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Builder(builder: (context) {
         return Scaffold(
-          body: Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(30.0),
-                child: TextField(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Enter a video id',
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: TextField(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Enter a video id',
+                      ),
+                      controller: _textEditingController,
+                      onSubmitted: (value) async {
+                        if (_controller == null) {
+                          setState(() {
+                            _controller = ApiVideoPlayerController(
+                              videoOptions: VideoOptions(videoId: value),
+                            );
+                          });
+                        } else {
+                          _controller
+                              ?.setVideoOptions(VideoOptions(videoId: value));
+                        }
+                      },
+                    ),
                   ),
-                  controller: _textEditingController,
-                  onSubmitted: (value) async {
-                    if (_controller == null) {
-                      setState(() {
-                        _controller = ApiVideoPlayerController(
-                          videoOptions: VideoOptions(videoId: value),
-                        );
-                      });
-                    } else {
-                      _controller
-                          ?.setVideoOptions(VideoOptions(videoId: value));
-                    }
-                  },
-                ),
+                  _controller != null
+                      ? PlayerWidget(controller: _controller!)
+                      : const SizedBox.shrink(),
+                ],
               ),
-              _controller != null
-                  ? PlayerWidget(
-                      controller: _controller!,
-                    )
-                  : const SizedBox.shrink(),
-            ],
+            ),
           ),
         );
       }),
