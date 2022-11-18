@@ -102,6 +102,22 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     super.dispose();
   }
 
+  void _toggleLooping() {
+    widget.controller.isLooping.then(
+      (bool isLooping) {
+        widget.controller.setIsLooping(!isLooping);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Your video is ${isLooping ? 'not on loop anymore' : 'on loop'}.',
+            ),
+            backgroundColor: Colors.blueAccent,
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -157,21 +173,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
             ),
             IconButton(
               icon: const Icon(Icons.loop),
-              onPressed: () {
-                widget.controller.isLooping.then(
-                  (bool value) {
-                    widget.controller.setIsLooping(!value);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Your video is ${value ? 'not on loop anymore' : 'on loop'}.',
-                        ),
-                        backgroundColor: Colors.blueAccent,
-                      ),
-                    );
-                  },
-                );
-              },
+              onPressed: () => _toggleLooping(),
             ),
           ],
         ),
