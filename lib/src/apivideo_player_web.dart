@@ -133,8 +133,12 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       Utils.callJsMethod(textureId: textureId, jsMethodName: 'pause');
 
   @override
-  Future<void> seek(int textureId, int offset) async => Utils.callJsMethod(
-      textureId: textureId, jsMethodName: 'seek', args: [offset ~/ 1000]);
+  Future<void> seek(int textureId, int offset) async {
+    _streamControllers[textureId]!
+        .add(PlayerEvent(type: PlayerEventType.seekStarted));
+    return Utils.callJsMethod(
+        textureId: textureId, jsMethodName: 'seek', args: [offset ~/ 1000]);
+  }
 
   @override
   Future<double> getVolume(int textureId) => Utils.getPromiseFromJs<double>(

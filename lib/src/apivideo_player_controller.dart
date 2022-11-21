@@ -216,11 +216,15 @@ class ApiVideoPlayerController {
         break;
       case PlayerEventType.seek:
         for (var listener in [...eventsListeners]) {
-          if (listener.onSeekStarted != null) {
-            listener.onSeekStarted!();
-          }
           if (listener.onSeek != null) {
             listener.onSeek!();
+          }
+        }
+        break;
+      case PlayerEventType.seekStarted:
+        for (var listener in [...eventsListeners]) {
+          if (listener.onSeekStarted != null) {
+            listener.onSeekStarted!();
           }
         }
         break;
