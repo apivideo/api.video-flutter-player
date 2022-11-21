@@ -45,7 +45,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       },
       onSeek: () async {
         await _updateCurrentTime();
-        if (_currentTime.inSeconds < _duration.inSeconds) {
+      },
+      onSeekStarted: () async {
+        if (_didEnd) {
           setState(() {
             _didEnd = false;
           });
