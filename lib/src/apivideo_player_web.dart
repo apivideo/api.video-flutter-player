@@ -108,12 +108,21 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
-  Future<void> setCurrentTime(int textureId, int currentTime) async =>
-      Utils.callJsMethod(
-        textureId: textureId,
-        jsMethodName: 'setCurrentTime',
-        args: [currentTime ~/ 1000],
+  Future<void> setCurrentTime(int textureId, int currentTime) async {
+    if (_players[textureId] == null) {
+      throw Exception(
+        'No player found for this texture id: $textureId. Cannot seek.',
       );
+    }
+    _players[textureId]!
+        .playerEvents!
+        .add(PlayerEvent(type: PlayerEventType.seekStarted));
+    Utils.callJsMethod(
+      textureId: textureId,
+      jsMethodName: 'setCurrentTime',
+      args: [currentTime ~/ 1000],
+    );
+  }
 
   @override
   Future<int> getDuration(int textureId) async {
