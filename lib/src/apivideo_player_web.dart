@@ -134,7 +134,13 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<void> seek(int textureId, int offset) async {
-    _streamControllers[textureId]!
+    if (_players[textureId] == null) {
+      throw Exception(
+        'No player found for this texture id: $textureId. Cannot seek.',
+      );
+    }
+    _players[textureId]!
+        .playerEvents!
         .add(PlayerEvent(type: PlayerEventType.seekStarted));
     return Utils.callJsMethod(
         textureId: textureId, jsMethodName: 'seek', args: [offset ~/ 1000]);
