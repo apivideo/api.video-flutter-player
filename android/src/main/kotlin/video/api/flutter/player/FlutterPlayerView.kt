@@ -140,7 +140,7 @@ class FlutterPlayerView(
 
     fun seek(offset: Float) {
         eventSink?.success(mapOf("type" to "seekStarted"))
-        playerController.seek(float)
+        playerController.seek(offset)
     }
 
     fun release() {
