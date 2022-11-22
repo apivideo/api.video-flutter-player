@@ -96,6 +96,7 @@ class FlutterPlayerView: NSObject, FlutterStreamHandler {
             playerController.currentTime
         }
         set {
+            self.eventSink?(["type": "seekStarted"])
             playerController.seek(to: newValue)
         }
     }
@@ -154,6 +155,7 @@ class FlutterPlayerView: NSObject, FlutterStreamHandler {
     }
 
     func seek(offset: CMTime) {
+        self.eventSink?(["type": "seekStarted"])
         playerController.seek(offset: offset)
         textureRegistry.textureFrameAvailable(textureId) // render frame of the new scene
     }

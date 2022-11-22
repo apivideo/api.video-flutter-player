@@ -134,7 +134,7 @@ class ApiVideoPlayerController {
 
     await _playerPlatform.create(_textureId, _initialVideoOptions);
 
-     for (var listener in [...widgetListeners]) {
+    for (var listener in [...widgetListeners]) {
       if (listener.onTextureReady != null) {
         listener.onTextureReady!();
       }
@@ -221,6 +221,13 @@ class ApiVideoPlayerController {
           }
         }
         break;
+      case PlayerEventType.seekStarted:
+        for (var listener in [...eventsListeners]) {
+          if (listener.onSeekStarted != null) {
+            listener.onSeekStarted!();
+          }
+        }
+        break;
       case PlayerEventType.ended:
         for (var listener in [...eventsListeners]) {
           if (listener.onEnd != null) {
@@ -240,6 +247,7 @@ class ApiVideoPlayerEventsListener {
   final VoidCallback? onPlay;
   final VoidCallback? onPause;
   final VoidCallback? onSeek;
+  final VoidCallback? onSeekStarted;
   final VoidCallback? onEnd;
   final Function(Object)? onError;
 
@@ -248,6 +256,7 @@ class ApiVideoPlayerEventsListener {
       this.onPlay,
       this.onPause,
       this.onSeek,
+      this.onSeekStarted,
       this.onEnd,
       this.onError});
 }

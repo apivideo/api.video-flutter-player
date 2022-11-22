@@ -125,6 +125,7 @@ class FlutterPlayerView(
     var currentTime: Float
         get() = playerController.currentTime
         set(value) {
+            eventSink?.success(mapOf("type" to "seekStarted"))
             playerController.currentTime = value
         }
 
@@ -137,8 +138,9 @@ class FlutterPlayerView(
     fun play() = playerController.play()
     fun pause() = playerController.pause()
 
-    fun seek(float: Float) {
-        playerController.seek(float)
+    fun seek(offset: Float) {
+        eventSink?.success(mapOf("type" to "seekStarted"))
+        playerController.seek(offset)
     }
 
     fun release() {

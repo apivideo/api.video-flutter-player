@@ -171,6 +171,9 @@ enum PlayerEventType {
   /// The video has been seek.
   seek,
 
+  /// The video seek has started.
+  seekStarted,
+
   /// The playback has been ended.
   ended,
 

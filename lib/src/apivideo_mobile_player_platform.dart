@@ -204,6 +204,8 @@ class ApiVideoMobilePlayer extends ApiVideoPlayerPlatform {
           return PlayerEvent(type: PlayerEventType.paused);
         case 'seek':
           return PlayerEvent(type: PlayerEventType.seek);
+        case 'seekStarted':
+          return PlayerEvent(type: PlayerEventType.seekStarted);
         case 'ended':
           return PlayerEvent(type: PlayerEventType.ended);
         default:

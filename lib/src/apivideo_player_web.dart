@@ -108,12 +108,21 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
-  Future<void> setCurrentTime(int textureId, int currentTime) async =>
-      Utils.callJsMethod(
-        textureId: textureId,
-        jsMethodName: 'setCurrentTime',
-        args: [currentTime ~/ 1000],
+  Future<void> setCurrentTime(int textureId, int currentTime) async {
+    if (_players[textureId] == null) {
+      throw Exception(
+        'No player found for this texture id: $textureId. Cannot seek.',
       );
+    }
+    _players[textureId]!
+        .playerEvents!
+        .add(PlayerEvent(type: PlayerEventType.seekStarted));
+    Utils.callJsMethod(
+      textureId: textureId,
+      jsMethodName: 'setCurrentTime',
+      args: [currentTime ~/ 1000],
+    );
+  }
 
   @override
   Future<int> getDuration(int textureId) async {
@@ -133,8 +142,18 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       Utils.callJsMethod(textureId: textureId, jsMethodName: 'pause');
 
   @override
-  Future<void> seek(int textureId, int offset) async => Utils.callJsMethod(
-      textureId: textureId, jsMethodName: 'seek', args: [offset ~/ 1000]);
+  Future<void> seek(int textureId, int offset) async {
+    if (_players[textureId] == null) {
+      throw Exception(
+        'No player found for this texture id: $textureId. Cannot seek.',
+      );
+    }
+    _players[textureId]!
+        .playerEvents!
+        .add(PlayerEvent(type: PlayerEventType.seekStarted));
+    return Utils.callJsMethod(
+        textureId: textureId, jsMethodName: 'seek', args: [offset ~/ 1000]);
+  }
 
   @override
   Future<double> getVolume(int textureId) => Utils.getPromiseFromJs<double>(

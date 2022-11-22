@@ -34,6 +34,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         _startRemainingTimeUpdates();
         setState(() {
           _isPlaying = true;
+          _didEnd = false;
         });
       },
       onPause: () {
@@ -45,16 +46,24 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       onSeek: () {
         _updateCurrentTime();
       },
+      onSeekStarted: () {
+        if (_didEnd) {
+          setState(() {
+            _didEnd = false;
+          });
+        }
+      },
       onEnd: () {
         _stopRemainingTimeUpdates();
         setState(() {
           _isPlaying = false;
+          _didEnd = true;
         });
       },
     );
   }
-
   bool _isPlaying = false;
+  bool _didEnd = false;
 
   late ApiVideoPlayerEventsListener _listener;
 
@@ -116,6 +125,11 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   void play() {
     widget.controller.play();
     _showOverlayForDuration();
+  }
+
+  void replay() async {
+    await widget.controller.setCurrentTime(const Duration(seconds: 0));
+    play();
   }
 
   void seek(Duration duration) {
@@ -252,11 +266,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                   seek(const Duration(seconds: -10));
                 },
                 iconSize: 30,
-                icon: const Icon(
-                  Icons.replay_10_rounded,
-                  color: Colors.white,
-                )),
-            buildBtnPlay(),
+                icon: const Icon(Icons.replay_10_rounded, color: Colors.white)),
+            buildBtnVideoControl(),
             IconButton(
                 onPressed: () {
                   seek(const Duration(seconds: 10));
@@ -270,6 +281,10 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         ),
       );
 
+  Widget buildBtnVideoControl() {
+    return _didEnd ? buildBtnReplay() : buildBtnPlay();
+  }
+
   Widget buildBtnPlay() {
     return IconButton(
         onPressed: () {
@@ -279,6 +294,15 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         icon: _isPlaying
             ? const Icon(ApiVideoIcons.pause_primary, color: Colors.white)
             : const Icon(ApiVideoIcons.play_primary, color: Colors.white));
+  }
+
+  Widget buildBtnReplay() {
+    return IconButton(
+        onPressed: () {
+          replay();
+        },
+        iconSize: 60,
+        icon: const Icon(ApiVideoIcons.replay_primary, color: Colors.white));
   }
 
   Widget buildSlider() => Container(
