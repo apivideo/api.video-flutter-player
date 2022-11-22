@@ -43,10 +43,10 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
           _isPlaying = false;
         });
       },
-      onSeek: () async {
-        await _updateCurrentTime();
+      onSeek: () {
+        _updateCurrentTime();
       },
-      onSeekStarted: () async {
+      onSeekStarted: () {
         if (_didEnd) {
           setState(() {
             _didEnd = false;
@@ -197,7 +197,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     });
   }
 
-  Future<void> _updateCurrentTime() async {
+  void _updateCurrentTime() async {
     Duration currentTime = await widget.controller.currentTime;
     setState(() {
       _currentTime = currentTime;
