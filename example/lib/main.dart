@@ -25,6 +25,14 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        // textTheme: TextTheme(labelLarge: TextStyle(color: Color(0xFFFA5B30))),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: const Color(0xFFFA5B30),
+          ),
+        ),
+      ),
       home: Builder(builder: (context) {
         return Scaffold(
           body: SafeArea(
