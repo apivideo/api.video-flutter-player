@@ -13,12 +13,12 @@ class ApiVideoPlayerOverlay extends StatefulWidget {
     super.key,
     required this.controller,
     this.hideControls = false,
-    this.playerTheme,
+    required this.theme,
   });
 
   final ApiVideoPlayerController controller;
   final bool hideControls;
-  final PlayerTheme? playerTheme;
+  final PlayerTheme theme;
 
   @override
   State<ApiVideoPlayerOverlay> createState() => _ApiVideoPlayerOverlayState();
@@ -82,8 +82,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   late AnimationController expandController;
   late Animation<double> animation;
 
-  late PlayerTheme _playerTheme;
-
   @override
   initState() {
     super.initState();
@@ -111,8 +109,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       parent: expandController,
       curve: Curves.fastLinearToSlowEaseIn,
     );
-
-    _playerTheme = widget.playerTheme ?? PlayerTheme();
   }
 
   @override
@@ -272,16 +268,19 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                   seek(const Duration(seconds: -10));
                 },
                 iconSize: 30,
-                icon: const Icon(Icons.replay_10_rounded, color: Colors.white)),
+                icon: Icon(
+                  Icons.replay_10_rounded,
+                  color: widget.theme.controlsColor,
+                )),
             buildBtnVideoControl(),
             IconButton(
                 onPressed: () {
                   seek(const Duration(seconds: 10));
                 },
                 iconSize: 30,
-                icon: const Icon(
+                icon: Icon(
                   Icons.forward_10_rounded,
-                  color: Colors.white,
+                  color: widget.theme.controlsColor,
                 )),
           ],
         ),
@@ -291,25 +290,31 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     return _didEnd ? buildBtnReplay() : buildBtnPlay();
   }
 
-  Widget buildBtnPlay() {
-    return IconButton(
+  Widget buildBtnPlay() => IconButton(
         onPressed: () {
           _isPlaying ? pause() : play();
         },
         iconSize: 60,
         icon: _isPlaying
-            ? const Icon(ApiVideoIcons.pause_primary, color: Colors.white)
-            : const Icon(ApiVideoIcons.play_primary, color: Colors.white));
-  }
+            ? Icon(
+                ApiVideoIcons.pause_primary,
+                color: widget.theme.controlsColor,
+              )
+            : Icon(
+                ApiVideoIcons.play_primary,
+                color: widget.theme.controlsColor,
+              ),
+      );
 
-  Widget buildBtnReplay() {
-    return IconButton(
-        onPressed: () {
-          replay();
-        },
-        iconSize: 60,
-        icon: const Icon(ApiVideoIcons.replay_primary, color: Colors.white));
-  }
+  Widget buildBtnReplay() => IconButton(
+      onPressed: () {
+        replay();
+      },
+      iconSize: 60,
+      icon: Icon(
+        ApiVideoIcons.replay_primary,
+        color: widget.theme.controlsColor,
+      ));
 
   Widget buildSlider() => Container(
         height: 60,
@@ -323,8 +328,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                   _duration.inMilliseconds,
                 ).toDouble(), // Ensure that the slider doesn't go over the duration
                 max: _duration.inMilliseconds.toDouble(),
-                activeColor: _playerTheme.activeTimeSliderColor,
-                inactiveColor: _playerTheme.inactiveTimeSliderColor,
+                activeColor: widget.theme.activeTimeSliderColor,
+                inactiveColor: widget.theme.inactiveTimeSliderColor,
                 onChanged: (value) {
                   setCurrentTime(Duration(milliseconds: value.toInt()));
                 },
@@ -355,7 +360,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                         _volume <= 0 || _isMuted
                             ? Icons.volume_off
                             : Icons.volume_up,
-                        color: Colors.white,
+                        color: widget.theme.controlsColor,
                       ),
                       onPressed: () => toggleMuted(),
                     ),
@@ -368,7 +373,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                         child: SliderTheme(
                           data: SliderThemeData(
                               activeTrackColor:
-                                  _playerTheme.activeVolumeSliderColor,
+                                  widget.theme.activeVolumeSliderColor,
                               trackHeight: 2.0,
                               thumbColor: Colors.white,
                               overlayShape: SliderComponentShape.noOverlay,
@@ -376,9 +381,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                                 enabledThumbRadius: 6.0,
                               )),
                           child: Slider(
-                            activeColor: _playerTheme.activeVolumeSliderColor,
+                            activeColor: widget.theme.activeVolumeSliderColor,
                             inactiveColor:
-                                _playerTheme.inactiveVolumeSliderColor,
+                                widget.theme.inactiveVolumeSliderColor,
                             value: _isMuted ? 0 : _volume,
                             onChanged: (value) => setVolume(value),
                           ),

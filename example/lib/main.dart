@@ -26,7 +26,6 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        // textTheme: TextTheme(labelLarge: TextStyle(color: Color(0xFFFA5B30))),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             foregroundColor: const Color(0xFFFA5B30),
@@ -211,7 +210,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
           onPressed: () => setState(() {
             _hideControls = !_hideControls;
           }),
-        )
+        ),
       ],
     );
   }
