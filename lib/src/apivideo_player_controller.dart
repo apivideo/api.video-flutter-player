@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:apivideo_player/apivideo_player.dart';
+import 'package:apivideo_player/src/apivideo_player_life_cycle_observer.dart';
 import 'package:apivideo_player/src/apivideo_types.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
@@ -22,6 +23,8 @@ class ApiVideoPlayerController {
   StreamSubscription<dynamic>? _eventSubscription;
   List<ApiVideoPlayerEventsListener> eventsListeners = [];
   List<ApiVideoPlayerWidgetListener> widgetListeners = [];
+
+  PlayerLifeCycleObserver? _lifeCycleObserver;
 
   /// This is just exposed for testing. Do not use it.
   @visibleForTesting
@@ -128,6 +131,9 @@ class ApiVideoPlayerController {
     _textureId = await _playerPlatform.initialize(_initialAutoplay) ??
         kUninitializedTextureId;
 
+    _lifeCycleObserver = PlayerLifeCycleObserver(this);
+    _lifeCycleObserver?.initialize();
+
     _eventSubscription = _playerPlatform
         .playerEventsFor(_textureId)
         .listen(_eventListener, onError: _errorListener);
@@ -155,6 +161,7 @@ class ApiVideoPlayerController {
     await _eventSubscription?.cancel();
     eventsListeners.clear();
     await _playerPlatform.dispose(_textureId);
+    _lifeCycleObserver?.dispose();
     return;
   }
 

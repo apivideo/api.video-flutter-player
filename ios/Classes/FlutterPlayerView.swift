@@ -32,7 +32,7 @@ class FlutterPlayerView: NSObject, FlutterStreamHandler {
         super.init()
         eventChannel.setStreamHandler(self)
 
-        events.didPrepare = {
+        events.didReady = {
             self.playerController.addOutput(output: self.playerTexture.videoOutput)
             // Hack to load the first image. We don't need it in case of autoplay
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
