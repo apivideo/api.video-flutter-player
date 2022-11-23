@@ -14,7 +14,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final TextEditingController _textEditingController =
-      TextEditingController(text: '');
+      TextEditingController(text: 'vi5dvUTsWpJ0J4TraUhf6pki');
   ApiVideoPlayerController? _controller;
 
   @override
@@ -50,8 +50,7 @@ class _MyAppState extends State<MyApp> {
                         if (_controller == null) {
                           setState(() {
                             _controller = ApiVideoPlayerController(
-                                videoOptions: VideoOptions(videoId: value),
-                                allowBackgroundPlayback: false);
+                                videoOptions: VideoOptions(videoId: value));
                           });
                         } else {
                           _controller
