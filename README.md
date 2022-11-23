@@ -21,6 +21,9 @@ your app.
     - [2. The ApiVideoPlayerController](#2-the-apivideoplayercontroller)
   - [Methods](#methods)
   - [Properties](#properties)
+  - [Events listener](#events-listener)
+    - [Method 1](#method-1)
+    - [Method 2](#method-2)
 - [Dependencies](#dependencies)
 - [Sample application](#sample-application)
 - [FAQ](#faq)
@@ -114,9 +117,67 @@ Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutte
 | setCurrentTime(Duration currentTime)       | Set the current playback time                                                 |
 | setVideoOptions(VideoOptions videoOptions) | Set the video options                                                         |
 
+Example:
+
+```dart
+final ApiVideoPlayerController controller = ApiVideoPlayerController(videoOptions: VideoOptions(videoId: 'VIDEO_ID'));
+controller.initialize();
+controller.play(); // Play the video
+```
+
 ## Properties
 
 Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart) has been intenciated, you can access the video player's properties:
+
+| Property     | Type                  | Description                                     |
+| ------------ | --------------------- | ----------------------------------------------- |
+| isCreated    | Future\<bool>         | Check if the player has been created            |
+| isPlaying    | Future\<bool>         | Check whether the video is playing              |
+| videoOptions | Future\<VideoOptions> | Retrieve the current video options              |
+| currentTime  | Future\<Duration>     | Retrieve the current playback time of the video |
+| duration     | Future\<Duration>     | Retrieve the duration of the video              |
+| autoplay     | Future\<bool>         | Check whether the video is autoplayed           |
+| isMuted      | Future\<bool>         | Check whether the video is muted                |
+| isLooping    | Future\<bool>         | Check whether the video is in loop mode         |
+| volume       | Future\<double>       | Retrieve the current volume                     |
+| videoSize    | Future\<Size?>        | Retrieve the current video size                 |
+
+Example:
+
+```dart
+final ApiVideoPlayerController controller = ApiVideoPlayerController(videoOptions: VideoOptions(videoId: 'VIDEO_ID'));
+controller.initialize();
+final bool isMuted = await controller.isMuted;
+```
+
+## Events listener
+
+### Method 1
+
+When you instanciate a new [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart), you can bind callbacks to some events:
+
+```dart
+final ApiVideoPlayerController controller = ApiVideoPlayerController(
+    videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+    onPlay: () => print('PLAY'),
+    onPause: () => print('PAUSE'),
+  );
+```
+
+### Method 2
+
+Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart) has been intenciated, you can bind callbacks to some events:
+
+```dart
+final ApiVideoPlayerController controller = ApiVideoPlayerController(videoOptions: VideoOptions(videoId: 'VIDEO_ID'));
+controller.initialize();
+controller.addEventsListener(
+    ApiVideoPlayerEventsListener(
+      onPlay: () => print('PLAY'),
+      onPause: () => print('PAUSE'),
+    ),
+  );
+```
 
 # Dependencies
 
