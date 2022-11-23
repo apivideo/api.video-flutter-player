@@ -14,7 +14,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final TextEditingController _textEditingController =
-      TextEditingController(text: 'vi5dvUTsWpJ0J4TraUhf6pki');
+      TextEditingController(text: '');
   ApiVideoPlayerController? _controller;
 
   @override
