@@ -9,14 +9,16 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import '../apivideo_player.dart';
 
 class ApiVideoPlayerOverlay extends StatefulWidget {
-  final ApiVideoPlayerController controller;
-  final bool hideControls;
-
   const ApiVideoPlayerOverlay({
     super.key,
     required this.controller,
     this.hideControls = false,
+    required this.theme,
   });
+
+  final ApiVideoPlayerController controller;
+  final bool hideControls;
+  final PlayerTheme theme;
 
   @override
   State<ApiVideoPlayerOverlay> createState() => _ApiVideoPlayerOverlayState();
@@ -266,16 +268,19 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                   seek(const Duration(seconds: -10));
                 },
                 iconSize: 30,
-                icon: const Icon(Icons.replay_10_rounded, color: Colors.white)),
+                icon: Icon(
+                  Icons.replay_10_rounded,
+                  color: widget.theme.controlsColor,
+                )),
             buildBtnVideoControl(),
             IconButton(
                 onPressed: () {
                   seek(const Duration(seconds: 10));
                 },
                 iconSize: 30,
-                icon: const Icon(
+                icon: Icon(
                   Icons.forward_10_rounded,
-                  color: Colors.white,
+                  color: widget.theme.controlsColor,
                 )),
           ],
         ),
@@ -285,25 +290,31 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     return _didEnd ? buildBtnReplay() : buildBtnPlay();
   }
 
-  Widget buildBtnPlay() {
-    return IconButton(
+  Widget buildBtnPlay() => IconButton(
         onPressed: () {
           _isPlaying ? pause() : play();
         },
         iconSize: 60,
         icon: _isPlaying
-            ? const Icon(ApiVideoIcons.pause_primary, color: Colors.white)
-            : const Icon(ApiVideoIcons.play_primary, color: Colors.white));
-  }
+            ? Icon(
+                ApiVideoIcons.pause_primary,
+                color: widget.theme.controlsColor,
+              )
+            : Icon(
+                ApiVideoIcons.play_primary,
+                color: widget.theme.controlsColor,
+              ),
+      );
 
-  Widget buildBtnReplay() {
-    return IconButton(
-        onPressed: () {
-          replay();
-        },
-        iconSize: 60,
-        icon: const Icon(ApiVideoIcons.replay_primary, color: Colors.white));
-  }
+  Widget buildBtnReplay() => IconButton(
+      onPressed: () {
+        replay();
+      },
+      iconSize: 60,
+      icon: Icon(
+        ApiVideoIcons.replay_primary,
+        color: widget.theme.controlsColor,
+      ));
 
   Widget buildSlider() => Container(
         height: 60,
@@ -317,8 +328,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                   _duration.inMilliseconds,
                 ).toDouble(), // Ensure that the slider doesn't go over the duration
                 max: _duration.inMilliseconds.toDouble(),
-                activeColor: Colors.orangeAccent,
-                inactiveColor: Colors.grey,
+                activeColor: widget.theme.activeTimeSliderColor,
+                inactiveColor: widget.theme.inactiveTimeSliderColor,
                 onChanged: (value) {
                   setCurrentTime(Duration(milliseconds: value.toInt()));
                 },
@@ -349,7 +360,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                         _volume <= 0 || _isMuted
                             ? Icons.volume_off
                             : Icons.volume_up,
-                        color: Colors.white,
+                        color: widget.theme.controlsColor,
                       ),
                       onPressed: () => toggleMuted(),
                     ),
@@ -361,7 +372,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                         width: 80.0,
                         child: SliderTheme(
                           data: SliderThemeData(
-                              activeTrackColor: Colors.white,
+                              activeTrackColor:
+                                  widget.theme.activeVolumeSliderColor,
                               trackHeight: 2.0,
                               thumbColor: Colors.white,
                               overlayShape: SliderComponentShape.noOverlay,
@@ -369,6 +381,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                                 enabledThumbRadius: 6.0,
                               )),
                           child: Slider(
+                            activeColor: widget.theme.activeVolumeSliderColor,
+                            inactiveColor:
+                                widget.theme.inactiveVolumeSliderColor,
                             value: _isMuted ? 0 : _volume,
                             onChanged: (value) => setVolume(value),
                           ),
@@ -395,4 +410,17 @@ extension DurationDisplay on Duration {
       return "$twoDigitMinutes:$twoDigitSeconds";
     }
   }
+}
+
+class ApiVideoColors {
+  static const MaterialColor orange = MaterialColor(
+    0xFFFA5B30,
+    <int, Color>{
+      100: Color(0xFFFBDDD4),
+      200: Color(0xFFFFD1C5),
+      300: Color(0xFFFFB39E),
+      400: Color(0xFFFA5B30),
+      500: Color(0xFFE53101),
+    },
+  );
 }

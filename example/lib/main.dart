@@ -25,38 +25,47 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: const Color(0xFFFA5B30),
+          ),
+        ),
+      ),
       home: Builder(builder: (context) {
         return Scaffold(
-          body: Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(30.0),
-                child: TextField(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Enter a video id',
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: TextField(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Enter a video id',
+                      ),
+                      controller: _textEditingController,
+                      onSubmitted: (value) async {
+                        if (_controller == null) {
+                          setState(() {
+                            _controller = ApiVideoPlayerController(
+                              videoOptions: VideoOptions(videoId: value),
+                            );
+                          });
+                        } else {
+                          _controller
+                              ?.setVideoOptions(VideoOptions(videoId: value));
+                        }
+                      },
+                    ),
                   ),
-                  controller: _textEditingController,
-                  onSubmitted: (value) async {
-                    if (_controller == null) {
-                      setState(() {
-                        _controller = ApiVideoPlayerController(
-                          videoOptions: VideoOptions(videoId: value),
-                        );
-                      });
-                    } else {
-                      _controller
-                          ?.setVideoOptions(VideoOptions(videoId: value));
-                    }
-                  },
-                ),
+                  _controller != null
+                      ? PlayerWidget(controller: _controller!)
+                      : const SizedBox.shrink(),
+                ],
               ),
-              _controller != null
-                  ? PlayerWidget(
-                      controller: _controller!,
-                    )
-                  : const SizedBox.shrink(),
-            ],
+            ),
           ),
         );
       }),
@@ -98,6 +107,22 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   void dispose() {
     widget.controller.dispose();
     super.dispose();
+  }
+
+  void _toggleLooping() {
+    widget.controller.isLooping.then(
+      (bool isLooping) {
+        widget.controller.setIsLooping(!isLooping);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Your video is ${isLooping ? 'not on loop anymore' : 'on loop'}.',
+            ),
+            backgroundColor: Colors.blueAccent,
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -155,21 +180,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
             ),
             IconButton(
               icon: const Icon(Icons.loop),
-              onPressed: () {
-                widget.controller.isLooping.then(
-                  (bool value) {
-                    widget.controller.setIsLooping(!value);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Your video is ${value ? 'not on loop anymore' : 'on loop'}.',
-                        ),
-                        backgroundColor: Colors.blueAccent,
-                      ),
-                    );
-                  },
-                );
-              },
+              onPressed: () => _toggleLooping(),
             ),
           ],
         ),
@@ -199,7 +210,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
           onPressed: () => setState(() {
             _hideControls = !_hideControls;
           }),
-        )
+        ),
       ],
     );
   }
