@@ -50,8 +50,8 @@ class _MyAppState extends State<MyApp> {
                         if (_controller == null) {
                           setState(() {
                             _controller = ApiVideoPlayerController(
-                              videoOptions: VideoOptions(videoId: value),
-                            );
+                                videoOptions: VideoOptions(videoId: value),
+                                allowBackgroundPlayback: false);
                           });
                         } else {
                           _controller
