@@ -16,7 +16,6 @@ ApiVideoPlayerPlatform get _playerPlatform {
 class ApiVideoPlayerController {
   final VideoOptions _initialVideoOptions;
   final bool _initialAutoplay;
-  final bool _initialAllowBackgroundPlayback;
 
   static const int kUninitializedTextureId = -1;
   int _textureId = kUninitializedTextureId;
@@ -34,14 +33,12 @@ class ApiVideoPlayerController {
   ApiVideoPlayerController({
     required VideoOptions videoOptions,
     bool autoplay = false,
-    bool allowBackgroundPlayback = false,
     VoidCallback? onReady,
     VoidCallback? onPlay,
     VoidCallback? onPause,
     VoidCallback? onEnd,
     Function(Object)? onError,
   })  : _initialAutoplay = autoplay,
-        _initialAllowBackgroundPlayback = allowBackgroundPlayback,
         _initialVideoOptions = videoOptions {
     eventsListeners.add(ApiVideoPlayerEventsListener(
         onReady: onReady,
@@ -54,10 +51,8 @@ class ApiVideoPlayerController {
   ApiVideoPlayerController.fromListener(
       {required VideoOptions videoOptions,
       bool autoplay = false,
-      bool allowBackgroundPlayback = false,
       ApiVideoPlayerEventsListener? listener})
       : _initialAutoplay = autoplay,
-        _initialAllowBackgroundPlayback = allowBackgroundPlayback,
         _initialVideoOptions = videoOptions {
     if (listener != null) {
       eventsListeners.add(listener);
@@ -136,11 +131,7 @@ class ApiVideoPlayerController {
     _textureId = await _playerPlatform.initialize(_initialAutoplay) ??
         kUninitializedTextureId;
 
-    final bool allowBackgroundPlayback =
-        _initialAllowBackgroundPlayback ?? false;
-    if (!allowBackgroundPlayback) {
-      _lifeCycleObserver = PlayerLifeCycleObserver(this);
-    }
+    _lifeCycleObserver = PlayerLifeCycleObserver(this);
     _lifeCycleObserver?.initialize();
 
     _eventSubscription = _playerPlatform
