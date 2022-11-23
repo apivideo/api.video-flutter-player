@@ -95,7 +95,9 @@ The [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-pla
 Once intanciated, you need to initialize the controller by calling its `initialize()` method.
 
 ```dart
-final ApiVideoPlayerController controller = ApiVideoPlayerController(videoOptions: VideoOptions(videoId: 'VIDEO_ID'));
+final ApiVideoPlayerController controller = ApiVideoPlayerController(
+  videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+);
 controller.initialize();
 ```
 
@@ -120,7 +122,9 @@ Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutte
 Example:
 
 ```dart
-final ApiVideoPlayerController controller = ApiVideoPlayerController(videoOptions: VideoOptions(videoId: 'VIDEO_ID'));
+final ApiVideoPlayerController controller = ApiVideoPlayerController(
+  videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+);
 controller.initialize();
 controller.play(); // Play the video
 ```
@@ -145,7 +149,9 @@ Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutte
 Example:
 
 ```dart
-final ApiVideoPlayerController controller = ApiVideoPlayerController(videoOptions: VideoOptions(videoId: 'VIDEO_ID'));
+final ApiVideoPlayerController controller = ApiVideoPlayerController(
+  videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+);
 controller.initialize();
 final bool isMuted = await controller.isMuted;
 ```
@@ -169,7 +175,9 @@ final ApiVideoPlayerController controller = ApiVideoPlayerController(
 Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart) has been intenciated, you can bind callbacks to some events:
 
 ```dart
-final ApiVideoPlayerController controller = ApiVideoPlayerController(videoOptions: VideoOptions(videoId: 'VIDEO_ID'));
+final ApiVideoPlayerController controller = ApiVideoPlayerController(
+  videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+);
 controller.initialize();
 controller.addEventsListener(
     ApiVideoPlayerEventsListener(
