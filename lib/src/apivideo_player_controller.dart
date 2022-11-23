@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:apivideo_player/apivideo_player.dart';
+import 'package:apivideo_player/src/apivideo_player_life_cycle_observer.dart';
 import 'package:apivideo_player/src/apivideo_types.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
@@ -15,6 +16,7 @@ ApiVideoPlayerPlatform get _playerPlatform {
 class ApiVideoPlayerController {
   final VideoOptions _initialVideoOptions;
   final bool _initialAutoplay;
+  final bool _initialAllowBackgroundPlayback;
 
   static const int kUninitializedTextureId = -1;
   int _textureId = kUninitializedTextureId;
@@ -23,6 +25,8 @@ class ApiVideoPlayerController {
   List<ApiVideoPlayerEventsListener> eventsListeners = [];
   List<ApiVideoPlayerWidgetListener> widgetListeners = [];
 
+  PlayerLifeCycleObserver? _lifeCycleObserver;
+
   /// This is just exposed for testing. Do not use it.
   @visibleForTesting
   int get textureId => _textureId;
@@ -30,12 +34,14 @@ class ApiVideoPlayerController {
   ApiVideoPlayerController({
     required VideoOptions videoOptions,
     bool autoplay = false,
+    bool allowBackgroundPlayback = false,
     VoidCallback? onReady,
     VoidCallback? onPlay,
     VoidCallback? onPause,
     VoidCallback? onEnd,
     Function(Object)? onError,
   })  : _initialAutoplay = autoplay,
+        _initialAllowBackgroundPlayback = allowBackgroundPlayback,
         _initialVideoOptions = videoOptions {
     eventsListeners.add(ApiVideoPlayerEventsListener(
         onReady: onReady,
@@ -48,8 +54,10 @@ class ApiVideoPlayerController {
   ApiVideoPlayerController.fromListener(
       {required VideoOptions videoOptions,
       bool autoplay = false,
+      bool allowBackgroundPlayback = false,
       ApiVideoPlayerEventsListener? listener})
       : _initialAutoplay = autoplay,
+        _initialAllowBackgroundPlayback = allowBackgroundPlayback,
         _initialVideoOptions = videoOptions {
     if (listener != null) {
       eventsListeners.add(listener);
@@ -128,6 +136,13 @@ class ApiVideoPlayerController {
     _textureId = await _playerPlatform.initialize(_initialAutoplay) ??
         kUninitializedTextureId;
 
+    final bool allowBackgroundPlayback =
+        _initialAllowBackgroundPlayback ?? false;
+    if (!allowBackgroundPlayback) {
+      _lifeCycleObserver = PlayerLifeCycleObserver(this);
+    }
+    _lifeCycleObserver?.initialize();
+
     _eventSubscription = _playerPlatform
         .playerEventsFor(_textureId)
         .listen(_eventListener, onError: _errorListener);
@@ -155,6 +170,7 @@ class ApiVideoPlayerController {
     await _eventSubscription?.cancel();
     eventsListeners.clear();
     await _playerPlatform.dispose(_textureId);
+    _lifeCycleObserver?.dispose();
     return;
   }
 
