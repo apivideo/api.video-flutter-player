@@ -222,7 +222,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final ApiVideoPlayerController _controller = ApiVideoPlayerController(
-    videoOptions: VideoOptions(videoId: 'vi3CjYlusQKz6JN7au0EmW9b'),
+    videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
     onPlay: () => print('PLAY'),
   );
   String _duration = 'Get duration';
