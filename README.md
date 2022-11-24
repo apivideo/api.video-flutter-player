@@ -205,7 +205,86 @@ We are using external library
 
 # Sample application
 
-**TODO**
+```dart
+import 'package:apivideo_player/apivideo_player.dart';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final ApiVideoPlayerController _controller = ApiVideoPlayerController(
+    videoOptions: VideoOptions(videoId: 'vi3CjYlusQKz6JN7au0EmW9b'),
+    onPlay: () => print('PLAY'),
+  );
+  String _duration = 'Get duration';
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.initialize();
+    _controller.addEventsListener(
+      ApiVideoPlayerEventsListener(
+        onPause: () => print('PAUSE'),
+      ),
+    );
+  }
+
+  void _getDuration() async {
+    final Duration duration = await _controller.duration;
+    setState(() {
+      _duration = 'Duration: $duration';
+    });
+  }
+
+  void _muteVideo() {
+    _controller.setIsMuted(true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Builder(builder: (context) {
+        return Scaffold(
+          body: Center(
+            child: Column(
+              children: <Widget>[
+                SizedBox(
+                  width: 400.0,
+                  height: 300.0,
+                  child: ApiVideoPlayer(
+                    controller: _controller,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.volume_off),
+                  onPressed: _muteVideo,
+                ),
+                TextButton(
+                  onPressed: _getDuration,
+                  child: Text(
+                    _duration,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+```
 
 # FAQ
 
