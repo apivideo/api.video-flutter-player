@@ -187,6 +187,14 @@ controller.addEventsListener(
   );
 ```
 
+| Event        | Type             | Description                                                                   |
+| ------------ | ---------------- | ----------------------------------------------------------------------------- |
+| onReady      | VoidCallback     | A callback called when the video is ready to be played                        |
+| onPlay       | VoidCallback     | A callback called when the video is played                                    |
+| onPause      | VoidCallback     | A callback called when the video is paused                                    |
+| onEnd        | VoidCallback     | A callback called when the video has ended                                    |
+| onError      | Function(Object) | A callback called when an error occured                                       |
+
 # Dependencies
 
 We are using external library
