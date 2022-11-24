@@ -1,13 +1,12 @@
 name: Build
 on: [push]
 
-defaults:
-  run:
-    working-directory: example/
-
 jobs:
   build_ios:
     runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: example/
     steps:
       - uses: actions/checkout@v2
       - name: Setup Flutter
@@ -22,6 +21,9 @@ jobs:
 
   build_android:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: example/
     steps:
       - uses: actions/checkout@v2
       - name: Setup Flutter
@@ -36,6 +38,9 @@ jobs:
 
   build_web:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: example/
     steps:
       - uses: actions/checkout@v2
       - name: Setup Flutter
