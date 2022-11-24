@@ -16,7 +16,7 @@ your app.
   - [Installation](#installation)
     - [Web usage](#web-usage)
 - [Documentation](#documentation)
-  - [Instanciation](#instanciation)
+  - [Instantiation](#instantiation)
     - [1. The ApiVideoPlayerController](#1-the-apivideoplayercontroller)
     - [2. The ApiVideoPlayer](#2-the-apivideoplayer)
   - [Methods](#methods)
@@ -64,25 +64,25 @@ If you want to use your application as a web app, you need to add the [api.video
 
 # Documentation
 
-## Instanciation
+## Instantiation
 
 ### 1. The ApiVideoPlayerController
 
-To use a video player and display a video in it, you must intanciate a new controller for each new player you need.
+To use a video player and display a video in it, you must instantiate a new controller for each new player you need.
 
 The [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart) parameters are:
 
-| Parameter    | Mandatory          | Type                                                                                                                                                | Description                                                                   |
-| ------------ | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| videoOptions | Yes                | [VideoOptions](https://github.com/apivideo/api.video-flutter-player/blob/4efe23f20ccf1c9459cee7588da1d3fed74e8e36/lib/src/apivideo_types.dart#L13)  | Options from the video you want to display inside the current video player    |
-| autoplay     | No (default false) | bool                                                                                                                                                | Whether you want your video to be automatically played when it's ready or not |
-| onReady      | No                 | VoidCallback                                                                                                                                        | A callback called when the video is ready to be played                        |
-| onPlay       | No                 | VoidCallback                                                                                                                                        | A callback called when the video is played                                    |
-| onPause      | No                 | VoidCallback                                                                                                                                        | A callback called when the video is paused                                    |
-| onEnd        | No                 | VoidCallback                                                                                                                                        | A callback called when the video has ended                                    |
-| onError      | No                 | Function(Object)                                                                                                                                    | A callback called when an error occured                                       |
+| Parameter    | Mandatory          | Type                                                                                                                                               | Description                                                                   |
+|--------------|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| videoOptions | Yes                | [VideoOptions](https://github.com/apivideo/api.video-flutter-player/blob/4efe23f20ccf1c9459cee7588da1d3fed74e8e36/lib/src/apivideo_types.dart#L13) | Options from the video you want to display inside the current video player    |
+| autoplay     | No (default false) | bool                                                                                                                                               | Whether you want your video to be automatically played when it's ready or not |
+| onReady      | No                 | VoidCallback                                                                                                                                       | A callback called when the video is ready to be played                        |
+| onPlay       | No                 | VoidCallback                                                                                                                                       | A callback called when the video is played                                    |
+| onPause      | No                 | VoidCallback                                                                                                                                       | A callback called when the video is paused                                    |
+| onEnd        | No                 | VoidCallback                                                                                                                                       | A callback called when the video has ended                                    |
+| onError      | No                 | Function(Object)                                                                                                                                   | A callback called when an error occured                                       |
 
-Once intanciated, you need to initialize the controller by calling its `initialize()` method.
+Once instantiated, you need to initialize the controller by calling its `initialize()` method.
 
 ```dart
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
@@ -101,7 +101,7 @@ A Widget that displays the video and its controls.
 The [ApiVideoPlayer](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player.dart) constructor takes 3 parameters:
 
 | Parameter    | Mandatory                | Type                                                                                                                                                | Description                                               |
-| ------------ | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+|--------------|--------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
 | controller   | Yes                      | [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart)                  | The controller that controls a video player               |
 | hideControls | No (default false)       | bool                                                                                                                                                | Allows you to hide or show the controls of a video player |
 | theme        | No (default PlayerTheme) | [PlayerTheme](https://github.com/apivideo/api.video-flutter-player/blob/4efe23f20ccf1c9459cee7588da1d3fed74e8e36/lib/src/apivideo_player.dart#L102) | Allows you to customize the video player's colors         |
@@ -122,10 +122,10 @@ Widget build(BuildContext context) {
 
 ## Methods
 
-Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart) has been instanciated, you can control the player it has been assigned to with its methods:
+Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart) has been instantiated, you can control the player it has been assigned to with its methods:
 
 | Method                                     | Description                                                                   |
-| ------------------------------------------ | ----------------------------------------------------------------------------- |
+|--------------------------------------------|-------------------------------------------------------------------------------|
 | play()                                     | Play the video                                                                |
 | pause()                                    | Pause the video                                                               |
 | seek(Duration offset)                      | Add/substract the given Duration from the current time                        |
@@ -150,10 +150,10 @@ controller.play(); // Play the video
 
 ## Properties
 
-Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart) has been intenciated, you can access the video player's properties:
+Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart) has been instantiated, you can access the video player's properties:
 
 | Property     | Type                  | Description                                     |
-| ------------ | --------------------- | ----------------------------------------------- |
+|--------------|-----------------------|-------------------------------------------------|
 | isCreated    | Future\<bool>         | Check if the player has been created            |
 | isPlaying    | Future\<bool>         | Check whether the video is playing              |
 | videoOptions | Future\<VideoOptions> | Retrieve the current video options              |
@@ -181,7 +181,7 @@ final bool isMuted = await controller.isMuted;
 
 ### Method 1
 
-When you instanciate a new [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart), you can bind callbacks to some events:
+When you instantiate a new [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart), you can bind callbacks to some events:
 
 ```dart
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
@@ -193,7 +193,7 @@ final ApiVideoPlayerController controller = ApiVideoPlayerController(
 
 ### Method 2
 
-Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart) has been intenciated, you can bind callbacks to some events:
+Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart) has been instantiated, you can bind callbacks to some events:
 
 ```dart
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
@@ -210,21 +210,21 @@ controller.addEventsListener(
   );
 ```
 
-| Event        | Type             | Description                                                                   |
-| ------------ | ---------------- | ----------------------------------------------------------------------------- |
-| onReady      | VoidCallback     | A callback called when the video is ready to be played                        |
-| onPlay       | VoidCallback     | A callback called when the video is played                                    |
-| onPause      | VoidCallback     | A callback called when the video is paused                                    |
-| onEnd        | VoidCallback     | A callback called when the video has ended                                    |
-| onError      | Function(Object) | A callback called when an error occured                                       |
+| Event   | Type             | Description                                            |
+|---------|------------------|--------------------------------------------------------|
+| onReady | VoidCallback     | A callback called when the video is ready to be played |
+| onPlay  | VoidCallback     | A callback called when the video is played             |
+| onPause | VoidCallback     | A callback called when the video is paused             |
+| onEnd   | VoidCallback     | A callback called when the video has ended             |
+| onError | Function(Object) | A callback called when an error occured                |
 
 # Dependencies
 
 We are using external library
 
-| Plugin | README |
-| ------ | ------ |
-| **TODO** [Link to project]() | **TODO** [Link to README]() |
+| Plugin                                           | README                                                  |
+|--------------------------------------------------|---------------------------------------------------------|
+| [Exoplayer](https://github.com/google/ExoPlayer) | [README.md](https://github.com/google/ExoPlayer#readme) |
 
 # Sample application
 
