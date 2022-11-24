@@ -69,3 +69,10 @@ jobs:
         run: flutter pub get
       - name: Flutter analyze
         run: flutter analyze
+  test_publish:
+    needs: analyze_project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: test flutter pub publish --dry-run
+        run: flutter pub publish --dry-run
