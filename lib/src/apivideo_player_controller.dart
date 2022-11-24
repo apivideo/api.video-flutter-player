@@ -4,7 +4,6 @@ import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/src/apivideo_player_life_cycle_observer.dart';
 import 'package:apivideo_player/src/apivideo_types.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import 'apivideo_player_platform_interface.dart';

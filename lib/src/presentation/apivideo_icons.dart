@@ -4,12 +4,12 @@ class ApiVideoIcons {
   ApiVideoIcons._();
 
   static const _kFontFam = 'ApiVideoIcons';
-  static const String? _kFontPkg = 'apivideo_player';
+  static const String _kFontPkg = 'apivideo_player';
 
-  static const IconData pause_primary =
+  static const IconData pausePrimary =
       IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData play_primary =
+  static const IconData playPrimary =
       IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData replay_primary =
+  static const IconData replayPrimary =
       IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }
