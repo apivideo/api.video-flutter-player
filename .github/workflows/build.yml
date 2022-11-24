@@ -47,3 +47,17 @@ jobs:
         run: flutter pub get
       - name: Build Web application
         run: flutter build web
+
+  analyze_project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Flutter
+        id: flutter
+        uses: DanTup/gh-actions/setup-flutter@master
+        with:
+          channel: stable
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Flutter analyze
+        run: flutter analyze
