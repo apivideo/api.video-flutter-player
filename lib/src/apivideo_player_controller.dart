@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/src/apivideo_player_life_cycle_observer.dart';
 import 'package:apivideo_player/src/apivideo_types.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 import 'apivideo_player_platform_interface.dart';
 
@@ -26,7 +26,7 @@ class ApiVideoPlayerController {
   PlayerLifeCycleObserver? _lifeCycleObserver;
 
   /// This is just exposed for testing. Do not use it.
-  @visibleForTesting
+  @internal
   int get textureId => _textureId;
 
   ApiVideoPlayerController({
@@ -177,13 +177,13 @@ class ApiVideoPlayerController {
   }
 
   /// This is exposed for internal use only. Do not use it.
-  @visibleForTesting
+  @internal
   void addWidgetListener(ApiVideoPlayerWidgetListener listener) {
     widgetListeners.add(listener);
   }
 
   /// This is exposed for internal use only. Do not use it.
-  @visibleForTesting
+  @internal
   void removeWidgetListener(ApiVideoPlayerWidgetListener listener) {
     widgetListeners.remove(listener);
   }
