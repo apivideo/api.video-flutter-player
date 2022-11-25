@@ -297,11 +297,11 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         iconSize: 60,
         icon: _isPlaying
             ? Icon(
-                ApiVideoIcons.pause_primary,
+                ApiVideoIcons.pausePrimary,
                 color: widget.theme.controlsColor,
               )
             : Icon(
-                ApiVideoIcons.play_primary,
+                ApiVideoIcons.playPrimary,
                 color: widget.theme.controlsColor,
               ),
       );
@@ -312,7 +312,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       },
       iconSize: 60,
       icon: Icon(
-        ApiVideoIcons.replay_primary,
+        ApiVideoIcons.replayPrimary,
         color: widget.theme.controlsColor,
       ));
 

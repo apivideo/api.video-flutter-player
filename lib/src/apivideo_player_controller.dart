@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/src/apivideo_player_life_cycle_observer.dart';
 import 'package:apivideo_player/src/apivideo_types.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 import 'apivideo_player_platform_interface.dart';
 
@@ -27,7 +26,7 @@ class ApiVideoPlayerController {
   PlayerLifeCycleObserver? _lifeCycleObserver;
 
   /// This is just exposed for testing. Do not use it.
-  @visibleForTesting
+  @internal
   int get textureId => _textureId;
 
   ApiVideoPlayerController({
@@ -59,74 +58,93 @@ class ApiVideoPlayerController {
     }
   }
 
+  /// Checks if the player has been created.
   Future<bool> get isCreated => _playerPlatform.isCreated(_textureId);
 
+  /// Checks whether the video is playing.
   Future<bool> get isPlaying {
     return _playerPlatform.isPlaying(_textureId);
   }
 
+  /// The video current time.
   Future<Duration> get currentTime async {
     final milliseconds = await _playerPlatform.getCurrentTime(_textureId);
     return Duration(milliseconds: milliseconds);
   }
 
+  /// Sets the current playback time.
   Future<void> setCurrentTime(Duration currentTime) {
     return _playerPlatform.setCurrentTime(
         _textureId, currentTime.inMilliseconds);
   }
 
+  /// Retrieves the duration of the video.
   Future<Duration> get duration async {
     final milliseconds = await _playerPlatform.getDuration(_textureId);
     return Duration(milliseconds: milliseconds);
   }
 
+  /// Retrieves the current video options.
   Future<VideoOptions> get videoOptions {
     return _playerPlatform.getVideoOptions(_textureId);
   }
 
+  /// Sets the video options.
   Future<void> setVideoOptions(VideoOptions videoOptions) {
     return _playerPlatform.setVideoOptions(_textureId, videoOptions);
   }
 
+  /// Checks whether the video is autoplayed.
   Future<bool> get autoplay {
     return _playerPlatform.getAutoplay(_textureId);
   }
 
+  /// Defines if the video should start playing as soon as it is loaded.
   Future<void> setAutoplay(bool autoplay) {
     return _playerPlatform.setAutoplay(_textureId, autoplay);
   }
 
+  /// Checks whether the video is muted.
   Future<bool> get isMuted {
     return _playerPlatform.getIsMuted(_textureId);
   }
 
+  /// Mutes/unmutes the video.
   Future<void> setIsMuted(bool isMuted) {
     return _playerPlatform.setIsMuted(_textureId, isMuted);
   }
 
+  /// Checks whether the video is in loop mode.
   Future<bool> get isLooping {
     return _playerPlatform.getIsLooping(_textureId);
   }
 
+  /// Defines if the video should be played in loop.
   Future<void> setIsLooping(bool isLooping) {
     return _playerPlatform.setIsLooping(_textureId, isLooping);
   }
 
+  /// Retrieves the current volume
   Future<double> get volume {
     return _playerPlatform.getVolume(_textureId);
   }
 
+  /// Changes the audio volume to the given value.
+  ///
+  /// From 0 to 1 (0 = muted, 1 = 100%).
   Future<void> setVolume(double volume) {
-    if (volume < 0 || volume > 100) {
-      throw ArgumentError('Volume must be between 0 and 100');
+    if (volume < 0 || volume > 1) {
+      throw ArgumentError('Volume must be between 0 and 1');
     }
     return _playerPlatform.setVolume(_textureId, volume);
   }
 
+  /// Retrieves the current video size.
   Future<Size?> get videoSize {
     return _playerPlatform.getVideoSize(_textureId);
   }
 
+  /// Initializes the controller.
   Future<void> initialize() async {
     _textureId = await _playerPlatform.initialize(_initialAutoplay) ??
         kUninitializedTextureId;
@@ -149,14 +167,17 @@ class ApiVideoPlayerController {
     return;
   }
 
+  /// Plays the video.
   Future<void> play() {
     return _playerPlatform.play(_textureId);
   }
 
+  /// Pauses the video.
   Future<void> pause() {
     return _playerPlatform.pause(_textureId);
   }
 
+  /// Disposes the controller.
   Future<void> dispose() async {
     await _eventSubscription?.cancel();
     eventsListeners.clear();
@@ -165,26 +186,43 @@ class ApiVideoPlayerController {
     return;
   }
 
+  /// Adds/substracts the given Duration to/from the playback time.
   Future<void> seek(Duration offset) {
     return _playerPlatform.seek(_textureId, offset.inMilliseconds);
   }
 
+  /// Adds an event listener to this controller.
+  ///
+  /// ```dart
+  /// final ApiVideoPlayerEventsListener _eventsListener =
+  ///    ApiVideoPlayerEventsListener(onPlay: () => print('PLAY'));
+  ///
+  /// controller.addEventsListener(_eventsListener);
+  /// ```
   void addEventsListener(ApiVideoPlayerEventsListener listener) {
     eventsListeners.add(listener);
   }
 
+  /// Adds an event listener to this controller.
+  ///
+  /// ```dart
+  /// final ApiVideoPlayerEventsListener _eventsListener =
+  ///    ApiVideoPlayerEventsListener(onPlay: () => print('PLAY'));
+  ///
+  /// controller.removeEventsListener(_eventsListener);
+  /// ```
   void removeEventsListener(ApiVideoPlayerEventsListener listener) {
     eventsListeners.remove(listener);
   }
 
   /// This is exposed for internal use only. Do not use it.
-  @visibleForTesting
+  @internal
   void addWidgetListener(ApiVideoPlayerWidgetListener listener) {
     widgetListeners.add(listener);
   }
 
   /// This is exposed for internal use only. Do not use it.
-  @visibleForTesting
+  @internal
   void removeWidgetListener(ApiVideoPlayerWidgetListener listener) {
     widgetListeners.remove(listener);
   }
