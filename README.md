@@ -89,7 +89,7 @@ final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
 );
 
-controller.initialize();
+await controller.initialize();
 ```
 
 See the sample application below for more details.
@@ -111,7 +111,7 @@ final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
 );
 
-controller.initialize();
+await controller.initialize();
 
 Widget build(BuildContext context) {
     return ApiVideoPlayer(
@@ -143,7 +143,7 @@ final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
 );
 
-controller.initialize();
+await controller.initialize();
 
 controller.play(); // Play the video
 ```
@@ -172,7 +172,7 @@ final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
 );
 
-controller.initialize();
+await controller.initialize();
 
 final bool isMuted = await controller.isMuted;
 ```
@@ -200,7 +200,7 @@ final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
 );
 
-controller.initialize();
+await controller.initialize();
 
 controller.addEventsListener(
     ApiVideoPlayerEventsListener(
