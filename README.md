@@ -17,8 +17,8 @@ your app.
     - [Web usage](#web-usage)
 - [Documentation](#documentation)
   - [Instanciation](#instanciation)
-    - [1. The ApiVideoPlayer](#1-the-apivideoplayer)
-    - [2. The ApiVideoPlayerController](#2-the-apivideoplayercontroller)
+    - [1. The ApiVideoPlayerController](#1-the-apivideoplayercontroller)
+    - [2. The ApiVideoPlayer](#2-the-apivideoplayer)
   - [Methods](#methods)
   - [Properties](#properties)
   - [Events listener](#events-listener)
@@ -66,17 +66,7 @@ If you want to use your application as a web app, you need to add the [api.video
 
 ## Instanciation
 
-### 1. The ApiVideoPlayer
-
-The [ApiVideoPlayer](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player.dart) constructor takes 3 parameters:
-
-| Parameter    | Mandatory                | Type                                                                                                                                                | Description                                               |
-| ------------ | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| controller   | Yes                      | [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart)                  | The controller that controls a video player               |
-| hideControls | No (default false)       | bool                                                                                                                                                | Allows you to hide or show the controls of a video player |
-| theme        | No (default PlayerTheme) | [PlayerTheme](https://github.com/apivideo/api.video-flutter-player/blob/4efe23f20ccf1c9459cee7588da1d3fed74e8e36/lib/src/apivideo_player.dart#L102) | Allows you to customize the video player's colors         |
-
-### 2. The ApiVideoPlayerController
+### 1. The ApiVideoPlayerController
 
 To use a video player and display a video in it, you must intanciate a new controller for each new player you need.
 
@@ -98,20 +88,47 @@ Once intanciated, you need to initialize the controller by calling its `initiali
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
 );
+
 controller.initialize();
 ```
 
 See the sample application below for more details.
 
+### 2. The ApiVideoPlayer
+
+A Widget that displays the video and its controls.
+
+The [ApiVideoPlayer](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player.dart) constructor takes 3 parameters:
+
+| Parameter    | Mandatory                | Type                                                                                                                                                | Description                                               |
+| ------------ | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| controller   | Yes                      | [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart)                  | The controller that controls a video player               |
+| hideControls | No (default false)       | bool                                                                                                                                                | Allows you to hide or show the controls of a video player |
+| theme        | No (default PlayerTheme) | [PlayerTheme](https://github.com/apivideo/api.video-flutter-player/blob/4efe23f20ccf1c9459cee7588da1d3fed74e8e36/lib/src/apivideo_player.dart#L102) | Allows you to customize the video player's colors         |
+
+```dart
+final ApiVideoPlayerController controller = ApiVideoPlayerController(
+  videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+);
+
+controller.initialize();
+
+Widget build(BuildContext context) {
+    return ApiVideoPlayer(
+        controller: controller,
+    )
+}
+```
+
 ## Methods
 
-Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart) has been intenciated, you can control the player it has been assigned to with its methods:
+Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart) has been instanciated, you can control the player it has been assigned to with its methods:
 
 | Method                                     | Description                                                                   |
 | ------------------------------------------ | ----------------------------------------------------------------------------- |
 | play()                                     | Play the video                                                                |
 | pause()                                    | Pause the video                                                               |
-| seek(Duration offset)                      | Add/substract the given Duration to/from the playback time                    |
+| seek(Duration offset)                      | Add/substract the given Duration from the current time                        |
 | setVolume(double volume)                   | Change the audio volume to the given value. From 0 to 1 (0 = muted, 1 = 100%) |
 | setIsMuted(bool isMuted)                   | Mute/unmute the video                                                         |
 | setAutoplay(bool autoplay)                 | Define if the video should start playing as soon as it is loaded              |
@@ -125,7 +142,9 @@ Example:
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
 );
+
 controller.initialize();
+
 controller.play(); // Play the video
 ```
 
@@ -152,7 +171,9 @@ Example:
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
 );
+
 controller.initialize();
+
 final bool isMuted = await controller.isMuted;
 ```
 
@@ -178,7 +199,9 @@ Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutte
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
 );
+
 controller.initialize();
+
 controller.addEventsListener(
     ApiVideoPlayerEventsListener(
       onPlay: () => print('PLAY'),
