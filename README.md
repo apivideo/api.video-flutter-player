@@ -22,8 +22,9 @@ your app.
   - [Methods](#methods)
   - [Properties](#properties)
   - [Events listener](#events-listener)
-    - [Method 1](#method-1)
-    - [Method 2](#method-2)
+    - [Add a new event listener: Method 1](#add-a-new-event-listener-method-1)
+    - [Add a new event listener: Method 2](#add-a-new-event-listener-method-2)
+    - [Remove an event listener](#remove-an-event-listener)
 - [Dependencies](#dependencies)
 - [Sample application](#sample-application)
 - [FAQ](#faq)
@@ -68,7 +69,7 @@ If you want to use your application as a web app, you need to add the [api.video
 
 ### 1. The ApiVideoPlayerController
 
-To use a video player and display a video in it, you must instantiate a new controller for each new player you need.
+To use a video player, you must instantiate a new controller.
 
 The [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart) parameters are:
 
@@ -179,7 +180,7 @@ final bool isMuted = await controller.isMuted;
 
 ## Events listener
 
-### Method 1
+### Add a new event listener: Method 1
 
 When you instantiate a new [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart), you can bind callbacks to some events:
 
@@ -191,7 +192,7 @@ final ApiVideoPlayerController controller = ApiVideoPlayerController(
   );
 ```
 
-### Method 2
+### Add a new event listener: Method 2
 
 Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart) has been instantiated, you can bind callbacks to some events:
 
@@ -202,12 +203,12 @@ final ApiVideoPlayerController controller = ApiVideoPlayerController(
 
 await controller.initialize();
 
-controller.addEventsListener(
-    ApiVideoPlayerEventsListener(
-      onPlay: () => print('PLAY'),
-      onPause: () => print('PAUSE'),
-    ),
+final ApiVideoPlayerEventsListener eventsListener =
+      ApiVideoPlayerEventsListener(
+    onPlay: () => print('PLAY'),
   );
+
+controller.addEventsListener(eventsListener);
 ```
 
 | Event   | Type             | Description                                            |
@@ -217,6 +218,25 @@ controller.addEventsListener(
 | onPause | VoidCallback     | A callback called when the video is paused             |
 | onEnd   | VoidCallback     | A callback called when the video has ended             |
 | onError | Function(Object) | A callback called when an error occured                |
+
+### Remove an event listener
+
+To remove an event listener, you need to call the controller's `removeEventsListener` method.
+
+```dart
+final ApiVideoPlayerController controller = ApiVideoPlayerController(
+  videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+);
+
+await controller.initialize();
+
+final ApiVideoPlayerEventsListener eventsListener =
+      ApiVideoPlayerEventsListener(
+    onPlay: () => print('PLAY'),
+  );
+
+controller.removeEventsListener(eventsListener);
+```
 
 # Dependencies
 
