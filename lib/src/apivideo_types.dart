@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'apivideo_types.g.dart';
 
+/// The video types enabled by the api.video API
 enum VideoType {
   @JsonValue("vod")
   vod,
@@ -9,6 +10,7 @@ enum VideoType {
   live
 }
 
+/// The video options that defines an api.video video
 @JsonSerializable()
 class VideoOptions {
   String videoId;

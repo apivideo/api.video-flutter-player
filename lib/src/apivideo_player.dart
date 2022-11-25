@@ -8,6 +8,15 @@ ApiVideoPlayerPlatform get _playerPlatform {
   return ApiVideoPlayerPlatform.instance;
 }
 
+/// The player widget.
+///
+/// ```dart
+/// Widget build(BuildContext context) {
+///   return ApiVideoPlayer(
+///     controller: controller,
+///   )
+/// }
+/// ```
 class ApiVideoPlayer extends StatefulWidget {
   const ApiVideoPlayer({
     super.key,
@@ -98,9 +107,18 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
   }
 }
 
+/// A customizable theme for the player.
+///
+/// ```dart
+/// final PlayerTheme theme = const PlayerTheme(
+///   controlsColor: Colors.yellow,
+///   activeTimeSliderColor: Colors.blue,
+///   inactiveTimeSliderColor: Colors.red,
+/// );
+/// ```
 class PlayerTheme {
   const PlayerTheme({
-    this.controlsColor = Colors.white,
+    this.controlsColor = Colors.yellow,
     this.activeTimeSliderColor = ApiVideoColors.orange,
     this.inactiveTimeSliderColor = Colors.grey,
     this.activeVolumeSliderColor = Colors.white,
