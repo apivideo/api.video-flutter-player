@@ -8,12 +8,12 @@ jobs:
       run:
         working-directory: example/
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Flutter
         id: flutter
-        uses: DanTup/gh-actions/setup-flutter@master
+        uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          channel: 'stable'
       - name: Install dependencies
         run: flutter pub get
       - name: Build iOS application
@@ -25,12 +25,12 @@ jobs:
       run:
         working-directory: example/
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Flutter
         id: flutter
-        uses: DanTup/gh-actions/setup-flutter@master
+        uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          channel: 'stable'
       - name: Install dependencies
         run: flutter pub get
       - name: Build Android application
@@ -42,12 +42,12 @@ jobs:
       run:
         working-directory: example/
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Flutter
         id: flutter
-        uses: DanTup/gh-actions/setup-flutter@master
+        uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          channel: 'stable'
       - name: Install dependencies
         run: flutter pub get
       - name: Build Web application
@@ -57,12 +57,12 @@ jobs:
     needs: [ build_web, build_android, build_ios]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Flutter
         id: flutter
-        uses: DanTup/gh-actions/setup-flutter@master
+        uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          channel: 'stable'
       - name: Install dependencies
         run: flutter pub get
       - name: Flutter analyze
@@ -71,12 +71,12 @@ jobs:
     needs: analyze_project
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Flutter
         id: flutter
-        uses: DanTup/gh-actions/setup-flutter@master
+        uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          channel: 'stable'
       - name: Install dependencies
         run: flutter pub get
       - name: test flutter pub publish --dry-run
