@@ -20,7 +20,6 @@ jobs:
         run: flutter build ios --no-codesign
 
   build_android:
-    needs: build_ios
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -38,7 +37,6 @@ jobs:
         run: flutter build apk
 
   build_web:
-    needs: build_android
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -56,7 +54,7 @@ jobs:
         run: flutter build web
 
   analyze_project:
-    needs: build_web
+    needs: [ build_web, build_android, build_ios]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
