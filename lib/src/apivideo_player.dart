@@ -118,7 +118,7 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
 /// ```
 class PlayerTheme {
   const PlayerTheme({
-    this.controlsColor = Colors.yellow,
+    this.controlsColor = Colors.white,
     this.activeTimeSliderColor = ApiVideoColors.orange,
     this.inactiveTimeSliderColor = Colors.grey,
     this.activeVolumeSliderColor = Colors.white,
