@@ -1,29 +1,45 @@
-// import 'package:flutter_test/flutter_test.dart';
-// import 'package:apivideo_player/apivideo_player.dart';
-// import 'package:apivideo_player/apivideo_player_platform_interface.dart';
-// import 'package:apivideo_player/apivideo_player_controller.dart';
-// import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'dart:async';
 
-// class MockApiVideoPlayerPlatform
-//     with MockPlatformInterfaceMixin
-//     implements ApiVideoPlayerPlatform {
+import 'package:apivideo_player/apivideo_player.dart';
+import 'package:apivideo_player/src/apivideo_player_platform_interface.dart';
+import 'package:flutter_test/flutter_test.dart';
 
-//   @override
-//   Future<String?> getPlatformVersion() => Future.value('42');
-// }
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
 
-// void main() {
-//   final ApiVideoPlayerPlatform initialPlatform = ApiVideoPlayerPlatform.instance;
+  test('plugin initialized', () async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    final FakeApiVideoPlayerPlatform fakeVideoPlayerPlatform =
+        FakeApiVideoPlayerPlatform();
+    ApiVideoPlayerPlatform.instance = fakeVideoPlayerPlatform;
 
-//   test('$ApiVideoPlayerController is the default instance', () {
-//     expect(initialPlatform, isInstanceOf<ApiVideoPlayerController>());
-//   });
+    final ApiVideoPlayerController controller =
+        ApiVideoPlayerController(videoOptions: VideoOptions(videoId: "test"));
+    await controller.initialize();
+    expect(fakeVideoPlayerPlatform.calls.first, 'initialize');
+    expect(fakeVideoPlayerPlatform.calls[1], 'create');
+  });
+}
 
-//   test('getPlatformVersion', () async {
-//     ApiVideoPlayer apivideoPlayerPlugin = ApiVideoPlayer();
-//     MockApiVideoPlayerPlatform fakePlatform = MockApiVideoPlayerPlatform();
-//     ApiVideoPlayerPlatform.instance = fakePlatform;
-  
-//     expect(await apivideoPlayerPlugin.getPlatformVersion(), '42');
-//   });
-// }
+class FakeApiVideoPlayerPlatform extends ApiVideoPlayerPlatform {
+  Completer<bool> initialized = Completer<bool>();
+  List<String> calls = <String>[];
+
+  @override
+  Future<int?> initialize(bool autoplay) {
+    calls.add('initialize');
+    initialized.complete(true);
+    return Future.value(0);
+  }
+
+  @override
+  Future<void> create(int textureId, VideoOptions videoOptions) {
+    calls.add('create');
+    return Future.value();
+  }
+
+  @override
+  Stream<PlayerEvent> playerEventsFor(int textureId) {
+    return StreamController<PlayerEvent>().stream;
+  }
+}
