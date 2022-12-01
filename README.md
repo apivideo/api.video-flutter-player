@@ -93,6 +93,8 @@ final ApiVideoPlayerController controller = ApiVideoPlayerController(
 await controller.initialize();
 ```
 
+**WARNING: This player can't currently handle private videos. This feature will come soon.**
+
 See the sample application below for more details.
 
 ### 2. The ApiVideoPlayer
