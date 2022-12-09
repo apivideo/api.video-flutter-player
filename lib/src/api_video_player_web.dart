@@ -2,15 +2,15 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:apivideo_player/src/javascript_controller.dart'
+import 'package:api_video_player/src/javascript_controller.dart'
     as js_controller;
-import 'package:apivideo_player/src/platform_view_registry/platform_view_registry.dart';
-import 'package:apivideo_player/src/utils/index.dart';
+import 'package:api_video_player/src/platform_view_registry/platform_view_registry.dart';
+import 'package:api_video_player/src/utils/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
-import 'apivideo_player_platform_interface.dart';
-import 'apivideo_types.dart';
+import 'api_video_player_platform_interface.dart';
+import 'api_video_types.dart';
 
 /// A web implementation of the ApiVideoPlayerPlatform of the ApiVideoPlayer plugin.
 class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {

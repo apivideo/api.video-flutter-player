@@ -1,7 +1,7 @@
 import 'dart:js' as js;
 import 'dart:js_util';
 
-import 'package:apivideo_player/src/apivideo_player_platform_interface.dart';
+import 'package:api_video_player/src/api_video_player_platform_interface.dart';
 
 class Utils {
   /// Calls a JS object method that returns void only.

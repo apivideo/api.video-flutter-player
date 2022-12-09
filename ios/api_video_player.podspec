@@ -1,9 +1,9 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint apivideo_player.podspec` to validate before publishing.
+# Run `pod lib lint api_video_player.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'apivideo_player'
+  s.name             = 'api_video_player'
   s.version          = '0.0.1'
   s.summary          = 'A new Flutter plugin project.'
   s.description      = <<-DESC

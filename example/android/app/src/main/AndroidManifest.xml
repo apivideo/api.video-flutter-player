@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="video.api.flutter.player.example">
    <application
-        android:label="apivideo_player_example"
+        android:label="api_video_player_example"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

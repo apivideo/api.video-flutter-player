@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-import '../apivideo_player.dart';
+import '../api_video_player.dart';
 
 class PlayerLifeCycleObserver extends Object with WidgetsBindingObserver {
   final ApiVideoPlayerController controller;

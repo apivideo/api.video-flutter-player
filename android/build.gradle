@@ -1,4 +1,4 @@
-group 'video.api.apivideo_player'
+group 'video.api.flutter.player'
 version '1.0-SNAPSHOT'
 
 buildscript {

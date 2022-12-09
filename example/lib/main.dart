@@ -1,4 +1,4 @@
-import 'package:apivideo_player/apivideo_player.dart';
+import 'package:api_video_player/api_video_player.dart';
 import 'package:flutter/material.dart';
 
 void main() {

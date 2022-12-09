@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:apivideo_player/src/presentation/apivideo_icons.dart';
+import 'package:api_video_player/src/presentation/api_video_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
-import '../apivideo_player.dart';
+import '../api_video_player.dart';
 
 class ApiVideoPlayerOverlay extends StatefulWidget {
   const ApiVideoPlayerOverlay({

@@ -1,11 +1,11 @@
 {
-    "name": "apivideo_player_example",
-    "short_name": "apivideo_player_example",
+    "name": "api_video_player_example",
+    "short_name": "api_video_player_example",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "Demonstrates how to use the apivideo_player plugin.",
+    "description": "Demonstrates how to use the api_video_player plugin.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

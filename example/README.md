@@ -1,6 +1,6 @@
-# apivideo_player_example
+# api_video_player_example
 
-Demonstrates how to use the apivideo_player plugin.
+Demonstrates how to use the api_video_player plugin.
 
 ## Getting Started
 

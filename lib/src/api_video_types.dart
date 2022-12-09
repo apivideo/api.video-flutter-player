@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'apivideo_types.g.dart';
+part 'api_video_types.g.dart';
 
 /// The video types enabled by the api.video API
 enum VideoType {

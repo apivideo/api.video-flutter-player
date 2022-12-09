@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'apivideo_types.dart';
+part of 'api_video_types.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
