@@ -29,6 +29,8 @@ class ApiVideoPlayerController {
   @internal
   int get textureId => _textureId;
 
+  bool isFullscreen = false;
+
   ApiVideoPlayerController({
     required VideoOptions videoOptions,
     bool autoplay = false,
@@ -36,6 +38,7 @@ class ApiVideoPlayerController {
     VoidCallback? onPlay,
     VoidCallback? onPause,
     VoidCallback? onEnd,
+    VoidCallback? onFullscreenChange,
     Function(Object)? onError,
   })  : _initialAutoplay = autoplay,
         _initialVideoOptions = videoOptions {
@@ -44,6 +47,7 @@ class ApiVideoPlayerController {
         onPlay: onPlay,
         onPause: onPause,
         onEnd: onEnd,
+        onFullscreenChange: onFullscreenChange,
         onError: onError));
   }
 
@@ -163,7 +167,6 @@ class ApiVideoPlayerController {
         listener.onTextureReady!();
       }
     }
-
     return;
   }
 
@@ -201,6 +204,24 @@ class ApiVideoPlayerController {
   /// ```
   void addEventsListener(ApiVideoPlayerEventsListener listener) {
     eventsListeners.add(listener);
+  }
+
+  void enterFullscreen() {
+    isFullscreen = true;
+    for (var listener in [...eventsListeners]) {
+      if (listener.onFullscreenChange != null) {
+        listener.onFullscreenChange!();
+      }
+    }
+  }
+
+  void exitFullscreen() {
+    isFullscreen = false;
+    for (var listener in [...eventsListeners]) {
+      if (listener.onFullscreenChange != null) {
+        listener.onFullscreenChange!();
+      }
+    }
   }
 
   /// Adds an event listener to this controller.
@@ -294,6 +315,7 @@ class ApiVideoPlayerEventsListener {
   final VoidCallback? onSeek;
   final VoidCallback? onSeekStarted;
   final VoidCallback? onEnd;
+  final VoidCallback? onFullscreenChange;
   final Function(Object)? onError;
 
   ApiVideoPlayerEventsListener(
@@ -303,6 +325,7 @@ class ApiVideoPlayerEventsListener {
       this.onSeek,
       this.onSeekStarted,
       this.onEnd,
+      this.onFullscreenChange,
       this.onError});
 }
 
