@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 import '../apivideo_player.dart';
+import 'apivideo_player_theme.dart';
 
 class ApiVideoPlayerOverlay extends StatefulWidget {
   const ApiVideoPlayerOverlay({
@@ -109,6 +110,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       parent: expandController,
       curve: Curves.fastLinearToSlowEaseIn,
     );
+    print('initGetIsFullscreen ${widget.controller.isFullscreen}');
   }
 
   @override
@@ -126,6 +128,16 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
 
   void play() {
     widget.controller.play();
+    _showOverlayForDuration();
+  }
+
+  void enterFullscreen() async {
+    widget.controller.enterFullscreen();
+    _showOverlayForDuration();
+  }
+
+  void exitFullscreen() async {
+    widget.controller.exitFullscreen();
     _showOverlayForDuration();
   }
 
@@ -253,11 +265,53 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          buildVolumeSlider(),
+          buildFullScreenControls(),
           buildControls(),
           buildSlider(),
         ],
       ));
+
+  Widget buildBtnFullScreen() => IconButton(
+        onPressed: () {
+          enterFullscreen();
+        },
+        iconSize: 20,
+        icon: Icon(
+          Icons.fullscreen,
+          color: widget.theme.controlsColor,
+        ),
+      );
+
+  Widget buildBtnExitFullScreen() => IconButton(
+        onPressed: () {
+          exitFullscreen();
+        },
+        iconSize: 20,
+        icon: Icon(
+          Icons.close,
+          color: widget.theme.controlsColor,
+        ),
+      );
+
+  Widget buildFullScreenControls() => Center(
+        child: Row(
+          //mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            widget.controller.isFullscreen
+                ? buildBtnExitFullScreen()
+                : Container(),
+            Row(
+              children: [
+                buildVolumeSlider(),
+                widget.controller.isFullscreen
+                    ? Container()
+                    : buildBtnFullScreen(),
+              ],
+            )
+          ],
+        ),
+      );
 
   Widget buildControls() => Center(
         child: Row(
