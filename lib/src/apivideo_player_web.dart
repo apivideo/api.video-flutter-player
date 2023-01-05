@@ -312,22 +312,24 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
         document.body?.insertAdjacentElement('beforeend', script);
       }
 
-      final String jsString = '''
-        window.player$textureId = new PlayerSdk(
-          "#playerDiv$textureId",
-          { 
-            id: "${_players[textureId]!.videoOptions!.videoId}",
-            chromeless: true,
-            live: ${_players[textureId]!.videoOptions!.videoType == VideoType.live},
-            autoplay: ${_players[textureId]!.autoplay},
-          }
-        );
-      ''';
-      final ScriptElement script = ScriptElement()
-        ..id = 'apiVideoPlayerJsScript$textureId'
-        ..innerText = jsString;
-      script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
-      document.body?.insertAdjacentElement('beforeend', script);
+      if (document.querySelector('#apiVideoPlayerJsScript$textureId') == null) {
+        final String jsString = '''
+          window.player$textureId = new PlayerSdk(
+            "#playerDiv$textureId",
+            { 
+              id: "${_players[textureId]!.videoOptions!.videoId}",
+              chromeless: true,
+              live: ${_players[textureId]!.videoOptions!.videoType == VideoType.live},
+              autoplay: ${_players[textureId]!.autoplay},
+            }
+          );
+        ''';
+        final ScriptElement script = ScriptElement()
+          ..id = 'apiVideoPlayerJsScript$textureId'
+          ..innerText = jsString;
+        script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
+        document.body?.insertAdjacentElement('beforeend', script);
+      }
 
       if (_players[textureId]!.playerEvents == null) {
         throw Exception('No player events for this texture id: $textureId.');

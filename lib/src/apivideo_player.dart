@@ -87,7 +87,6 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    print('BUILD');
     return _textureId == ApiVideoPlayerController.kUninitializedTextureId
         ? Container()
         : buildPlayer();
