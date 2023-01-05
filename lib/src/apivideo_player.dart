@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:apivideo_player/src/apivideo_player_overlay.dart';
 import 'package:apivideo_player/src/apivideo_player_theme.dart';
 import 'package:flutter/foundation.dart';
@@ -62,6 +64,7 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
   OverlayEntry? _overlayEntry;
   late int _textureId;
   double _aspectRatio = 1.0;
+  int foo = 0;
 
   @override
   void initState() {
@@ -84,6 +87,7 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    print('BUILD');
     return _textureId == ApiVideoPlayerController.kUninitializedTextureId
         ? Container()
         : buildPlayer();
@@ -107,7 +111,9 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
       );
 
   _enterFullscreen() {
-    if (kIsWeb) {}
+    if (kIsWeb) {
+      document.documentElement?.requestFullscreen();
+    }
     _overlayEntry = OverlayEntry(builder: (context) {
       return Scaffold(
         body: Center(
@@ -133,7 +139,10 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
   }
 
   _exitFullscreen() {
-    if (kIsWeb) {}
+    if (kIsWeb) {
+      widget.controller.initialize();
+      document.exitFullscreen();
+    }
     _overlayEntry?.remove();
     _overlayEntry = null;
   }

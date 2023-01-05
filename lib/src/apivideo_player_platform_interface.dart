@@ -145,6 +145,10 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
   Stream<PlayerEvent> playerEventsFor(int textureId) {
     throw UnimplementedError('playerEventsFor() has not been implemented.');
   }
+
+  Future<void> exitFullScreen(int textureId) {
+    throw UnimplementedError('exitFullScreen() has not been implemented.');
+  }
 }
 
 class _PlatformImplementation extends ApiVideoPlayerPlatform {}

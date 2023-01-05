@@ -242,6 +242,11 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
+  Future<void> exitFullScreen(int textureId) async {
+    // await create(textureId, _players[textureId]!.videoOptions!);
+  }
+
+  @override
   Widget buildView(int textureId) {
     if (_players[textureId] == null) {
       throw ArgumentError(
