@@ -21,6 +21,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   int _textureCounter = -1;
   final Map<int, Player> _players = {};
+  int? _lastTextureId;
 
   @override
   Future<bool> isCreated(int textureId) async {
@@ -251,16 +252,29 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
         'No player found for this texture id: $textureId. Cannot enter full screen.',
       );
     }
-    _players[textureId]!.wasPlayingBeforeFullScreen =
-        await isPlaying(textureId);
-    _players[textureId]!.currentTime = await getCurrentTime(textureId);
-    _players[textureId]!.currentVolume = await getVolume(textureId);
+
+    DivElement div = DivElement()
+      ..attributes = {'id': 'fsflag', 'data-textureId': textureId.toString()};
+    document.body?.insertAdjacentElement('beforeend', div);
+
+    await setCurrentVideoState(textureId);
   }
 
   @override
   Future<void> exitFullScreen(int textureId) async {
-    final bool isPlaying_ = await isPlaying(textureId);
-    _players[textureId]?.wasPlayingBeforeFullScreen = isPlaying_;
+    final String? lastTextureId =
+        document.querySelector('#fsflag')?.getAttribute('data-textureId');
+    document.querySelector('#fsflag')?.remove();
+    ArgumentError.checkNotNull(lastTextureId, 'lastTextureId');
+    _lastTextureId = int.parse(lastTextureId!);
+    await setCurrentVideoState(int.parse(lastTextureId));
+    document.querySelector('#apiVideoPlayerJsScript$lastTextureId')?.remove();
+  }
+
+  Future<void> setCurrentVideoState(int textureId) async {
+    _players[textureId]!.wasPlayingBefore = await isPlaying(textureId);
+    _players[textureId]!.currentTime = await getCurrentTime(textureId);
+    _players[textureId]!.currentVolume = await getVolume(textureId);
   }
 
   @override
@@ -327,6 +341,8 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       }
 
       if (document.querySelector('#apiVideoPlayerJsScript$textureId') == null) {
+        final bool isDiff =
+            _lastTextureId != null && _lastTextureId != textureId;
         final String jsString = '''
           window.player$textureId = new PlayerSdk(
             "#playerDiv$textureId",
@@ -334,7 +350,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
               id: "${_players[textureId]!.videoOptions!.videoId}",
               chromeless: true,
               live: ${_players[textureId]!.videoOptions!.videoType == VideoType.live},
-              autoplay: ${_players[textureId]!.autoplay},
+              autoplay: ${_players[textureId]!.autoplay || (isDiff && _players[_lastTextureId]!.wasPlayingBefore)},
             }
           );
         ''';
@@ -353,7 +369,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
               id: "${_players[textureId]!.videoOptions!.videoId}",
               chromeless: true,
               live: ${_players[textureId]!.videoOptions!.videoType == VideoType.live},
-              autoplay: ${_players[textureId]!.autoplay || _players[textureId]!.wasPlayingBeforeFullScreen},
+              autoplay: ${_players[textureId]!.autoplay || _players[textureId]!.wasPlayingBefore},
             }
           );
           if (${_players[textureId]!.currentTime}) {
@@ -400,7 +416,7 @@ class Player {
     this.isCreated = false,
     this.videoOptions,
     this.playerEvents,
-    this.wasPlayingBeforeFullScreen = false,
+    this.wasPlayingBefore = false,
     this.currentTime,
     this.currentVolume,
   });
@@ -408,7 +424,7 @@ class Player {
   bool isCreated;
   VideoOptions? videoOptions;
   StreamController<PlayerEvent>? playerEvents;
-  bool wasPlayingBeforeFullScreen;
+  bool wasPlayingBefore;
   int? currentTime;
   double? currentVolume;
 }

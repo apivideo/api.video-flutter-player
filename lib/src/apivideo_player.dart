@@ -140,13 +140,15 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
 
   _exitFullscreen() async {
     if (kIsWeb) {
-      // TODO: Ajouter un flag en JS pour capter textureId
       await _playerPlatform.exitFullScreen(_textureId);
-      widget.controller.initialize();
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+      await widget.controller.initialize();
       document.exitFullscreen();
+    } else {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
     }
-    _overlayEntry?.remove();
-    _overlayEntry = null;
   }
 
   void _updateAspectRatio() async {
