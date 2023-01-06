@@ -109,8 +109,9 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
             )),
       );
 
-  _enterFullscreen() {
+  _enterFullscreen() async {
     if (kIsWeb) {
+      await _playerPlatform.enterFullScreen(_textureId);
       document.documentElement?.requestFullscreen();
     }
     _overlayEntry = OverlayEntry(builder: (context) {
@@ -137,8 +138,10 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
     Overlay.of(context).insert(_overlayEntry!);
   }
 
-  _exitFullscreen() {
+  _exitFullscreen() async {
     if (kIsWeb) {
+      // TODO: Ajouter un flag en JS pour capter textureId
+      await _playerPlatform.exitFullScreen(_textureId);
       widget.controller.initialize();
       document.exitFullscreen();
     }

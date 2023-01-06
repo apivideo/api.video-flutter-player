@@ -245,8 +245,22 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
+  Future<void> enterFullScreen(int textureId) async {
+    if (_players[textureId] == null) {
+      throw Exception(
+        'No player found for this texture id: $textureId. Cannot enter full screen.',
+      );
+    }
+    _players[textureId]!.wasPlayingBeforeFullScreen =
+        await isPlaying(textureId);
+    _players[textureId]!.currentTime = await getCurrentTime(textureId);
+    _players[textureId]!.currentVolume = await getVolume(textureId);
+  }
+
+  @override
   Future<void> exitFullScreen(int textureId) async {
-    // await create(textureId, _players[textureId]!.videoOptions!);
+    final bool isPlaying_ = await isPlaying(textureId);
+    _players[textureId]?.wasPlayingBeforeFullScreen = isPlaying_;
   }
 
   @override
@@ -329,6 +343,31 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
           ..innerText = jsString;
         script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
         document.body?.insertAdjacentElement('beforeend', script);
+      } else {
+        document.querySelector('#apiVideoPlayerJsScript$textureId')!.remove();
+        document.querySelector('#playerDiv$textureId > iframe')?.remove();
+        final String jsString = '''
+          window.player$textureId = new PlayerSdk(
+            "#playerDiv$textureId",
+            { 
+              id: "${_players[textureId]!.videoOptions!.videoId}",
+              chromeless: true,
+              live: ${_players[textureId]!.videoOptions!.videoType == VideoType.live},
+              autoplay: ${_players[textureId]!.autoplay || _players[textureId]!.wasPlayingBeforeFullScreen},
+            }
+          );
+          if (${_players[textureId]!.currentTime}) {
+            window.player$textureId.setCurrentTime(${_players[textureId]!.currentTime! / 1000});
+          }
+          if (${_players[textureId]!.currentVolume}) {
+            window.player$textureId.setVolume(${_players[textureId]!.currentVolume});
+          }
+        ''';
+        final ScriptElement script = ScriptElement()
+          ..id = 'apiVideoPlayerJsScript$textureId'
+          ..innerText = jsString;
+        script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
+        document.body?.insertAdjacentElement('beforeend', script);
       }
 
       if (_players[textureId]!.playerEvents == null) {
@@ -361,9 +400,15 @@ class Player {
     this.isCreated = false,
     this.videoOptions,
     this.playerEvents,
+    this.wasPlayingBeforeFullScreen = false,
+    this.currentTime,
+    this.currentVolume,
   });
   bool autoplay;
   bool isCreated;
   VideoOptions? videoOptions;
   StreamController<PlayerEvent>? playerEvents;
+  bool wasPlayingBeforeFullScreen;
+  int? currentTime;
+  double? currentVolume;
 }
