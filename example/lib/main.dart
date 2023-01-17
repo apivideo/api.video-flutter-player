@@ -15,7 +15,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final TextEditingController _textEditingController =
       TextEditingController(text: 'viAYG4UyioCniaLsNfXMnDC');
+  final TextEditingController _textEditingController2 =
+      TextEditingController(text: 'vi3QMmTntHUa0YVGfb4eopzi');
   ApiVideoPlayerController? _controller;
+  ApiVideoPlayerController? _controller2;
 
   @override
   void initState() {
@@ -62,6 +65,31 @@ class _MyAppState extends State<MyApp> {
                   ),
                   _controller != null
                       ? PlayerWidget(controller: _controller!)
+                      : const SizedBox.shrink(),
+                  Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: TextField(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Enter a video id',
+                      ),
+                      controller: _textEditingController2,
+                      onSubmitted: (value) async {
+                        if (_controller2 == null) {
+                          setState(() {
+                            _controller2 = ApiVideoPlayerController(
+                              videoOptions: VideoOptions(videoId: value),
+                            );
+                          });
+                        } else {
+                          _controller2
+                              ?.setVideoOptions(VideoOptions(videoId: value));
+                        }
+                      },
+                    ),
+                  ),
+                  _controller2 != null
+                      ? PlayerWidget(controller: _controller2!)
                       : const SizedBox.shrink(),
                 ],
               ),
