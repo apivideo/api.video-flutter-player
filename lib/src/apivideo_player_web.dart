@@ -238,6 +238,9 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       );
     }
     final streamController = StreamController<PlayerEvent>();
+    streamController.onCancel = () {
+      streamController.close();
+    };
     _players[textureId]!.playerEvents = streamController;
     return streamController.stream;
   }
