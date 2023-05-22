@@ -8,7 +8,7 @@ val Map<String, Any>.videoOptions: VideoOptions
     get() = VideoOptions(
         this["videoId"] as String,
         (this["videoType"] as String).toVideoType(),
-        this["privateToken"] as String?
+        this["token"] as String?
     )
 
 fun String.toVideoType(): VideoType {
