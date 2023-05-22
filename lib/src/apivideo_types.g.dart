@@ -10,12 +10,14 @@ VideoOptions _$VideoOptionsFromJson(Map<String, dynamic> json) => VideoOptions(
       videoId: json['videoId'] as String,
       videoType: $enumDecodeNullable(_$VideoTypeEnumMap, json['videoType']) ??
           VideoType.vod,
+      token: json['token'] as String?,
     );
 
 Map<String, dynamic> _$VideoOptionsToJson(VideoOptions instance) =>
     <String, dynamic>{
       'videoId': instance.videoId,
       'videoType': _$VideoTypeEnumMap[instance.videoType]!,
+      'token': instance.token,
     };
 
 const _$VideoTypeEnumMap = {
