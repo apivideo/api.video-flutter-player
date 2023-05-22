@@ -1,5 +1,6 @@
 import 'package:apivideo_player/apivideo_player.dart';
 import 'package:flutter/material.dart';
+import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,13 +14,21 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  String get _publicVideoId => 'YOUR_PUBLIC_VIDEO_ID';
+  String get _privateVideoId => 'YOUR_PRIVATE_VIDEO_ID';
   final TextEditingController _textEditingController =
       TextEditingController(text: '');
   ApiVideoPlayerController? _controller;
+  bool _isPublicVideo = true;
+  final TextEditingController _tokenTextEditingController =
+      TextEditingController(text: 'YOUR_TOKEN');
 
   @override
   void initState() {
     super.initState();
+    _isPublicVideo == true
+        ? _textEditingController.text = _publicVideoId
+        : _textEditingController.text = _privateVideoId;
   }
 
   @override
@@ -60,6 +69,60 @@ class _MyAppState extends State<MyApp> {
                       },
                     ),
                   ),
+                  // add a switch btn to set private or public video
+                  Padding(
+                    padding: const EdgeInsets.only(top: 3),
+                    child: LiteRollingSwitch(
+                      value: _isPublicVideo,
+                      width: 150,
+                      textOn: 'Public',
+                      textOff: 'Private',
+                      colorOn: Colors.blueGrey,
+                      colorOff: Colors.orangeAccent,
+                      iconOn: Icons.public,
+                      iconOff: Icons.lock,
+                      animationDuration: const Duration(milliseconds: 300),
+                      onChanged: (bool state) {
+                        _textEditingController.text =
+                            state ? _publicVideoId : _privateVideoId;
+                        setState(() {
+                          _isPublicVideo = state;
+                        });
+                      },
+                      onDoubleTap: () {},
+                      onSwipe: () {},
+                      onTap: () {},
+                    ),
+                  ),
+                  _isPublicVideo == false
+                      ? Padding(
+                          padding: const EdgeInsets.all(30.0),
+                          child: TextField(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Enter a token',
+                            ),
+                            controller: _tokenTextEditingController,
+                            onSubmitted: (value) async {
+                              if (_controller == null) {
+                                setState(() {
+                                  print("je suis dans le setstate");
+                                  print(value);
+                                  _controller = ApiVideoPlayerController(
+                                    videoOptions: VideoOptions(
+                                        videoId: _textEditingController.text,
+                                        token: value),
+                                  );
+                                });
+                              } else {
+                                _controller?.setVideoOptions(VideoOptions(
+                                    videoId: _textEditingController.text,
+                                    token: value));
+                              }
+                            },
+                          ),
+                        )
+                      : const SizedBox.shrink(),
                   _controller != null
                       ? PlayerWidget(controller: _controller!)
                       : const SizedBox.shrink(),
