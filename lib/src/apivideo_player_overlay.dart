@@ -68,6 +68,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   bool _isPlaying = false;
   bool _didEnd = false;
 
+  late double widgetWidth;
+
   late ApiVideoPlayerEventsListener _listener;
 
   Timer? _timeSliderTimer;
@@ -247,8 +249,26 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     }
   }
 
+  double _getForwardIconsSize() {
+    double size = widgetWidth * 0.15;
+    print('size forward $size');
+    print('actual size forward ${size.clamp(10, 30)}');
+    return size.clamp(10, 30);
+  }
+
+  double _getPlayPauseIconsSize() {
+    double size = widgetWidth * 0.35;
+    print('size  play/pause $size');
+    print('actual size  play/pause ${size.clamp(20, 50)}');
+    return size.clamp(20, 50);
+  }
+
   @override
-  Widget build(BuildContext context) => MouseRegion(
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      widgetWidth = constraints.maxWidth;
+      return MouseRegion(
         onEnter: (_) => showOverlay(),
         onExit: (_) => _showOverlayForDuration(),
         child: GestureDetector(
@@ -259,15 +279,29 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
           child: PointerInterceptor(child: buildOverlay()),
         ),
       );
+    });
+  }
 
   Widget buildOverlay() => Visibility(
       visible: _isOverlayVisible && !widget.hideControls,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          buildFullScreenControls(),
-          buildControls(),
-          buildSlider(),
+          Expanded(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: buildFullScreenControls(),
+            ),
+          ),
+          Expanded(
+            child: buildControls(),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: buildSlider(),
+            ),
+          ),
         ],
       ));
 
@@ -293,51 +327,50 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         ),
       );
 
-  Widget buildFullScreenControls() => Center(
-        child: Row(
-          //mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            widget.controller.isFullscreen
-                ? buildBtnExitFullScreen()
-                : Container(),
-            Row(
-              children: [
-                buildVolumeSlider(),
-                widget.controller.isFullscreen
-                    ? Container()
-                    : buildBtnFullScreen(),
-              ],
-            )
-          ],
-        ),
+  Widget buildFullScreenControls() => Row(
+        //mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          widget.controller.isFullscreen
+              ? buildBtnExitFullScreen()
+              : Container(),
+          Row(
+            children: [
+              buildVolumeSlider(),
+              widget.controller.isFullscreen
+                  ? Container()
+                  : buildBtnFullScreen(),
+            ],
+          )
+        ],
       );
 
-  Widget buildControls() => Center(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-                onPressed: () {
-                  seek(const Duration(seconds: -10));
-                },
-                iconSize: 30,
-                icon: Icon(
-                  Icons.replay_10_rounded,
-                  color: widget.theme.controlsColor,
-                )),
-            buildBtnVideoControl(),
-            IconButton(
-                onPressed: () {
-                  seek(const Duration(seconds: 10));
-                },
-                iconSize: 30,
-                icon: Icon(
-                  Icons.forward_10_rounded,
-                  color: widget.theme.controlsColor,
-                )),
-          ],
-        ),
+  Widget buildControls() => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(
+              child: IconButton(
+                  onPressed: () {
+                    seek(const Duration(seconds: -10));
+                  },
+                  iconSize: _getForwardIconsSize(),
+                  icon: Icon(
+                    Icons.replay_10_rounded,
+                    color: widget.theme.controlsColor,
+                  ))),
+          Expanded(flex: 2, child: buildBtnVideoControl()),
+          Expanded(
+              child: IconButton(
+                  onPressed: () {
+                    seek(const Duration(seconds: 10));
+                  },
+                  iconSize: _getForwardIconsSize(),
+                  icon: Icon(
+                    Icons.forward_10_rounded,
+                    color: widget.theme.controlsColor,
+                  ))),
+        ],
       );
 
   Widget buildBtnVideoControl() {
@@ -347,8 +380,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   Widget buildBtnPlay() => IconButton(
         onPressed: () {
           _isPlaying ? pause() : play();
+          print(widgetWidth);
         },
-        iconSize: 60,
+        iconSize: _getPlayPauseIconsSize(),
         icon: _isPlaying
             ? Icon(
                 ApiVideoIcons.pausePrimary,
@@ -372,7 +406,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
 
   Widget buildSlider() => Container(
         height: 60,
-        padding: const EdgeInsets.only(right: 5),
+        padding: const EdgeInsets.only(right: 1),
         child: Row(
           children: [
             Expanded(
