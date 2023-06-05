@@ -15,50 +15,20 @@ class FlutterPlayerView: NSObject, FlutterStreamHandler {
     private let eventChannel: FlutterEventChannel
     private var eventSink: FlutterEventSink?
 
-    private let events = PlayerEvents()
-
     init(binaryMessenger: FlutterBinaryMessenger,
          textureRegistry: FlutterTextureRegistry,
          videoOptions: VideoOptions? = nil,
          autoplay: Bool)
     {
         self.textureRegistry = textureRegistry
-        playerController = ApiVideoPlayerController(videoOptions: videoOptions, playerLayer: playerLayer, autoplay: autoplay, events: events)
+        playerController = ApiVideoPlayerController(videoOptions: videoOptions, playerLayer: playerLayer, autoplay: autoplay)
         textureId = self.textureRegistry.register(playerTexture)
         frameUpdater = FrameUpdater(textureRegistry: self.textureRegistry, textureId: textureId)
         displayLink = FlutterPlayerView.createDisplayLink(frameUpdater: frameUpdater)
-
         eventChannel = FlutterEventChannel(name: "video.api.player/events\(String(textureId))", binaryMessenger: binaryMessenger)
         super.init()
         eventChannel.setStreamHandler(self)
-
-        events.didReady = {
-            self.playerController.addOutput(output: self.playerTexture.videoOutput)
-            // Hack to load the first image. We don't need it in case of autoplay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.textureRegistry.textureFrameAvailable(self.textureId)
-            }
-
-            self.eventSink?(["type": "ready"])
-        }
-        events.didPlay = {
-            self.displayLink.isPaused = false
-            self.eventSink?(["type": "played"])
-        }
-        events.didPause = {
-            self.displayLink.isPaused = true
-            self.eventSink?(["type": "paused"])
-        }
-        events.didSeek = { _, _ in
-            self.eventSink?(["type": "seek"])
-        }
-        events.didEnd = {
-            self.displayLink.isPaused = true
-            self.eventSink?(["type": "ended"])
-        }
-        events.didError = { error in
-            self.eventSink?(FlutterError(code: "error", message: error.localizedDescription, details: error))
-        }
+        playerController.addDelegate(delegate: self)
     }
 
     static func createVideoOutput() -> AVPlayerItemVideoOutput {
@@ -96,7 +66,7 @@ class FlutterPlayerView: NSObject, FlutterStreamHandler {
             playerController.currentTime
         }
         set {
-            self.eventSink?(["type": "seekStarted"])
+            eventSink?(["type": "seekStarted"])
             playerController.seek(to: newValue)
         }
     }
@@ -155,7 +125,7 @@ class FlutterPlayerView: NSObject, FlutterStreamHandler {
     }
 
     func seek(offset: CMTime) {
-        self.eventSink?(["type": "seekStarted"])
+        eventSink?(["type": "seekStarted"])
         playerController.seek(offset: offset)
         textureRegistry.textureFrameAvailable(textureId) // render frame of the new scene
     }
@@ -181,6 +151,55 @@ class FlutterPlayerView: NSObject, FlutterStreamHandler {
         eventSink = nil
         return nil
     }
+}
+
+extension FlutterPlayerView: ApiVideoPlayerControllerPlayerDelegate {
+    func didPrepare() {}
+
+    func didReady() {
+        playerController.addOutput(output: playerTexture.videoOutput)
+        // Hack to load the first image. We don't need it in case of autoplay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.textureRegistry.textureFrameAvailable(self.textureId)
+        }
+
+        eventSink?(["type": "ready"])
+    }
+
+    func didPause() {
+        displayLink.isPaused = true
+        eventSink?(["type": "paused"])
+    }
+
+    func didPlay() {
+        displayLink.isPaused = false
+        eventSink?(["type": "played"])
+    }
+
+    func didReplay() {}
+
+    func didMute() {}
+
+    func didUnMute() {}
+
+    func didLoop() {}
+
+    func didSetVolume(_: Float) {}
+
+    func didSeek(_: CMTime, _: CMTime) {
+        eventSink?(["type": "seek"])
+    }
+
+    func didEnd() {
+        displayLink.isPaused = true
+        eventSink?(["type": "ended"])
+    }
+
+    func didError(_ error: Error) {
+        eventSink?(FlutterError(code: "error", message: error.localizedDescription, details: error))
+    }
+
+    func didVideoSizeChanged(_: CGSize) {}
 }
 
 class FrameUpdater: NSObject {
