@@ -106,8 +106,6 @@ class _MyAppState extends State<MyApp> {
                             onSubmitted: (value) async {
                               if (_controller == null) {
                                 setState(() {
-                                  print("je suis dans le setstate");
-                                  print(value);
                                   _controller = ApiVideoPlayerController(
                                     videoOptions: VideoOptions(
                                         videoId: _textEditingController.text,
