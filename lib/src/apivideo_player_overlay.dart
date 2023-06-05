@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:apivideo_player/src/apivideo_player_selectableListView.dart';
 import 'package:apivideo_player/src/presentation/apivideo_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +69,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   bool _isPlaying = false;
   bool _didEnd = false;
 
-  late double widgetWidth;
+  late double _widgetWidth;
+  late double _widgetHeight;
 
   late ApiVideoPlayerEventsListener _listener;
 
@@ -82,6 +84,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   double _volume = 0.0;
   bool _isMuted = false;
 
+  bool _isSelectedSpeedRateListViewVisible = false;
+  double _selectedSpeedRate = 1.0;
+
   late AnimationController expandController;
   late Animation<double> animation;
 
@@ -91,13 +96,18 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     widget.controller.addEventsListener(_listener);
     _showOverlayForDuration();
     // In case controller is already created
-    widget.controller.isCreated.then((bool isCreated) => {
+    double speedR = 1.0;
+    widget.controller.isCreated.then((bool isCreated) async => {
           if (isCreated)
             {
               _updateCurrentTime(),
               _updateDuration(),
               _updateVolume(),
               _updateMuted(),
+              speedR = await widget.controller.speedRate,
+              setState(() {
+                _selectedSpeedRate = speedR;
+              }),
               widget.controller.isPlaying.then((isPlaying) => {
                     if (isPlaying) {_onPlay()}
                   })
@@ -191,6 +201,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   void hideOverlay() {
     setState(() {
       _isOverlayVisible = false;
+      _isSelectedSpeedRateListViewVisible = false;
     });
   }
 
@@ -249,17 +260,15 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     }
   }
 
-  double _getForwardIconsSize() {
-    double size = widgetWidth * 0.15;
+  double _getSecondaryIconsSize() {
+    double size = _widgetWidth * 0.05;
     print('size forward $size');
-    print('actual size forward ${size.clamp(10, 30)}');
-    return size.clamp(10, 30);
+    return size.clamp(15, 30);
   }
 
-  double _getPlayPauseIconsSize() {
-    double size = widgetWidth * 0.35;
-    print('size  play/pause $size');
-    print('actual size  play/pause ${size.clamp(20, 50)}');
+  double _getPrimaryIconsSize() {
+    double size = _widgetWidth * 0.15;
+    print('size play pause $size');
     return size.clamp(20, 50);
   }
 
@@ -267,18 +276,52 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   Widget build(BuildContext context) {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      widgetWidth = constraints.maxWidth;
+      _widgetWidth = constraints.maxWidth;
+      _widgetHeight = constraints.maxHeight;
       return MouseRegion(
-        onEnter: (_) => showOverlay(),
-        onExit: (_) => _showOverlayForDuration(),
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            _showOverlayForDuration();
-          },
-          child: PointerInterceptor(child: buildOverlay()),
-        ),
-      );
+          onEnter: (_) => showOverlay(),
+          onExit: (_) => _showOverlayForDuration(),
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              _showOverlayForDuration();
+            },
+            child: PointerInterceptor(
+              child: Stack(children: <Widget>[
+                buildOverlay(),
+                Positioned(
+                  bottom: 120,
+                  left: 20,
+                  child: Visibility(
+                      visible: _isSelectedSpeedRateListViewVisible &&
+                          _isOverlayVisible,
+                      child: SizedBox(
+                        width: 120,
+                        height: 140,
+                        child: DecoratedBox(
+                            decoration: const BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20)),
+                            ),
+                            child: ApiVideoPlayerSelectableListView(
+                              items: const [0.5, 1.0, 1.25, 1.5, 2.0],
+                              selectedElement: _selectedSpeedRate,
+                              onSelected: (Object value) {
+                                setState(() {
+                                  if (value is double) {
+                                    _selectedSpeedRate = value;
+                                    widget.controller.setSpeedRate(value);
+                                  }
+                                  _isSelectedSpeedRateListViewVisible = false;
+                                });
+                              },
+                            )),
+                      )),
+                ),
+              ]),
+            ),
+          ));
     });
   }
 
@@ -354,7 +397,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                   onPressed: () {
                     seek(const Duration(seconds: -10));
                   },
-                  iconSize: _getForwardIconsSize(),
+                  iconSize: _getSecondaryIconsSize(),
                   icon: Icon(
                     Icons.replay_10_rounded,
                     color: widget.theme.controlsColor,
@@ -365,7 +408,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                   onPressed: () {
                     seek(const Duration(seconds: 10));
                   },
-                  iconSize: _getForwardIconsSize(),
+                  iconSize: _getSecondaryIconsSize(),
                   icon: Icon(
                     Icons.forward_10_rounded,
                     color: widget.theme.controlsColor,
@@ -380,9 +423,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   Widget buildBtnPlay() => IconButton(
         onPressed: () {
           _isPlaying ? pause() : play();
-          print(widgetWidth);
+          print(_widgetWidth);
         },
-        iconSize: _getPlayPauseIconsSize(),
+        iconSize: _getPrimaryIconsSize(),
         icon: _isPlaying
             ? Icon(
                 ApiVideoIcons.pausePrimary,
@@ -405,26 +448,55 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       ));
 
   Widget buildSlider() => Container(
-        height: 60,
+        height: 80,
+        color: Colors.amber,
         padding: const EdgeInsets.only(right: 1),
-        child: Row(
+        child: Column(
           children: [
             Expanded(
-              child: Slider(
-                value: min(
-                  _currentTime.inMilliseconds,
-                  _duration.inMilliseconds,
-                ).toDouble(), // Ensure that the slider doesn't go over the duration
-                max: _duration.inMilliseconds.toDouble(),
-                activeColor: widget.theme.activeTimeSliderColor,
-                inactiveColor: widget.theme.inactiveTimeSliderColor,
-                onChanged: (value) {
-                  setCurrentTime(Duration(milliseconds: value.toInt()));
-                },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      //TODO: display view list of speed options
+                      _showOverlayForDuration();
+                      setState(() {
+                        _isSelectedSpeedRateListViewVisible = true;
+                      });
+                    },
+                    iconSize: _getSecondaryIconsSize(),
+                    icon: Icon(
+                      Icons.speed,
+                      color: widget.theme.controlsColor,
+                    ),
+                  ),
+                ],
               ),
             ),
-            Text((_duration - _currentTime).toPlayerString(),
-                style: const TextStyle(color: Colors.white)),
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Slider(
+                      value: min(
+                        _currentTime.inMilliseconds,
+                        _duration.inMilliseconds,
+                      ).toDouble(), // Ensure that the slider doesn't go over the duration
+                      max: _duration.inMilliseconds.toDouble(),
+                      activeColor: widget.theme.activeTimeSliderColor,
+                      inactiveColor: widget.theme.inactiveTimeSliderColor,
+                      onChanged: (value) {
+                        setCurrentTime(Duration(milliseconds: value.toInt()));
+                      },
+                    ),
+                  ),
+                  Text((_duration - _currentTime).toPlayerString(),
+                      style: const TextStyle(color: Colors.white)),
+                ],
+              ),
+            ),
           ],
         ),
       );
