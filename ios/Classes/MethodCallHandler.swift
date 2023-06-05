@@ -204,6 +204,24 @@ class MethodCallHandler {
                     }
                     self?.controller.seek(textureId: Int64(textureId), offset: offset)
                     result(nil)
+                case Keys.setPlaybackSpeed:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int,
+                          let speed = args["speedRate"] as? Double
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id or speed", details: nil))
+                        return
+                    }
+                    self?.controller.setPlaybackSpeed(textureId: Int64(textureId), speedRate: speed)
+                    result(nil)
+                case Keys.getPlaybackSpeed:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int
+                        else {
+                            result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                            return
+                        }
+                    result(["speedRate": self?.controller.getPlaybackSpeed(textureId: Int64(textureId))])
                 default:
                     result(FlutterMethodNotImplemented)
                 }
@@ -241,6 +259,8 @@ enum Keys {
     static let getVolume = "getVolume"
     static let setVolume = "setVolume"
     static let getVideoSize = "getVideoSize"
+    static let getPlaybackSpeed = "getPlaybackSpeed"
+    static let setPlaybackSpeed = "setPlaybackSpeed"
 
     static let play = "play"
     static let pause = "pause"

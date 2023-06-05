@@ -146,6 +146,23 @@ class ApiVideoMobilePlayer extends ApiVideoPlayerPlatform {
   }
 
   @override
+  Future<void> setPlaybackSpeed(int textureId, double speedRate) {
+    final Map<String, dynamic> params = <String, dynamic>{
+      "speedRate": speedRate
+    };
+    return _channel.invokeMapMethodWithTexture(
+        'setPlaybackSpeed', TextureMessage(textureId: textureId), params);
+  }
+
+  @override
+  Future<double> getPlaybackSpeed(int textureId) async {
+    final Map<dynamic, dynamic> reply =
+        await _channel.invokeMapMethodWithTexture(
+            'getPlaybackSpeed', TextureMessage(textureId: textureId)) as Map;
+    return reply['speedRate'] as double;
+  }
+
+  @override
   Future<int?> initialize(bool autoplay) async {
     final Map<String, dynamic> params = <String, dynamic>{"autoplay": autoplay};
     final Map<String, dynamic>? reply =
