@@ -110,7 +110,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       parent: expandController,
       curve: Curves.fastLinearToSlowEaseIn,
     );
-    print('initGetIsFullscreen ${widget.controller.isFullscreen}');
   }
 
   @override
@@ -295,7 +294,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
 
   Widget buildFullScreenControls() => Center(
         child: Row(
-          //mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             widget.controller.isFullscreen
