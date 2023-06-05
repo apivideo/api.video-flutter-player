@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:apivideo_player/src/apivideo_player_selectableListView.dart';
 import 'package:apivideo_player/src/presentation/apivideo_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -80,6 +81,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   double _volume = 0.0;
   bool _isMuted = false;
 
+  bool _isSelectedSpeedRateListViewVisible = false;
+  double _selectedSpeedRate = 1.0;
+
   late AnimationController expandController;
   late Animation<double> animation;
 
@@ -89,13 +93,18 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     widget.controller.addEventsListener(_listener);
     _showOverlayForDuration();
     // In case controller is already created
-    widget.controller.isCreated.then((bool isCreated) => {
+    double speedR = 1.0;
+    widget.controller.isCreated.then((bool isCreated) async => {
           if (isCreated)
             {
               _updateCurrentTime(),
               _updateDuration(),
               _updateVolume(),
               _updateMuted(),
+              speedR = await widget.controller.speedRate,
+              setState(() {
+                _selectedSpeedRate = speedR;
+              }),
               widget.controller.isPlaying.then((isPlaying) => {
                     if (isPlaying) {_onPlay()}
                   })
@@ -178,6 +187,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   void hideOverlay() {
     setState(() {
       _isOverlayVisible = false;
+      _isSelectedSpeedRateListViewVisible = false;
     });
   }
 
@@ -245,7 +255,41 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
           onTap: () {
             _showOverlayForDuration();
           },
-          child: PointerInterceptor(child: buildOverlay()),
+          child: PointerInterceptor(
+            child: Stack(children: <Widget>[
+              buildOverlay(),
+              Positioned(
+                bottom: 120,
+                left: 20,
+                child: Visibility(
+                    visible: _isSelectedSpeedRateListViewVisible &&
+                        _isOverlayVisible,
+                    child: SizedBox(
+                      width: 120,
+                      height: 140,
+                      child: DecoratedBox(
+                          decoration: const BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(20)),
+                          ),
+                          child: ApiVideoPlayerSelectableListView(
+                            items: const [0.5, 1.0, 1.25, 1.5, 2.0],
+                            selectedElement: _selectedSpeedRate,
+                            onSelected: (Object value) {
+                              setState(() {
+                                if (value is double) {
+                                  _selectedSpeedRate = value;
+                                  widget.controller.setSpeedRate(value);
+                                }
+                                _isSelectedSpeedRateListViewVisible = false;
+                              });
+                            },
+                          )),
+                    )),
+              ),
+            ]),
+          ),
         ),
       );
 
@@ -318,30 +362,53 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       ));
 
   Widget buildSlider() => Container(
-        height: 60,
-        padding: const EdgeInsets.only(right: 5),
-        child: Row(
+        height: 80,
+        padding: const EdgeInsets.only(right: 1),
+        child: Column(
           children: [
             Expanded(
-              child: Slider(
-                value: max(
-                    0,
-                    min(
-                      _currentTime.inMilliseconds,
-                      _duration.inMilliseconds,
-                    )).toDouble(),
-                // Ensure that the slider doesn't go over the duration or under 0.0
-                min: 0.0,
-                max: _duration.inMilliseconds.toDouble(),
-                activeColor: widget.theme.activeTimeSliderColor,
-                inactiveColor: widget.theme.inactiveTimeSliderColor,
-                onChanged: (value) {
-                  setCurrentTime(Duration(milliseconds: value.toInt()));
-                },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      _showOverlayForDuration();
+                      setState(() {
+                        _isSelectedSpeedRateListViewVisible = true;
+                      });
+                    },
+                    iconSize: 30,
+                    icon: Icon(
+                      Icons.speed,
+                      color: widget.theme.controlsColor,
+                    ),
+                  ),
+                ],
               ),
             ),
-            Text((_duration - _currentTime).toPlayerString(),
-                style: const TextStyle(color: Colors.white)),
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Slider(
+                      value: min(
+                        _currentTime.inMilliseconds,
+                        _duration.inMilliseconds,
+                      ).toDouble(), // Ensure that the slider doesn't go over the duration
+                      max: _duration.inMilliseconds.toDouble(),
+                      activeColor: widget.theme.activeTimeSliderColor,
+                      inactiveColor: widget.theme.inactiveTimeSliderColor,
+                      onChanged: (value) {
+                        setCurrentTime(Duration(milliseconds: value.toInt()));
+                      },
+                    ),
+                  ),
+                  Text((_duration - _currentTime).toPlayerString(),
+                      style: const TextStyle(color: Colors.white)),
+                ],
+              ),
+            ),
           ],
         ),
       );
