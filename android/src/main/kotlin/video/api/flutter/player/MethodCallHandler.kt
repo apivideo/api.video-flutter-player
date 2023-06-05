@@ -199,7 +199,7 @@ class MethodCallHandler(
 
             SET_PLAYBACK_SPEED -> {
                 val speed = try {
-                    ((call.arguments as Map<*, *>)["speed"] as Double).toFloat()
+                    ((call.arguments as Map<*, *>)["speedRate"] as Double)
                 } catch (e: Exception) {
                     result.error("invalid_parameter", "Invalid speed", e)
                     return
@@ -213,7 +213,7 @@ class MethodCallHandler(
             GET_PLAYBACK_SPEED -> {
                 ensureTextureId(call, result) {
                     val reply: MutableMap<String, Any> = HashMap()
-                    reply["speed"] = controller.getPlaybackSpeed(it).toDouble()
+                    reply["speedRate"] = controller.getPlaybackSpeed(it).toDouble()
                     result.success(reply)
                 }
             }
