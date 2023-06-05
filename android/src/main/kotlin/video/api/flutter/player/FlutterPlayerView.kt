@@ -135,6 +135,12 @@ class FlutterPlayerView(
     val videoSize: Size?
         get() = playerController.videoSize
 
+    var playbackSpeed: Float
+        get() = playerController.playbackSpeed
+        set(value) {
+            playerController.playbackSpeed = value
+        }
+
     fun play() = playerController.play()
     fun pause() = playerController.pause()
 

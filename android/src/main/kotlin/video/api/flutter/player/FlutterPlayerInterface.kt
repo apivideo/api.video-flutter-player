@@ -24,6 +24,8 @@ interface FlutterPlayerInterface {
     fun getVolume(textureId: Long): Float
     fun setVolume(textureId: Long, volume: Float)
     fun getVideoSize(textureId: Long): Size?
+    fun getPlaybackSpeed(textureId: Long): Float
+    fun setPlaybackSpeed(textureId: Long, playbackSpeed: Float)
 
     fun play(textureId: Long)
     fun pause(textureId: Long)
