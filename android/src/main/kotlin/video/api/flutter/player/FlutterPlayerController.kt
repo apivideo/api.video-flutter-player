@@ -147,6 +147,20 @@ class FlutterPlayerController(
         }
     }
 
+    override fun getPlaybackSpeed(textureId: Long): Float {
+        return players[textureId]?.playbackSpeed ?: run {
+            Log.e(TAG, "Unknown player $textureId")
+            0.0F
+        }
+    }
+
+    override fun setPlaybackSpeed(textureId: Long, playbackSpeed: Float) {
+        players[textureId]?.let { it.playbackSpeed = playbackSpeed } ?: Log.e(
+            TAG,
+            "Unknown player $textureId"
+        )
+    }
+
     override fun play(textureId: Long) {
         players[textureId]?.play() ?: Log.e(TAG, "Unknown player $textureId")
     }
