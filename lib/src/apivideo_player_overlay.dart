@@ -262,13 +262,11 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
 
   double _getSecondaryIconsSize() {
     double size = _widgetWidth * 0.05;
-    print('size forward $size');
     return size.clamp(15, 30);
   }
 
   double _getPrimaryIconsSize() {
     double size = _widgetWidth * 0.15;
-    print('size play pause $size');
     return size.clamp(20, 50);
   }
 
@@ -449,7 +447,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
 
   Widget buildSlider() => Container(
         height: 80,
-        color: Colors.amber,
         padding: const EdgeInsets.only(right: 1),
         child: Column(
           children: [
@@ -460,7 +457,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                 children: [
                   IconButton(
                     onPressed: () {
-                      //TODO: display view list of speed options
                       _showOverlayForDuration();
                       setState(() {
                         _isSelectedSpeedRateListViewVisible = true;
