@@ -275,9 +275,6 @@ extension VideoType {
 
 extension Dictionary where Key == String {
     func toVideoOptions() -> VideoOptions {
-        guard let token = self["token"] as? String else {
-            return VideoOptions(videoId: self["videoId"] as! String, videoType: (self["videoType"] as! String).toVideoType())
-        }
-        return VideoOptions(videoId: self["videoId"] as! String, videoType: (self["videoType"] as! String).toVideoType(), token: token)
+        return VideoOptions(videoId: self["videoId"] as! String, videoType: (self["videoType"] as! String).toVideoType(), token: token as? String)
     }
 }
