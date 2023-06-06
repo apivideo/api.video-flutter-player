@@ -64,6 +64,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       },
     );
   }
+
   bool _isPlaying = false;
   bool _didEnd = false;
 
@@ -323,10 +324,14 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
           children: [
             Expanded(
               child: Slider(
-                value: min(
-                  _currentTime.inMilliseconds,
-                  _duration.inMilliseconds,
-                ).toDouble(), // Ensure that the slider doesn't go over the duration
+                value: max(
+                    0,
+                    min(
+                      _currentTime.inMilliseconds,
+                      _duration.inMilliseconds,
+                    )).toDouble(),
+                // Ensure that the slider doesn't go over the duration or under 0.0
+                min: 0.0,
                 max: _duration.inMilliseconds.toDouble(),
                 activeColor: widget.theme.activeTimeSliderColor,
                 inactiveColor: widget.theme.inactiveTimeSliderColor,
