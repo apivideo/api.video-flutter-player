@@ -82,7 +82,6 @@ class _MyAppState extends State<MyApp> {
                       },
                     ),
                   ),
-                  // add a switch btn to set private or public video
                   Padding(
                     padding: const EdgeInsets.all(30.0),
                     child: TextField(
