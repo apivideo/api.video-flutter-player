@@ -1,6 +1,5 @@
 import 'package:apivideo_player/apivideo_player.dart';
 import 'package:flutter/material.dart';
-import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 
 void main() {
   runApp(const MyApp());
