@@ -81,8 +81,7 @@ class MethodCallHandler {
                         return
                     }
                     let videoOptions = self?.controller.getVideoOptions(textureId: Int64(textureId)) // As it is mandatory to set a video option. This should never be null.
-                    result(["videoId": videoOptions!.videoId,
-                            "videoType": videoOptions!.videoType.toString()])
+                    result(videoOptions?.toMap())
                 case Keys.setVideoOptions:
                     guard let args = call.arguments as? [String: Any],
                           let textureId = args[Keys.textureId] as? Int,
@@ -275,6 +274,16 @@ extension VideoType {
 
 extension Dictionary where Key == String {
     func toVideoOptions() -> VideoOptions {
-        return VideoOptions(videoId: self["videoId"] as! String, videoType: (self["videoType"] as! String).toVideoType(), token: token as? String)
+        return VideoOptions(videoId: self["videoId"] as! String, videoType: (self["videoType"] as! String).toVideoType(), token: self["token"] as? String)
+    }
+}
+
+extension VideoOptions {
+    func toMap() -> [String: Any] {
+        return [
+            "videoId": videoId,
+            "videoType": videoType.toString(),
+            "token": token ?? nil
+        ]
     }
 }
