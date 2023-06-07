@@ -196,11 +196,7 @@ extension FlutterPlayerView: ApiVideoPlayerControllerPlayerDelegate {
     }
 
     func didError(_ error: Error) {
-        if videoOptions?.token != nil {
-            eventSink?(FlutterError(code: "error", message: error.localizedDescription, details: "The videoId or token may be wrong"))
-        } else {
-            eventSink?(FlutterError(code: "error", message: error.localizedDescription, details: "The videoId may be wrong"))
-        }
+        eventSink?(FlutterError(code: "error", message: error.localizedDescription, details: nil))
     }
 
     func didVideoSizeChanged(_: CGSize) {}
