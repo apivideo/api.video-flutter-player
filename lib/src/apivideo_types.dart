@@ -17,6 +17,10 @@ class VideoOptions {
   VideoType videoType;
   String? token;
 
+  /// Creates a [VideoOptions] object.
+  /// [videoId] is the id of the video.
+  /// [videoType] is the type of the video, by default it's vod.
+  /// [token] is the token of the video, could be null.
   VideoOptions(
       {required this.videoId, this.videoType = VideoType.vod, this.token});
 
