@@ -24,32 +24,21 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  void setVideoOption() {
-    if (_tokenTextEditingController.text.isEmpty) {
-      if (_controller == null) {
-        setState(() {
-          _controller = ApiVideoPlayerController(
-            videoOptions: VideoOptions(videoId: _textEditingController.text),
-          );
-        });
-      } else {
-        _controller?.setVideoOptions(
-            VideoOptions(videoId: _textEditingController.text));
-      }
+  void buildVideoOption() {
+    String? token = _tokenTextEditingController.text.isEmpty
+        ? null
+        : _textEditingController.text;
+
+    if (_controller == null) {
+      setState(() {
+        _controller = ApiVideoPlayerController(
+          videoOptions:
+              VideoOptions(videoId: _textEditingController.text, token: token),
+        );
+      });
     } else {
-      if (_controller == null) {
-        setState(() {
-          _controller = ApiVideoPlayerController(
-            videoOptions: VideoOptions(
-                videoId: _textEditingController.text,
-                token: _tokenTextEditingController.text),
-          );
-        });
-      } else {
-        _controller?.setVideoOptions(VideoOptions(
-            videoId: _textEditingController.text,
-            token: _tokenTextEditingController.text));
-      }
+      _controller?.setVideoOptions(
+          VideoOptions(videoId: _textEditingController.text, token: token));
     }
   }
 
@@ -78,7 +67,7 @@ class _MyAppState extends State<MyApp> {
                       ),
                       controller: _textEditingController,
                       onSubmitted: (value) async {
-                        setVideoOption();
+                        buildVideoOption();
                       },
                     ),
                   ),
@@ -92,7 +81,7 @@ class _MyAppState extends State<MyApp> {
                       ),
                       controller: _tokenTextEditingController,
                       onSubmitted: (value) async {
-                        setVideoOption();
+                        buildVideoOption();
                       },
                     ),
                   ),
