@@ -196,7 +196,7 @@ extension FlutterPlayerView: ApiVideoPlayerControllerPlayerDelegate {
     }
 
     func didError(_ error: Error) {
-        eventSink?(FlutterError(code: "error", message: error.localizedDescription, details: nil))
+        eventSink?(FlutterError(code: "error", message: error.localizedDescription, details: "Stacktrace: \(Thread.callStackSymbols)"))
     }
 
     func didVideoSizeChanged(_: CGSize) {}
