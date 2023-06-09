@@ -21,6 +21,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   int _textureCounter = -1;
   final Map<int, Player> _players = {};
+  int? _lastTextureId;
 
   @override
   Future<bool> isCreated(int textureId) async {
@@ -29,7 +30,10 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<int?> initialize(bool autoplay) async {
-    final textureCounter = ++_textureCounter;
+    int textureCounter = ++_textureCounter;
+    while (_players.containsKey(textureCounter)) {
+      textureCounter++;
+    }
     _players[textureCounter] = Player(autoplay: autoplay);
     return textureCounter;
   }
@@ -246,6 +250,38 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
+  Future<void> enterFullScreen(int textureId) async {
+    if (_players[textureId] == null) {
+      throw Exception(
+        'No player found for this texture id: $textureId. Cannot enter full screen.',
+      );
+    }
+
+    DivElement div = DivElement()
+      ..attributes = {'id': 'fsflag', 'data-textureId': textureId.toString()};
+    document.body?.insertAdjacentElement('beforeend', div);
+
+    await setCurrentVideoState(textureId);
+  }
+
+  @override
+  Future<void> exitFullScreen(int textureId) async {
+    final String? lastTextureId =
+        document.querySelector('#fsflag')?.getAttribute('data-textureId');
+    document.querySelector('#fsflag')?.remove();
+    ArgumentError.checkNotNull(lastTextureId, 'lastTextureId');
+    _lastTextureId = int.parse(lastTextureId!);
+    await setCurrentVideoState(int.parse(lastTextureId));
+    document.querySelector('#apiVideoPlayerJsScript$lastTextureId')?.remove();
+  }
+
+  Future<void> setCurrentVideoState(int textureId) async {
+    _players[textureId]!.wasPlayingBefore = await isPlaying(textureId);
+    _players[textureId]!.currentTime = await getCurrentTime(textureId);
+    _players[textureId]!.currentVolume = await getVolume(textureId);
+  }
+
+  @override
   Widget buildView(int textureId) {
     if (_players[textureId] == null) {
       throw ArgumentError(
@@ -308,22 +344,51 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
         document.body?.insertAdjacentElement('beforeend', script);
       }
 
-      final String jsString = '''
-        window.player$textureId = new PlayerSdk(
-          "#playerDiv$textureId",
-          { 
-            id: "${_players[textureId]!.videoOptions!.videoId}",
-            chromeless: true,
-            live: ${_players[textureId]!.videoOptions!.videoType == VideoType.live},
-            autoplay: ${_players[textureId]!.autoplay},
+      if (document.querySelector('#apiVideoPlayerJsScript$textureId') == null) {
+        final bool isDiff =
+            _lastTextureId != null && _lastTextureId != textureId;
+        final String jsString = '''
+          window.player$textureId = new PlayerSdk(
+            "#playerDiv$textureId",
+            { 
+              id: "${_players[textureId]!.videoOptions!.videoId}",
+              chromeless: true,
+              live: ${_players[textureId]!.videoOptions!.videoType == VideoType.live},
+              autoplay: ${_players[textureId]!.autoplay || (isDiff && _players[_lastTextureId]!.wasPlayingBefore)},
+            }
+          );
+        ''';
+        final ScriptElement script = ScriptElement()
+          ..id = 'apiVideoPlayerJsScript$textureId'
+          ..innerText = jsString;
+        script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
+        document.body?.insertAdjacentElement('beforeend', script);
+      } else {
+        document.querySelector('#apiVideoPlayerJsScript$textureId')!.remove();
+        document.querySelector('#playerDiv$textureId > iframe')?.remove();
+        final String jsString = '''
+          window.player$textureId = new PlayerSdk(
+            "#playerDiv$textureId",
+            { 
+              id: "${_players[textureId]!.videoOptions!.videoId}",
+              chromeless: true,
+              live: ${_players[textureId]!.videoOptions!.videoType == VideoType.live},
+              autoplay: ${_players[textureId]!.autoplay || _players[textureId]!.wasPlayingBefore},
+            }
+          );
+          if (${_players[textureId]!.currentTime}) {
+            window.player$textureId.setCurrentTime(${_players[textureId]!.currentTime! / 1000});
           }
-        );
-      ''';
-      final ScriptElement script = ScriptElement()
-        ..id = 'apiVideoPlayerJsScript$textureId'
-        ..innerText = jsString;
-      script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
-      document.body?.insertAdjacentElement('beforeend', script);
+          if (${_players[textureId]!.currentVolume}) {
+            window.player$textureId.setVolume(${_players[textureId]!.currentVolume});
+          }
+        ''';
+        final ScriptElement script = ScriptElement()
+          ..id = 'apiVideoPlayerJsScript$textureId'
+          ..innerText = jsString;
+        script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
+        document.body?.insertAdjacentElement('beforeend', script);
+      }
 
       if (_players[textureId]!.playerEvents == null) {
         throw Exception('No player events for this texture id: $textureId.');
@@ -355,9 +420,15 @@ class Player {
     this.isCreated = false,
     this.videoOptions,
     this.playerEvents,
+    this.wasPlayingBefore = false,
+    this.currentTime,
+    this.currentVolume,
   });
   bool autoplay;
   bool isCreated;
   VideoOptions? videoOptions;
   StreamController<PlayerEvent>? playerEvents;
+  bool wasPlayingBefore;
+  int? currentTime;
+  double? currentVolume;
 }

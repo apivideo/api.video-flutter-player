@@ -1,4 +1,8 @@
+import 'dart:html';
+
 import 'package:apivideo_player/src/apivideo_player_overlay.dart';
+import 'package:apivideo_player/src/apivideo_player_theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'apivideo_player_controller.dart';
@@ -45,13 +49,22 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
     });
     _eventsListener = ApiVideoPlayerEventsListener(onReady: () async {
       _updateAspectRatio();
+    }, onFullscreenChange: () {
+      final bool isFullscreen = widget.controller.isFullscreen;
+      if (!isFullscreen) {
+        _exitFullscreen();
+      } else {
+        _enterFullscreen();
+      }
     });
   }
 
   late ApiVideoPlayerEventsListener _eventsListener;
   late ApiVideoPlayerWidgetListener _widgetListener;
+  OverlayEntry? _overlayEntry;
   late int _textureId;
   double _aspectRatio = 1.0;
+  int foo = 0;
 
   @override
   void initState() {
@@ -96,6 +109,48 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
             )),
       );
 
+  _enterFullscreen() async {
+    if (kIsWeb) {
+      await _playerPlatform.enterFullScreen(_textureId);
+      document.documentElement?.requestFullscreen();
+    }
+    _overlayEntry = OverlayEntry(builder: (context) {
+      return Scaffold(
+        body: Center(
+          child: AspectRatio(
+              aspectRatio: _aspectRatio,
+              child: Stack(
+                children: <Widget>[
+                  _playerPlatform.buildView(_textureId),
+                  Positioned.fill(
+                    child: ApiVideoPlayerOverlay(
+                      controller: widget.controller,
+                      hideControls: widget.hideControls,
+                      theme: widget.theme,
+                    ),
+                  ),
+                ],
+              )),
+        ),
+      );
+    });
+
+    Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  _exitFullscreen() async {
+    if (kIsWeb) {
+      await _playerPlatform.exitFullScreen(_textureId);
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+      await widget.controller.initialize();
+      document.exitFullscreen();
+    } else {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+    }
+  }
+
   void _updateAspectRatio() async {
     final size = await widget.controller.videoSize;
     final double newAspectRatio = size?.aspectRatio ?? 1.0;
@@ -105,29 +160,4 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
       });
     }
   }
-}
-
-/// A customizable theme for the player.
-///
-/// ```dart
-/// final PlayerTheme theme = const PlayerTheme(
-///   controlsColor: Colors.yellow,
-///   activeTimeSliderColor: Colors.blue,
-///   inactiveTimeSliderColor: Colors.red,
-/// );
-/// ```
-class PlayerTheme {
-  const PlayerTheme({
-    this.controlsColor = Colors.white,
-    this.activeTimeSliderColor = ApiVideoColors.orange,
-    this.inactiveTimeSliderColor = Colors.grey,
-    this.activeVolumeSliderColor = Colors.white,
-    this.inactiveVolumeSliderColor = Colors.grey,
-  });
-
-  final Color controlsColor;
-  final Color activeTimeSliderColor;
-  final Color inactiveTimeSliderColor;
-  final Color activeVolumeSliderColor;
-  final Color inactiveVolumeSliderColor;
 }
