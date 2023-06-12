@@ -16,10 +16,30 @@ class _MyAppState extends State<MyApp> {
   final TextEditingController _textEditingController =
       TextEditingController(text: '');
   ApiVideoPlayerController? _controller;
+  final TextEditingController _tokenTextEditingController =
+      TextEditingController(text: '');
 
   @override
   void initState() {
     super.initState();
+  }
+
+  void buildVideoOption() {
+    String? token = _tokenTextEditingController.text.isEmpty
+        ? null
+        : _textEditingController.text;
+
+    if (_controller == null) {
+      setState(() {
+        _controller = ApiVideoPlayerController(
+          videoOptions:
+              VideoOptions(videoId: _textEditingController.text, token: token),
+        );
+      });
+    } else {
+      _controller?.setVideoOptions(
+          VideoOptions(videoId: _textEditingController.text, token: token));
+    }
   }
 
   @override
@@ -47,16 +67,21 @@ class _MyAppState extends State<MyApp> {
                       ),
                       controller: _textEditingController,
                       onSubmitted: (value) async {
-                        if (_controller == null) {
-                          setState(() {
-                            _controller = ApiVideoPlayerController(
-                              videoOptions: VideoOptions(videoId: value),
-                            );
-                          });
-                        } else {
-                          _controller
-                              ?.setVideoOptions(VideoOptions(videoId: value));
-                        }
+                        buildVideoOption();
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: TextField(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText:
+                            'Enter a token (leave empty if the video is public)',
+                      ),
+                      controller: _tokenTextEditingController,
+                      onSubmitted: (value) async {
+                        buildVideoOption();
                       },
                     ),
                   ),

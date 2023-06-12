@@ -15,8 +15,14 @@ enum VideoType {
 class VideoOptions {
   String videoId;
   VideoType videoType;
+  String? token;
 
-  VideoOptions({required this.videoId, this.videoType = VideoType.vod});
+  /// Creates a [VideoOptions] object.
+  /// [videoId] is the id of the video.
+  /// [videoType] is the type of the video, by default it's vod.
+  /// [token] is the token of the video, could be null.
+  VideoOptions(
+      {required this.videoId, this.videoType = VideoType.vod, this.token});
 
   /// Creates a [VideoOptions] from a [json] map.
   factory VideoOptions.fromJson(Map<String, dynamic> json) =>
