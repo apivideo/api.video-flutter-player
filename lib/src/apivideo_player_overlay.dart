@@ -238,18 +238,33 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     }
   }
 
-  double _getForwardIconsSize() {
-    double size = widgetWidth * 0.15;
-    print('size forward $size');
-    print('actual size forward ${size.clamp(10, 30)}');
-    return size.clamp(10, 30);
+  double _getSecondaryIconsSize() {
+    double size = widgetWidth * 0.09;
+    return size.clamp(15, 30);
   }
 
-  double _getPlayPauseIconsSize() {
-    double size = widgetWidth * 0.35;
-    print('size  play/pause $size');
-    print('actual size  play/pause ${size.clamp(20, 50)}');
+  double _getPrimaryIconsSize() {
+    double size = widgetWidth * 0.15;
     return size.clamp(20, 50);
+  }
+
+  double _getSliderRoundedIconSize() {
+    double size = 4;
+    if (widgetWidth > 200) {
+      size = 8;
+    }
+    return size;
+  }
+
+  double _getSliderTimerSize() {
+    double textSize = 12;
+    if (widgetWidth < 200) {
+      textSize = 8;
+    }
+    if (widgetWidth > 500) {
+      textSize = 16;
+    }
+    return textSize;
   }
 
   @override
@@ -302,7 +317,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                   onPressed: () {
                     seek(const Duration(seconds: -10));
                   },
-                  iconSize: _getForwardIconsSize(),
+                  iconSize: _getSecondaryIconsSize(),
                   icon: Icon(
                     Icons.replay_10_rounded,
                     color: widget.theme.controlsColor,
@@ -313,7 +328,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                   onPressed: () {
                     seek(const Duration(seconds: 10));
                   },
-                  iconSize: _getForwardIconsSize(),
+                  iconSize: _getSecondaryIconsSize(),
                   icon: Icon(
                     Icons.forward_10_rounded,
                     color: widget.theme.controlsColor,
@@ -328,9 +343,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   Widget buildBtnPlay() => IconButton(
         onPressed: () {
           _isPlaying ? pause() : play();
-          print(widgetWidth);
         },
-        iconSize: _getPlayPauseIconsSize(),
+        iconSize: _getPrimaryIconsSize(),
         icon: _isPlaying
             ? Icon(
                 ApiVideoIcons.pausePrimary,
@@ -346,7 +360,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       onPressed: () {
         replay();
       },
-      iconSize: 60,
+      iconSize: _getPrimaryIconsSize(),
       icon: Icon(
         ApiVideoIcons.replayPrimary,
         color: widget.theme.controlsColor,
@@ -358,25 +372,33 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         child: Row(
           children: [
             Expanded(
-              child: Slider(
-                value: max(
-                    0,
-                    min(
-                      _currentTime.inMilliseconds,
-                      _duration.inMilliseconds,
-                    )).toDouble(),
-                // Ensure that the slider doesn't go over the duration or under 0.0
-                min: 0.0,
-                max: _duration.inMilliseconds.toDouble(),
-                activeColor: widget.theme.activeTimeSliderColor,
-                inactiveColor: widget.theme.inactiveTimeSliderColor,
-                onChanged: (value) {
-                  setCurrentTime(Duration(milliseconds: value.toInt()));
-                },
+              child: SliderTheme(
+                data: SliderThemeData(
+                  thumbShape: RoundSliderThumbShape(
+                    enabledThumbRadius: _getSliderRoundedIconSize(),
+                  ),
+                ),
+                child: Slider(
+                  value: max(
+                      0,
+                      min(
+                        _currentTime.inMilliseconds,
+                        _duration.inMilliseconds,
+                      )).toDouble(),
+                  // Ensure that the slider doesn't go over the duration or under 0.0
+                  min: 0.0,
+                  max: _duration.inMilliseconds.toDouble(),
+                  activeColor: widget.theme.activeTimeSliderColor,
+                  inactiveColor: widget.theme.inactiveTimeSliderColor,
+                  onChanged: (value) {
+                    setCurrentTime(Duration(milliseconds: value.toInt()));
+                  },
+                ),
               ),
             ),
             Text((_duration - _currentTime).toPlayerString(),
-                style: const TextStyle(color: Colors.white)),
+                style: TextStyle(
+                    color: Colors.white, fontSize: _getSliderTimerSize())),
           ],
         ),
       );
