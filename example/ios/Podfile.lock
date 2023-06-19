@@ -1,8 +1,8 @@
 PODS:
   - apivideo_player (0.0.1):
-    - ApiVideoPlayer (= 1.1.2)
+    - ApiVideoPlayer (= 1.1.3)
     - Flutter
-  - ApiVideoPlayer (1.1.2):
+  - ApiVideoPlayer (1.1.3):
     - ApiVideoPlayerAnalytics (= 1.0.6)
   - ApiVideoPlayerAnalytics (1.0.6)
   - Flutter (1.0.0)
@@ -23,11 +23,11 @@ EXTERNAL SOURCES:
     :path: Flutter
 
 SPEC CHECKSUMS:
-  apivideo_player: 1a638b677c0aec15c7d51f7e6ce4a74d1e96fa16
-  ApiVideoPlayer: ac5997e82f3a14fa921afb2ea733ead7e52f7310
+  apivideo_player: 9f13ba109d77bc0ff76f3e031b1f5b0198220e58
+  ApiVideoPlayer: 1e522152adbebf37cdc4f9a704ad258cdab64ec1
   ApiVideoPlayerAnalytics: 4770b5546b53bc3d1ecf906c1bc7015b50e5959a
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
 
-PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3
+PODFILE CHECKSUM: 7368163408c647b7eb699d0d788ba6718e18fb8d
 
 COCOAPODS: 1.12.1
