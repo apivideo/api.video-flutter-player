@@ -249,22 +249,15 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   }
 
   double _getSliderRoundedIconSize() {
-    double size = 4;
-    if (widgetWidth > 200) {
-      size = 8;
-    }
-    return size;
+    return widgetWidth > 200 ? 8 : 4;
   }
 
   double _getSliderTimerSize() {
-    double textSize = 12;
-    if (widgetWidth < 200) {
-      textSize = 8;
-    }
-    if (widgetWidth > 500) {
-      textSize = 16;
-    }
-    return textSize;
+    return widgetWidth < 200
+        ? 8
+        : widgetWidth > 500
+            ? 16
+            : 12;
   }
 
   @override
