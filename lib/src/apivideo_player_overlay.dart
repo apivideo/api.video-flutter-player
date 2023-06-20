@@ -238,14 +238,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     }
   }
 
-  double _getSecondaryIconsSize() {
-    double size = widgetWidth * 0.09;
-    return size.clamp(15, 30);
-  }
-
-  double _getPrimaryIconsSize() {
-    double size = widgetWidth * 0.15;
-    return size.clamp(20, 50);
+  double _getIconsScaleSize(double scaleFactor, Iterable<int> range) {
+    double size = widgetWidth * scaleFactor;
+    return size.clamp(range.first.toDouble(), range.last.toDouble());
   }
 
   double _getSliderRoundedIconSize() {
@@ -310,7 +305,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                   onPressed: () {
                     seek(const Duration(seconds: -10));
                   },
-                  iconSize: _getSecondaryIconsSize(),
+                  iconSize: _getIconsScaleSize(0.09, [15, 30]),
                   icon: Icon(
                     Icons.replay_10_rounded,
                     color: widget.theme.controlsColor,
@@ -321,7 +316,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                   onPressed: () {
                     seek(const Duration(seconds: 10));
                   },
-                  iconSize: _getSecondaryIconsSize(),
+                  iconSize: _getIconsScaleSize(0.09, [15, 30]),
                   icon: Icon(
                     Icons.forward_10_rounded,
                     color: widget.theme.controlsColor,
@@ -337,7 +332,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         onPressed: () {
           _isPlaying ? pause() : play();
         },
-        iconSize: _getPrimaryIconsSize(),
+        iconSize: _getIconsScaleSize(0.15, [20, 50]),
         icon: _isPlaying
             ? Icon(
                 ApiVideoIcons.pausePrimary,
@@ -353,7 +348,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       onPressed: () {
         replay();
       },
-      iconSize: _getPrimaryIconsSize(),
+      iconSize: _getIconsScaleSize(0.15, [20, 50]),
       icon: Icon(
         ApiVideoIcons.replayPrimary,
         color: widget.theme.controlsColor,
