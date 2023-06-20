@@ -386,7 +386,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
             ),
             Text((_duration - _currentTime).toPlayerString(),
                 style: TextStyle(
-                    color: Colors.white, fontSize: _getSliderTimerSize())),
+                    color: widget.theme.controlsColor,
+                    fontSize: _getSliderTimerSize())),
           ],
         ),
       );
