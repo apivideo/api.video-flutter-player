@@ -1,3 +1,4 @@
+import 'package:apivideo_player/apivideo_player.dart';
 import 'package:flutter/material.dart';
 
 class ApiVideoPlayerSelectableListView extends StatefulWidget {
@@ -6,11 +7,13 @@ class ApiVideoPlayerSelectableListView extends StatefulWidget {
     required this.items,
     required this.selectedElement,
     required this.onSelected,
+    required this.theme,
   });
 
   final List<Object> items;
   final Object selectedElement;
   final ValueChanged<Object> onSelected;
+  final PlayerTheme theme;
 
   @override
   State<ApiVideoPlayerSelectableListView> createState() =>
@@ -41,9 +44,9 @@ class _ApiVideoPlayerSelectableListViewState
         return ListTile(
           title: Text('$item'),
           trailing: isSelected
-              ? const Icon(
+              ? Icon(
                   Icons.check,
-                  color: Colors.lightGreen,
+                  color: widget.theme.selectedSpeedRateColor,
                 )
               : null,
           onTap: () {
