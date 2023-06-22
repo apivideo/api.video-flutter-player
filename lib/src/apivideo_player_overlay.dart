@@ -270,8 +270,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                       child: DecoratedBox(
                           decoration: const BoxDecoration(
                             color: Colors.grey,
-                            borderRadius:
-                            BorderRadius.all(Radius.circular(20)),
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
                           ),
                           child: ApiVideoPlayerSelectableListView(
                             items: const [0.5, 1.0, 1.25, 1.5, 2.0],
@@ -285,6 +284,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                                 _isSelectedSpeedRateListViewVisible = false;
                               });
                             },
+                            theme: widget.theme,
                           )),
                     )),
               ),
