@@ -136,7 +136,7 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('seek() has not been implemented.');
   }
 
-  Future<void> setPlaybackSpeed(int textureId, double speed) {
+  Future<void> setPlaybackSpeed(int textureId, double speedRate) {
     throw UnimplementedError('setPlaybackSpeed() has not been implemented.');
   }
 
