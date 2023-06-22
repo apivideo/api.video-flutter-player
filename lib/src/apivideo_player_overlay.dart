@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:apivideo_player/src/apivideo_player_selectableListView.dart';
+import 'package:apivideo_player/src/apivideo_player_selectable_list_view.dart';
 import 'package:apivideo_player/src/presentation/apivideo_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
