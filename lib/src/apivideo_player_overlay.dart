@@ -259,14 +259,14 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
             child: Stack(children: <Widget>[
               buildOverlay(),
               Positioned(
-                bottom: 120,
+                bottom: 70,
                 left: 20,
                 child: Visibility(
                     visible: _isSelectedSpeedRateListViewVisible &&
                         _isOverlayVisible,
                     child: SizedBox(
                       width: 120,
-                      height: 140,
+                      height: 110,
                       child: DecoratedBox(
                           decoration: const BoxDecoration(
                             color: Colors.grey,
