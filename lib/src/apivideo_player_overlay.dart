@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/src/apivideo_player_selectable_list_view.dart';
 import 'package:apivideo_player/src/presentation/apivideo_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:apivideo_player/apivideo_player.dart';
 
 class ApiVideoPlayerOverlay extends StatefulWidget {
   const ApiVideoPlayerOverlay({
@@ -262,7 +262,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         children: [
           buildVolumeSlider(),
           buildControls(),
-          buildSlider(),
+          buildActionBar(),
         ],
       ));
 
@@ -361,58 +361,62 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         color: widget.theme.controlsColor,
       ));
 
-  Widget buildSlider() => Container(
+  Widget buildActionBar() => Container(
         height: 80,
         padding: const EdgeInsets.only(right: 1),
         child: Column(
           children: [
+            buildBottomAction(),
+            buildTimeSlider()
+          ],
+        ),
+      );
+
+  Widget buildBottomAction() => Expanded(
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        IconButton(
+          onPressed: () {
+            _showOverlayForDuration();
+            setState(() {
+              _isSelectedSpeedRateListViewVisible = true;
+            });
+          },
+          iconSize: 30,
+          icon: Icon(
+            Icons.speed,
+            color: widget.theme.controlsColor,
+          ),
+        ),
+      ],
+    ),
+  );
+
+  Widget buildTimeSlider() => Expanded(
+        child: Row(
+          children: [
             Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      _showOverlayForDuration();
-                      setState(() {
-                        _isSelectedSpeedRateListViewVisible = true;
-                      });
-                    },
-                    iconSize: 30,
-                    icon: Icon(
-                      Icons.speed,
-                      color: widget.theme.controlsColor,
-                    ),
-                  ),
-                ],
+              child: Slider(
+                value: max(
+                    0,
+                    min(
+                      _currentTime.inMilliseconds,
+                      _duration.inMilliseconds,
+                    )).toDouble(),
+                // Ensure that the slider doesn't go over the duration or under 0.0
+                min: 0.0,
+                max: _duration.inMilliseconds.toDouble(),
+                activeColor: widget.theme.activeTimeSliderColor,
+                inactiveColor: widget.theme.inactiveTimeSliderColor,
+                onChanged: (value) {
+                  setCurrentTime(Duration(milliseconds: value.toInt()));
+                },
               ),
             ),
-            Expanded(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Slider(
-                      value: max(
-                          0,
-                          min(
-                            _currentTime.inMilliseconds,
-                            _duration.inMilliseconds,
-                          )).toDouble(),
-                      // Ensure that the slider doesn't go over the duration or under 0.0
-                      min: 0.0,
-                      max: _duration.inMilliseconds.toDouble(),
-                      activeColor: widget.theme.activeTimeSliderColor,
-                      inactiveColor: widget.theme.inactiveTimeSliderColor,
-                      onChanged: (value) {
-                        setCurrentTime(Duration(milliseconds: value.toInt()));
-                      },
-                    ),
-                  ),
-                  Text((_duration - _currentTime).toPlayerString(),
-                      style: TextStyle(color: widget.theme.controlsColor)),
-                ],
-              ),
-            ),
+            Text((_duration - _currentTime).toPlayerString(),
+                style: TextStyle(color: widget.theme.controlsColor)),
           ],
         ),
       );
