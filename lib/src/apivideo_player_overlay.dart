@@ -167,6 +167,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     if (!_isOverlayVisible) {
       showOverlay();
     }
+    if (_isSelectedSpeedRateListViewVisible) {
+      _hideSpeedRateListView();
+    }
     _overlayVisibilityTimer?.cancel();
     _overlayVisibilityTimer = Timer(const Duration(seconds: 5), hideOverlay);
   }
@@ -180,6 +183,12 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   void hideOverlay() {
     setState(() {
       _isOverlayVisible = false;
+      _isSelectedSpeedRateListViewVisible = false;
+    });
+  }
+
+  void _hideSpeedRateListView() {
+    setState(() {
       _isSelectedSpeedRateListViewVisible = false;
     });
   }
@@ -365,34 +374,31 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         height: 80,
         padding: const EdgeInsets.only(right: 1),
         child: Column(
-          children: [
-            buildBottomAction(),
-            buildTimeSlider()
-          ],
+          children: [buildBottomAction(), buildTimeSlider()],
         ),
       );
 
   Widget buildBottomAction() => Expanded(
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        IconButton(
-          onPressed: () {
-            _showOverlayForDuration();
-            setState(() {
-              _isSelectedSpeedRateListViewVisible = true;
-            });
-          },
-          iconSize: 30,
-          icon: Icon(
-            Icons.speed,
-            color: widget.theme.controlsColor,
-          ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            IconButton(
+              onPressed: () {
+                _showOverlayForDuration();
+                setState(() {
+                  _isSelectedSpeedRateListViewVisible = true;
+                });
+              },
+              iconSize: 30,
+              icon: Icon(
+                Icons.speed,
+                color: widget.theme.controlsColor,
+              ),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      );
 
   Widget buildTimeSlider() => Expanded(
         child: Row(
