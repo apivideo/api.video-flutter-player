@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:apivideo_player/apivideo_player.dart';
+import 'package:apivideo_player/src/apivideo_player_selectable_list_view.dart';
 import 'package:apivideo_player/src/presentation/apivideo_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-
-import '../apivideo_player.dart';
 
 class ApiVideoPlayerOverlay extends StatefulWidget {
   const ApiVideoPlayerOverlay({
@@ -80,6 +80,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   double _volume = 0.0;
   bool _isMuted = false;
 
+  bool _isSelectedSpeedRateListViewVisible = false;
+
   late AnimationController expandController;
   late Animation<double> animation;
 
@@ -89,7 +91,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     widget.controller.addEventsListener(_listener);
     _showOverlayForDuration();
     // In case controller is already created
-    widget.controller.isCreated.then((bool isCreated) => {
+    widget.controller.isCreated.then((bool isCreated) async => {
           if (isCreated)
             {
               _updateCurrentTime(),
@@ -165,6 +167,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     if (!_isOverlayVisible) {
       showOverlay();
     }
+    if (_isSelectedSpeedRateListViewVisible) {
+      _hideSpeedRateListView();
+    }
     _overlayVisibilityTimer?.cancel();
     _overlayVisibilityTimer = Timer(const Duration(seconds: 5), hideOverlay);
   }
@@ -178,6 +183,13 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   void hideOverlay() {
     setState(() {
       _isOverlayVisible = false;
+      _isSelectedSpeedRateListViewVisible = false;
+    });
+  }
+
+  void _hideSpeedRateListView() {
+    setState(() {
+      _isSelectedSpeedRateListViewVisible = false;
     });
   }
 
@@ -245,7 +257,10 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
           onTap: () {
             _showOverlayForDuration();
           },
-          child: PointerInterceptor(child: buildOverlay()),
+          child: PointerInterceptor(
+            child: Stack(
+                children: <Widget>[buildOverlay(), buildSpeedRateSelector()]),
+          ),
         ),
       );
 
@@ -256,9 +271,47 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         children: [
           buildVolumeSlider(),
           buildControls(),
-          buildSlider(),
+          buildActionBar(),
         ],
       ));
+
+  Widget buildSpeedRateSelector() {
+    return FutureBuilder(
+        future: widget.controller.speedRate,
+        builder:
+            (BuildContext context, AsyncSnapshot<double> speedRateSnapshot) {
+          return Positioned(
+            bottom: 70,
+            left: 20,
+            child: Visibility(
+                visible:
+                    _isSelectedSpeedRateListViewVisible && _isOverlayVisible,
+                child: SizedBox(
+                  width: 120,
+                  height: 110,
+                  child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: widget.theme.boxDecorationColor,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: ApiVideoPlayerSelectableListView(
+                        items: const [0.5, 1.0, 1.25, 1.5, 2.0],
+                        selectedItem: speedRateSnapshot.data ?? 1.0,
+                        onSelected: (Object value) {
+                          if (value is double) {
+                            widget.controller.setSpeedRate(value);
+                          }
+                          setState(() {
+                            _isSelectedSpeedRateListViewVisible = false;
+                          });
+                        },
+                        theme: widget.theme,
+                      )),
+                )),
+          );
+        });
+  }
 
   Widget buildControls() => Center(
         child: Row(
@@ -317,9 +370,37 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         color: widget.theme.controlsColor,
       ));
 
-  Widget buildSlider() => Container(
-        height: 60,
-        padding: const EdgeInsets.only(right: 5),
+  Widget buildActionBar() => Container(
+        height: 80,
+        padding: const EdgeInsets.only(right: 1),
+        child: Column(
+          children: [buildBottomAction(), buildTimeSlider()],
+        ),
+      );
+
+  Widget buildBottomAction() => Expanded(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            IconButton(
+              onPressed: () {
+                _showOverlayForDuration();
+                setState(() {
+                  _isSelectedSpeedRateListViewVisible = true;
+                });
+              },
+              iconSize: 30,
+              icon: Icon(
+                Icons.speed,
+                color: widget.theme.controlsColor,
+              ),
+            ),
+          ],
+        ),
+      );
+
+  Widget buildTimeSlider() => Expanded(
         child: Row(
           children: [
             Expanded(
@@ -341,7 +422,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
               ),
             ),
             Text((_duration - _currentTime).toPlayerString(),
-                style: const TextStyle(color: Colors.white)),
+                style: TextStyle(color: widget.theme.controlsColor)),
           ],
         ),
       );

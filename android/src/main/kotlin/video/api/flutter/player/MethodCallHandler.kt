@@ -196,6 +196,28 @@ class MethodCallHandler(
                     result.success(reply)
                 }
             }
+
+            SET_PLAYBACK_SPEED -> {
+                val speed = try {
+                    ((call.arguments as Map<*, *>)["speedRate"] as Double)
+                } catch (e: Exception) {
+                    result.error("invalid_parameter", "Invalid speed", e)
+                    return
+                }
+                ensureTextureId(call, result) {
+                    controller.setPlaybackSpeed(it, speed)
+                    result.success(null)
+                }
+            }
+
+            GET_PLAYBACK_SPEED -> {
+                ensureTextureId(call, result) {
+                    val reply: MutableMap<String, Any> = HashMap()
+                    reply["speedRate"] = controller.getPlaybackSpeed(it).toDouble()
+                    result.success(reply)
+                }
+            }
+            
             PLAY -> {
                 ensureTextureId(call, result) {
                     controller.play(it)
@@ -260,6 +282,8 @@ class MethodCallHandler(
         private const val GET_VOLUME = "getVolume"
         private const val SET_VOLUME = "setVolume"
         private const val GET_VIDEO_SIZE = "getVideoSize"
+        private const val GET_PLAYBACK_SPEED = "getPlaybackSpeed"
+        private const val SET_PLAYBACK_SPEED = "setPlaybackSpeed"
 
         private const val PLAY = "play"
         private const val PAUSE = "pause"

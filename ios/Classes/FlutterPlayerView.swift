@@ -107,6 +107,15 @@ class FlutterPlayerView: NSObject, FlutterStreamHandler {
         }
     }
 
+    var speedRate: Float {
+        get {
+            playerController.speedRate
+        }
+        set {
+            playerController.speedRate = newValue
+        }
+    }
+
     var videoSize: CGSize? {
         let videoSize = playerController.videoSize
         if videoSize.width != 0, videoSize.height != 0 {

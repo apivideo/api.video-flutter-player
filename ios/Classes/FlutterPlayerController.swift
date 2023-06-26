@@ -183,6 +183,22 @@ class FlutterPlayerController {
         }
         player.seek(offset: offset.msToCMTime())
     }
+
+    func setPlaybackSpeed(textureId: Int64, speedRate: Double) {
+        guard let player = players[textureId] else {
+            print("Unknown player \(textureId)")
+            return
+        }
+        player.speedRate = Float(speedRate)
+    }
+
+    func getPlaybackSpeed(textureId: Int64) -> Double {
+        guard let player = players[textureId] else {
+            print("Unknown player \(textureId)")
+            return 0
+        }
+        return Double(player.speedRate)
+    }
 }
 
 extension Int {

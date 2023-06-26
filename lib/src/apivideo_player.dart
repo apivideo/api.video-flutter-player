@@ -123,6 +123,8 @@ class PlayerTheme {
     this.inactiveTimeSliderColor = Colors.grey,
     this.activeVolumeSliderColor = Colors.white,
     this.inactiveVolumeSliderColor = Colors.grey,
+    this.checkIconColor = ApiVideoColors.orange,
+    this.boxDecorationColor = Colors.grey,
   });
 
   final Color controlsColor;
@@ -130,4 +132,6 @@ class PlayerTheme {
   final Color inactiveTimeSliderColor;
   final Color activeVolumeSliderColor;
   final Color inactiveVolumeSliderColor;
+  final Color checkIconColor;
+  final Color boxDecorationColor;
 }
