@@ -6,8 +6,7 @@ import 'package:apivideo_player/src/presentation/apivideo_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-
-import '../apivideo_player.dart';
+import 'package:apivideo_player/apivideo_player.dart';
 
 class ApiVideoPlayerOverlay extends StatefulWidget {
   const ApiVideoPlayerOverlay({
@@ -82,7 +81,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   bool _isMuted = false;
 
   bool _isSelectedSpeedRateListViewVisible = false;
-  double _selectedSpeedRate = 1.0;
 
   late AnimationController expandController;
   late Animation<double> animation;
@@ -93,7 +91,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     widget.controller.addEventsListener(_listener);
     _showOverlayForDuration();
     // In case controller is already created
-    double speedR = 1.0;
     widget.controller.isCreated.then((bool isCreated) async => {
           if (isCreated)
             {
@@ -101,10 +98,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
               _updateDuration(),
               _updateVolume(),
               _updateMuted(),
-              speedR = await widget.controller.speedRate,
-              setState(() {
-                _selectedSpeedRate = speedR;
-              }),
               widget.controller.isPlaying.then((isPlaying) => {
                     if (isPlaying) {_onPlay()}
                   })
@@ -256,39 +249,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
             _showOverlayForDuration();
           },
           child: PointerInterceptor(
-            child: Stack(children: <Widget>[
-              buildOverlay(),
-              Positioned(
-                bottom: 70,
-                left: 20,
-                child: Visibility(
-                    visible: _isSelectedSpeedRateListViewVisible &&
-                        _isOverlayVisible,
-                    child: SizedBox(
-                      width: 120,
-                      height: 110,
-                      child: DecoratedBox(
-                          decoration: const BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                          ),
-                          child: ApiVideoPlayerSelectableListView(
-                            items: const [0.5, 1.0, 1.25, 1.5, 2.0],
-                            selectedElement: _selectedSpeedRate,
-                            onSelected: (Object value) {
-                              setState(() {
-                                if (value is double) {
-                                  _selectedSpeedRate = value;
-                                  widget.controller.setSpeedRate(value);
-                                }
-                                _isSelectedSpeedRateListViewVisible = false;
-                              });
-                            },
-                            theme: widget.theme,
-                          )),
-                    )),
-              ),
-            ]),
+            child: Stack(
+                children: <Widget>[buildOverlay(), buildSpeedRateSelector()]),
           ),
         ),
       );
@@ -303,6 +265,44 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
           buildSlider(),
         ],
       ));
+
+  Widget buildSpeedRateSelector() {
+    return FutureBuilder(
+        future: widget.controller.speedRate,
+        builder:
+            (BuildContext context, AsyncSnapshot<double> speedRateSnapshot) {
+          return Positioned(
+            bottom: 70,
+            left: 20,
+            child: Visibility(
+                visible:
+                    _isSelectedSpeedRateListViewVisible && _isOverlayVisible,
+                child: SizedBox(
+                  width: 120,
+                  height: 110,
+                  child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: widget.theme.boxDecorationColor,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: ApiVideoPlayerSelectableListView(
+                        items: const [0.5, 1.0, 1.25, 1.5, 2.0],
+                        selectedItem: speedRateSnapshot.data ?? 1.0,
+                        onSelected: (Object value) {
+                          if (value is double) {
+                            widget.controller.setSpeedRate(value);
+                          }
+                          setState(() {
+                            _isSelectedSpeedRateListViewVisible = false;
+                          });
+                        },
+                        theme: widget.theme,
+                      )),
+                )),
+          );
+        });
+  }
 
   Widget buildControls() => Center(
         child: Row(
