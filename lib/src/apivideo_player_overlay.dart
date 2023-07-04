@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/src/apivideo_player_selectable_list_view.dart';
 import 'package:apivideo_player/src/presentation/apivideo_icons.dart';
+import 'package:apivideo_player/src/views/apivideo_player_time_slider_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -28,12 +29,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     with TickerProviderStateMixin {
   _ApiVideoPlayerOverlayState() {
     _listener = ApiVideoPlayerEventsListener(
-      onReady: () async {
-        _updateCurrentTime();
-        _updateDuration();
-      },
+      onReady: () async {},
       onPlay: () {
-        _startRemainingTimeUpdates();
         setState(() {
           _isPlaying = true;
           _didEnd = false;
@@ -45,9 +42,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
           _isPlaying = false;
         });
       },
-      onSeek: () {
-        _updateCurrentTime();
-      },
+      onSeek: () {},
       onSeekStarted: () {
         if (_didEnd) {
           setState(() {
@@ -75,8 +70,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   bool _isOverlayVisible = true;
   Timer? _overlayVisibilityTimer;
 
-  Duration _currentTime = const Duration(seconds: 0);
-  Duration _duration = const Duration(seconds: 0);
   double _volume = 0.0;
   bool _isMuted = false;
 
@@ -94,8 +87,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     widget.controller.isCreated.then((bool isCreated) async => {
           if (isCreated)
             {
-              _updateCurrentTime(),
-              _updateDuration(),
               _updateVolume(),
               _updateMuted(),
               widget.controller.isPlaying.then((isPlaying) => {
@@ -142,14 +133,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     _showOverlayForDuration();
   }
 
-  void setCurrentTime(Duration duration) async {
-    await widget.controller.setCurrentTime(duration);
-    setState(() {
-      _currentTime = duration;
-    });
-    _showOverlayForDuration();
-  }
-
   void setVolume(double volume) async {
     await widget.controller.setVolume(volume);
     _updateVolume();
@@ -193,36 +176,13 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     });
   }
 
-  void _startRemainingTimeUpdates() {
-    _timeSliderTimer?.cancel();
-    _timeSliderTimer = Timer.periodic(
-      const Duration(milliseconds: 100),
-      (_) => _updateCurrentTime(),
-    );
-  }
-
   void _stopRemainingTimeUpdates() {
     _timeSliderTimer?.cancel();
   }
 
   void _onPlay() {
-    _startRemainingTimeUpdates();
     setState(() {
       _isPlaying = true;
-    });
-  }
-
-  void _updateCurrentTime() async {
-    Duration currentTime = await widget.controller.currentTime;
-    setState(() {
-      _currentTime = currentTime;
-    });
-  }
-
-  void _updateDuration() async {
-    Duration duration = await widget.controller.duration;
-    setState(() {
-      _duration = duration;
     });
   }
 
@@ -400,32 +360,15 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         ),
       );
 
-  Widget buildTimeSlider() => Expanded(
-        child: Row(
-          children: [
-            Expanded(
-              child: Slider(
-                value: max(
-                    0,
-                    min(
-                      _currentTime.inMilliseconds,
-                      _duration.inMilliseconds,
-                    )).toDouble(),
-                // Ensure that the slider doesn't go over the duration or under 0.0
-                min: 0.0,
-                max: _duration.inMilliseconds.toDouble(),
-                activeColor: widget.theme.activeTimeSliderColor,
-                inactiveColor: widget.theme.inactiveTimeSliderColor,
-                onChanged: (value) {
-                  setCurrentTime(Duration(milliseconds: value.toInt()));
-                },
-              ),
-            ),
-            Text((_duration - _currentTime).toPlayerString(),
-                style: TextStyle(color: widget.theme.controlsColor)),
-          ],
-        ),
+  Widget buildTimeSlider() => ApiVideoPlayerTimeSliderView(
+        controller: widget.controller,
+        theme: widget.theme,
+        // onChanged: ((value) => onTimeSliderChanged(value))
       );
+
+  void onTimeSliderChanged(double value) {
+    //setCurrentTime(Duration(milliseconds: value.toInt()));
+  }
 
   Widget buildVolumeSlider() => kIsWeb
       ? Column(
