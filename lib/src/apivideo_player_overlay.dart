@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:math';
-
 import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/src/apivideo_player_selectable_list_view.dart';
 import 'package:apivideo_player/src/presentation/apivideo_icons.dart';
