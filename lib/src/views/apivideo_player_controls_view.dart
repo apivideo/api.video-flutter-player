@@ -108,7 +108,7 @@ class _ApivideoPlayerControlsViewState
           IconButton(
               onPressed: () {
                 seek(const Duration(seconds: -10));
-                widget.onSelected;
+                widget.onSelected();
               },
               iconSize: 30,
               icon: Icon(
@@ -119,7 +119,7 @@ class _ApivideoPlayerControlsViewState
           IconButton(
               onPressed: () {
                 seek(const Duration(seconds: 10));
-                widget.onSelected;
+                widget.onSelected();
               },
               iconSize: 30,
               icon: Icon(
@@ -138,7 +138,7 @@ class _ApivideoPlayerControlsViewState
   Widget buildBtnPlay() => IconButton(
         onPressed: () {
           _isPlaying ? pause() : play();
-          widget.onSelected;
+          widget.onSelected();
         },
         iconSize: 60,
         icon: _isPlaying
@@ -155,7 +155,7 @@ class _ApivideoPlayerControlsViewState
   Widget buildBtnReplay() => IconButton(
       onPressed: () {
         replay();
-        widget.onSelected;
+        widget.onSelected();
       },
       iconSize: 60,
       icon: Icon(
