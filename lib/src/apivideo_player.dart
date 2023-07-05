@@ -1,4 +1,4 @@
-import 'package:apivideo_player/src/apivideo_player_overlay.dart';
+import 'package:apivideo_player/src/views/apivideo_player_overlay.dart';
 import 'package:flutter/material.dart';
 
 import 'apivideo_player_controller.dart';
