@@ -155,7 +155,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
           ApivideoPlayerControlsView(
             controller: widget.controller,
             theme: widget.theme,
-            onSelected: (value) {
+            onSelected: () {
               _showOverlayForDuration();
             },
           ),
