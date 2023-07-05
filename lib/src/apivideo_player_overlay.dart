@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/src/apivideo_player_selectable_list_view.dart';
-import 'package:apivideo_player/src/presentation/apivideo_icons.dart';
+import 'package:apivideo_player/src/views/apivideo_player_controls_view.dart';
 import 'package:apivideo_player/src/views/apivideo_player_time_slider_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -25,46 +25,6 @@ class ApiVideoPlayerOverlay extends StatefulWidget {
 
 class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     with TickerProviderStateMixin {
-  _ApiVideoPlayerOverlayState() {
-    _listener = ApiVideoPlayerEventsListener(
-      onReady: () async {},
-      onPlay: () {
-        setState(() {
-          _isPlaying = true;
-          _didEnd = false;
-        });
-      },
-      onPause: () {
-        _stopRemainingTimeUpdates();
-        setState(() {
-          _isPlaying = false;
-        });
-      },
-      onSeek: () {},
-      onSeekStarted: () {
-        if (_didEnd) {
-          setState(() {
-            _didEnd = false;
-          });
-        }
-      },
-      onEnd: () {
-        _stopRemainingTimeUpdates();
-        setState(() {
-          _isPlaying = false;
-          _didEnd = true;
-        });
-      },
-    );
-  }
-
-  bool _isPlaying = false;
-  bool _didEnd = false;
-
-  late ApiVideoPlayerEventsListener _listener;
-
-  Timer? _timeSliderTimer;
-
   bool _isOverlayVisible = true;
   Timer? _overlayVisibilityTimer;
 
@@ -79,7 +39,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   @override
   initState() {
     super.initState();
-    widget.controller.addEventsListener(_listener);
     _showOverlayForDuration();
     // In case controller is already created
     widget.controller.isCreated.then((bool isCreated) async => {
@@ -87,9 +46,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
             {
               _updateVolume(),
               _updateMuted(),
-              widget.controller.isPlaying.then((isPlaying) => {
-                    if (isPlaying) {_onPlay()}
-                  })
             }
         });
 
@@ -105,30 +61,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
 
   @override
   void dispose() {
-    widget.controller.removeEventsListener(_listener);
     _overlayVisibilityTimer?.cancel();
-    _stopRemainingTimeUpdates();
     super.dispose();
-  }
-
-  void pause() {
-    widget.controller.pause();
-    _showOverlayForDuration();
-  }
-
-  void play() {
-    widget.controller.play();
-    _showOverlayForDuration();
-  }
-
-  void replay() async {
-    await widget.controller.setCurrentTime(const Duration(seconds: 0));
-    play();
-  }
-
-  void seek(Duration duration) {
-    widget.controller.seek(duration);
-    _showOverlayForDuration();
   }
 
   void setVolume(double volume) async {
@@ -171,16 +105,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   void _hideSpeedRateListView() {
     setState(() {
       _isSelectedSpeedRateListViewVisible = false;
-    });
-  }
-
-  void _stopRemainingTimeUpdates() {
-    _timeSliderTimer?.cancel();
-  }
-
-  void _onPlay() {
-    setState(() {
-      _isPlaying = true;
     });
   }
 
@@ -228,7 +152,13 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           buildVolumeSlider(),
-          buildControls(),
+          ApivideoPlayerControlsView(
+            controller: widget.controller,
+            theme: widget.theme,
+            onSelected: (value) {
+              _showOverlayForDuration();
+            },
+          ),
           buildActionBar(),
         ],
       ));
@@ -271,63 +201,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
         });
   }
 
-  Widget buildControls() => Center(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-                onPressed: () {
-                  seek(const Duration(seconds: -10));
-                },
-                iconSize: 30,
-                icon: Icon(
-                  Icons.replay_10_rounded,
-                  color: widget.theme.controlsColor,
-                )),
-            buildBtnVideoControl(),
-            IconButton(
-                onPressed: () {
-                  seek(const Duration(seconds: 10));
-                },
-                iconSize: 30,
-                icon: Icon(
-                  Icons.forward_10_rounded,
-                  color: widget.theme.controlsColor,
-                )),
-          ],
-        ),
-      );
-
-  Widget buildBtnVideoControl() {
-    return _didEnd ? buildBtnReplay() : buildBtnPlay();
-  }
-
-  Widget buildBtnPlay() => IconButton(
-        onPressed: () {
-          _isPlaying ? pause() : play();
-        },
-        iconSize: 60,
-        icon: _isPlaying
-            ? Icon(
-                ApiVideoIcons.pausePrimary,
-                color: widget.theme.controlsColor,
-              )
-            : Icon(
-                ApiVideoIcons.playPrimary,
-                color: widget.theme.controlsColor,
-              ),
-      );
-
-  Widget buildBtnReplay() => IconButton(
-      onPressed: () {
-        replay();
-      },
-      iconSize: 60,
-      icon: Icon(
-        ApiVideoIcons.replayPrimary,
-        color: widget.theme.controlsColor,
-      ));
-
   Widget buildActionBar() => Container(
         height: 80,
         padding: const EdgeInsets.only(right: 1),
@@ -361,12 +234,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   Widget buildTimeSlider() => ApiVideoPlayerTimeSliderView(
         controller: widget.controller,
         theme: widget.theme,
-        // onChanged: ((value) => onTimeSliderChanged(value))
       );
-
-  void onTimeSliderChanged(double value) {
-    //setCurrentTime(Duration(milliseconds: value.toInt()));
-  }
 
   Widget buildVolumeSlider() => kIsWeb
       ? Column(
