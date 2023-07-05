@@ -10,7 +10,7 @@ class ApivideoPlayerControlsView extends StatefulWidget {
       required this.theme});
 
   final ApiVideoPlayerController controller;
-  final ValueChanged<void> onSelected;
+  final Function() onSelected;
   final PlayerTheme theme;
 
   @override
