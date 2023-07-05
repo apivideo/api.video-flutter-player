@@ -6,13 +6,10 @@ import 'package:flutter/material.dart';
 
 class ApiVideoPlayerTimeSliderView extends StatefulWidget {
   const ApiVideoPlayerTimeSliderView(
-      {super.key, required this.controller, required this.theme
-      // this.onChanged
-      });
+      {super.key, required this.controller, required this.theme});
 
   final ApiVideoPlayerController controller;
   final PlayerTheme theme;
-  // final ValueChanged<double> onChanged;
 
   @override
   State<ApiVideoPlayerTimeSliderView> createState() =>
@@ -51,7 +48,6 @@ class _ApiVideoPlayerTimeSliderViewState
     setState(() {
       _currentTime = duration;
     });
-    // _showOverlayForDuration();
   }
 
   void _updateCurrentTime() async {
