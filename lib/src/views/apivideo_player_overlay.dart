@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:apivideo_player/apivideo_player.dart';
+import 'package:apivideo_player/src/views/apivideo_player_actionbar_view.dart';
 import 'package:apivideo_player/src/views/apivideo_player_selectable_list_view.dart';
 import 'package:apivideo_player/src/views/apivideo_player_controls_view.dart';
 import 'package:apivideo_player/src/views/apivideo_player_time_slider_view.dart';
@@ -159,7 +160,17 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
               _showOverlayForDuration();
             },
           ),
-          buildActionBar(),
+          ApiVideoPlayerActionbarView(
+            controller: widget.controller,
+            theme: widget.theme,
+            isOverlayVisible: _isOverlayVisible,
+            onSelected: () {
+              _showOverlayForDuration();
+              setState(() {
+                _isSelectedSpeedRateListViewVisible = true;
+              });
+            },
+          ),
         ],
       ));
 
@@ -200,41 +211,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
           );
         });
   }
-
-  Widget buildActionBar() => Container(
-        height: 80,
-        padding: const EdgeInsets.only(right: 1),
-        child: Column(
-          children: [buildBottomAction(), buildTimeSlider()],
-        ),
-      );
-
-  Widget buildBottomAction() => Expanded(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            IconButton(
-              onPressed: () {
-                _showOverlayForDuration();
-                setState(() {
-                  _isSelectedSpeedRateListViewVisible = true;
-                });
-              },
-              iconSize: 30,
-              icon: Icon(
-                Icons.speed,
-                color: widget.theme.controlsColor,
-              ),
-            ),
-          ],
-        ),
-      );
-
-  Widget buildTimeSlider() => ApiVideoPlayerTimeSliderView(
-        controller: widget.controller,
-        theme: widget.theme,
-      );
 
   Widget buildVolumeSlider() => kIsWeb
       ? Column(
