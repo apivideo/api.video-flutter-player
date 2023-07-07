@@ -3,7 +3,6 @@ import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/src/views/apivideo_player_actionbar_view.dart';
 import 'package:apivideo_player/src/views/apivideo_player_selectable_list_view.dart';
 import 'package:apivideo_player/src/views/apivideo_player_controls_view.dart';
-import 'package:apivideo_player/src/views/apivideo_player_time_slider_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
