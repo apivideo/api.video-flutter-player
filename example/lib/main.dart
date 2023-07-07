@@ -13,32 +13,32 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final TextEditingController _textEditingController =
-      TextEditingController(text: '');
+  final TextEditingController _videoIdTextEditingController =
+      TextEditingController(text: 'vi77Dgk0F8eLwaFOtC5870yn');
   ApiVideoPlayerController? _controller;
   final TextEditingController _tokenTextEditingController =
       TextEditingController(text: '');
 
   @override
   void initState() {
+    buildVideoOptions();
     super.initState();
   }
 
-  void buildVideoOption() {
+  void buildVideoOptions() {
     String? token = _tokenTextEditingController.text.isEmpty
         ? null
-        : _textEditingController.text;
+        : _tokenTextEditingController.text;
 
     if (_controller == null) {
-      setState(() {
-        _controller = ApiVideoPlayerController(
-          videoOptions:
-              VideoOptions(videoId: _textEditingController.text, token: token),
-        );
-      });
+      _controller = ApiVideoPlayerController(
+        videoOptions: VideoOptions(
+            videoId: _videoIdTextEditingController.text, token: token),
+        autoplay: true,
+      );
     } else {
-      _controller?.setVideoOptions(
-          VideoOptions(videoId: _textEditingController.text, token: token));
+      _controller?.setVideoOptions(VideoOptions(
+          videoId: _videoIdTextEditingController.text, token: token));
     }
   }
 
@@ -65,9 +65,9 @@ class _MyAppState extends State<MyApp> {
                         border: OutlineInputBorder(),
                         labelText: 'Enter a video id',
                       ),
-                      controller: _textEditingController,
+                      controller: _videoIdTextEditingController,
                       onSubmitted: (value) async {
-                        buildVideoOption();
+                        buildVideoOptions();
                       },
                     ),
                   ),
@@ -81,7 +81,7 @@ class _MyAppState extends State<MyApp> {
                       ),
                       controller: _tokenTextEditingController,
                       onSubmitted: (value) async {
-                        buildVideoOption();
+                        buildVideoOptions();
                       },
                     ),
                   ),
