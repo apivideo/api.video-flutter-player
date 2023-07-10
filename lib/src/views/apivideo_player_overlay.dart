@@ -3,7 +3,7 @@ import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/src/views/apivideo_player_actionbar_view.dart';
 import 'package:apivideo_player/src/views/apivideo_player_selectable_list_view.dart';
 import 'package:apivideo_player/src/views/apivideo_player_controls_view.dart';
-import 'package:flutter/foundation.dart';
+import 'package:apivideo_player/src/views/apivideo_player_volume_slider_view.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
@@ -23,13 +23,9 @@ class ApiVideoPlayerOverlay extends StatefulWidget {
   State<ApiVideoPlayerOverlay> createState() => _ApiVideoPlayerOverlayState();
 }
 
-class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
-    with TickerProviderStateMixin {
+class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
   bool _isOverlayVisible = true;
   Timer? _overlayVisibilityTimer;
-
-  double _volume = 0.0;
-  bool _isMuted = false;
 
   bool _isSelectedSpeedRateListViewVisible = false;
 
@@ -40,42 +36,12 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
   initState() {
     super.initState();
     _showOverlayForDuration();
-    // In case controller is already created
-    widget.controller.isCreated.then((bool isCreated) async => {
-          if (isCreated)
-            {
-              _updateVolume(),
-              _updateMuted(),
-            }
-        });
-
-    expandController = AnimationController(
-      duration: const Duration(seconds: 1),
-      vsync: this,
-    );
-    animation = CurvedAnimation(
-      parent: expandController,
-      curve: Curves.fastLinearToSlowEaseIn,
-    );
   }
 
   @override
   void dispose() {
     _overlayVisibilityTimer?.cancel();
     super.dispose();
-  }
-
-  void setVolume(double volume) async {
-    await widget.controller.setVolume(volume);
-    _updateVolume();
-    _showOverlayForDuration();
-  }
-
-  void toggleMuted() async {
-    final bool muted = await widget.controller.isMuted;
-    await widget.controller.setIsMuted(!muted);
-    _updateMuted();
-    _showOverlayForDuration();
   }
 
   void _showOverlayForDuration() {
@@ -108,28 +74,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     });
   }
 
-  void _updateVolume() async {
-    double volume = await widget.controller.volume;
-    setState(() {
-      _volume = volume;
-    });
-  }
-
-  void _updateMuted() async {
-    bool muted = await widget.controller.isMuted;
-    setState(() {
-      _isMuted = muted;
-    });
-  }
-
-  void _animateExpand({required bool open}) {
-    if (open) {
-      expandController.forward();
-    } else {
-      expandController.animateBack(0, duration: const Duration(seconds: 1));
-    }
-  }
-
   @override
   Widget build(BuildContext context) => MouseRegion(
         onEnter: (_) => showOverlay(),
@@ -151,7 +95,16 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          buildVolumeSlider(),
+          ApiVideoPlayerVolumeSliderView(
+            controller: widget.controller,
+            theme: widget.theme,
+            volumeDidSet: () {
+              _showOverlayForDuration();
+            },
+            toggleMute: () {
+              _showOverlayForDuration();
+            },
+          ),
           ApivideoPlayerControlsView(
             controller: widget.controller,
             theme: widget.theme,
@@ -210,63 +163,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
           );
         });
   }
-
-  Widget buildVolumeSlider() => kIsWeb
-      ? Column(
-          children: [
-            const SizedBox(
-              height: 10,
-            ),
-            MouseRegion(
-              onEnter: (_) => _animateExpand(open: true),
-              onExit: (_) => _animateExpand(open: false),
-              child: Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        _volume <= 0 || _isMuted
-                            ? Icons.volume_off
-                            : Icons.volume_up,
-                        color: widget.theme.controlsColor,
-                      ),
-                      onPressed: () => toggleMuted(),
-                    ),
-                    SizeTransition(
-                      sizeFactor: animation,
-                      axis: Axis.horizontal,
-                      child: SizedBox(
-                        height: 30.0,
-                        width: 80.0,
-                        child: SliderTheme(
-                          data: SliderThemeData(
-                              activeTrackColor:
-                                  widget.theme.activeVolumeSliderColor,
-                              trackHeight: 2.0,
-                              thumbColor: Colors.white,
-                              overlayShape: SliderComponentShape.noOverlay,
-                              thumbShape: const RoundSliderThumbShape(
-                                enabledThumbRadius: 6.0,
-                              )),
-                          child: Slider(
-                            activeColor: widget.theme.activeVolumeSliderColor,
-                            inactiveColor:
-                                widget.theme.inactiveVolumeSliderColor,
-                            value: _isMuted ? 0 : _volume,
-                            onChanged: (value) => setVolume(value),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        )
-      : const SizedBox(height: 30);
 }
 
 extension DurationDisplay on Duration {
