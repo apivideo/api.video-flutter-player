@@ -1,5 +1,5 @@
 import 'package:apivideo_player/apivideo_player.dart';
-import 'package:apivideo_player/src/views/apivideo_player_time_slider_view.dart';
+import 'package:apivideo_player/src/widgets/apivideo_player_time_slider_view.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
