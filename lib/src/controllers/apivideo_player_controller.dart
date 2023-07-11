@@ -6,7 +6,7 @@ import 'package:apivideo_player/src/apivideo_types.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
-import 'apivideo_player_platform_interface.dart';
+import '../apivideo_player_platform_interface.dart';
 
 ApiVideoPlayerPlatform get _playerPlatform {
   return ApiVideoPlayerPlatform.instance;
