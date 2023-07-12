@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/src/controllers/apivideo_player_overlay_controller.dart';
 import 'package:apivideo_player/src/widgets/apivideo_player_actionbar_view.dart';
