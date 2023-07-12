@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:apivideo_player/apivideo_player.dart';
+import 'package:apivideo_player/src/controllers/apivideo_player_overlay_controller.dart';
 import 'package:apivideo_player/src/widgets/apivideo_player_actionbar_view.dart';
 import 'package:apivideo_player/src/widgets/apivideo_player_selectable_list_view.dart';
 import 'package:apivideo_player/src/widgets/apivideo_player_controls_view.dart';
@@ -24,64 +25,43 @@ class ApiVideoPlayerOverlay extends StatefulWidget {
 }
 
 class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
+  // late AnimationController expandController;
+  // late Animation<double> animation;
+  late ApiVideoPlayerOverlayController _overlayController;
   bool _isOverlayVisible = true;
-  Timer? _overlayVisibilityTimer;
-
   bool _isSelectedSpeedRateListViewVisible = false;
-
-  late AnimationController expandController;
-  late Animation<double> animation;
-
   @override
   initState() {
     super.initState();
-    _showOverlayForDuration();
+    _overlayController = ApiVideoPlayerOverlayController(
+      controller: widget.controller,
+      isOverlayVisible: _isOverlayVisible,
+      isSelectedSpeedRateListViewVisible: _isSelectedSpeedRateListViewVisible,
+    );
+    _overlayController.addListener(() {
+      setState(() {
+        _isOverlayVisible = _overlayController.isOverlayVisible;
+        _isSelectedSpeedRateListViewVisible =
+            _overlayController.isSelectedSpeedRateListViewVisible;
+      });
+    });
+    _overlayController.showOverlayForDuration();
   }
 
   @override
   void dispose() {
-    _overlayVisibilityTimer?.cancel();
+    _overlayController.dispose();
     super.dispose();
-  }
-
-  void _showOverlayForDuration() {
-    if (!_isOverlayVisible) {
-      showOverlay();
-    }
-    if (_isSelectedSpeedRateListViewVisible) {
-      _hideSpeedRateListView();
-    }
-    _overlayVisibilityTimer?.cancel();
-    _overlayVisibilityTimer = Timer(const Duration(seconds: 5), hideOverlay);
-  }
-
-  void showOverlay() {
-    setState(() {
-      _isOverlayVisible = true;
-    });
-  }
-
-  void hideOverlay() {
-    setState(() {
-      _isOverlayVisible = false;
-      _isSelectedSpeedRateListViewVisible = false;
-    });
-  }
-
-  void _hideSpeedRateListView() {
-    setState(() {
-      _isSelectedSpeedRateListViewVisible = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) => MouseRegion(
-        onEnter: (_) => showOverlay(),
-        onExit: (_) => _showOverlayForDuration(),
+        onEnter: (_) => _overlayController.showOverlay(),
+        onExit: (_) => _overlayController.showOverlayForDuration(),
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () {
-            _showOverlayForDuration();
+            _overlayController.showOverlayForDuration();
           },
           child: PointerInterceptor(
             child: Stack(
@@ -99,28 +79,25 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
             controller: widget.controller,
             theme: widget.theme,
             volumeDidSet: () {
-              _showOverlayForDuration();
+              _overlayController.showOverlayForDuration();
             },
             toggleMute: () {
-              _showOverlayForDuration();
+              _overlayController.showOverlayForDuration();
             },
           ),
           ApivideoPlayerControlsView(
             controller: widget.controller,
             theme: widget.theme,
             onSelected: () {
-              _showOverlayForDuration();
+              _overlayController.showOverlayForDuration();
             },
           ),
           ApiVideoPlayerActionbarView(
             controller: widget.controller,
             theme: widget.theme,
-            isOverlayVisible: _isOverlayVisible,
+            isOverlayVisible: _overlayController.isOverlayVisible,
             onSelected: () {
-              _showOverlayForDuration();
-              setState(() {
-                _isSelectedSpeedRateListViewVisible = true;
-              });
+              _overlayController.showOverlayForDuration();
             },
           ),
         ],
@@ -153,9 +130,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
                           if (value is double) {
                             widget.controller.setSpeedRate(value);
                           }
-                          setState(() {
-                            _isSelectedSpeedRateListViewVisible = false;
-                          });
                         },
                         theme: widget.theme,
                       )),
