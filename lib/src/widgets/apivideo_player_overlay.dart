@@ -25,8 +25,6 @@ class ApiVideoPlayerOverlay extends StatefulWidget {
 }
 
 class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
-  // late AnimationController expandController;
-  // late Animation<double> animation;
   late ApiVideoPlayerOverlayController _overlayController;
   bool _isOverlayVisible = true;
   bool _isSelectedSpeedRateListViewVisible = false;
