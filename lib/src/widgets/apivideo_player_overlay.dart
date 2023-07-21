@@ -1,4 +1,5 @@
 import 'package:apivideo_player/apivideo_player.dart';
+import 'package:apivideo_player/src/controllers/apivideo_player_controls_view_controller.dart';
 import 'package:apivideo_player/src/controllers/apivideo_player_overlay_controller.dart';
 import 'package:apivideo_player/src/widgets/apivideo_player_actionbar_view.dart';
 import 'package:apivideo_player/src/widgets/apivideo_player_selectable_list_view.dart';
@@ -83,7 +84,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay> {
             },
           ),
           ApivideoPlayerControlsView(
-            controller: widget.controller,
+            controller: ApiVideoPlayerControlsViewController(
+                overlayController: _overlayController),
             theme: widget.theme,
             onSelected: () {
               _overlayController.showOverlayForDuration();

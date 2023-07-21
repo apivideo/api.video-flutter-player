@@ -20,6 +20,9 @@ class ApiVideoPlayerOverlayController extends ChangeNotifier {
     super.dispose();
   }
 
+  Future<bool> get isCreated => _controller.isCreated;
+  Future<bool> get isPlaying => _controller.isCreated;
+
   void showOverlayForDuration() {
     if (!isOverlayVisible) {
       showOverlay();
@@ -44,5 +47,29 @@ class ApiVideoPlayerOverlayController extends ChangeNotifier {
 
   void _hideSpeedRateListView() {
     isSelectedSpeedRateListViewVisible = false;
+  }
+
+  void play() {
+    _controller.play();
+  }
+
+  void pause() {
+    _controller.pause();
+  }
+
+  Future<void> setCurrentTime(Duration currentTime) {
+    return _controller.setCurrentTime(currentTime);
+  }
+
+  void seek(Duration duration) {
+    _controller.seek(duration);
+  }
+
+  void addEventsListener(ApiVideoPlayerEventsListener listener) {
+    _controller.addEventsListener(listener);
+  }
+
+  void removeEventsListener(ApiVideoPlayerEventsListener listener) {
+    _controller.removeEventsListener(listener);
   }
 }

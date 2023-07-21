@@ -1,4 +1,5 @@
 import 'package:apivideo_player/apivideo_player.dart';
+import 'package:apivideo_player/src/controllers/apivideo_player_controls_view_controller.dart';
 import 'package:apivideo_player/src/presentation/apivideo_icons.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +10,7 @@ class ApivideoPlayerControlsView extends StatefulWidget {
       required this.onSelected,
       required this.theme});
 
-  final ApiVideoPlayerController controller;
+  final ApiVideoPlayerControlsViewController controller;
   final Function() onSelected;
   final PlayerTheme theme;
 
