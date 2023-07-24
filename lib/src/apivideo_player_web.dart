@@ -236,6 +236,21 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
+  Future<void> setPlaybackSpeed(int textureId, double speedRate) =>
+      Utils.callJsMethod(
+        textureId: textureId,
+        jsMethodName: 'setPlaybackRate',
+        args: [speedRate],
+      );
+
+  @override
+  Future<double> getPlaybackSpeed(int textureId) =>
+      Utils.getPromiseFromJs<double>(
+        textureId: textureId,
+        jsMethod: () => js_controller.getPlaybackRate('player$textureId'),
+      );
+
+  @override
   Stream<PlayerEvent> playerEventsFor(int textureId) {
     if (_players[textureId] == null) {
       throw Exception(
@@ -299,6 +314,14 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
               if (!playerId || !window[playerId]) return;
               return await window[playerId].getVideoSize();
             },
+            setPlaybackRate: async function(playerId, playbackRate) {
+              if (!playerId || !window[playerId]) return;
+              return await window[playerId].setPlaybackRate(playbackRate);
+            },
+            getPlaybackRate: async function(playerId) {
+              if (!playerId || !window[playerId]) return;
+              return await window[playerId].getPlaybackRate();
+            },
             loadConfig: function(playerId, videoOptions) {
               if (!playerId || !window[playerId]) return;
               console.log(videoOptions);
@@ -361,6 +384,7 @@ class Player {
     this.videoOptions,
     this.playerEvents,
   });
+
   bool autoplay;
   bool isCreated;
   VideoOptions? videoOptions;
