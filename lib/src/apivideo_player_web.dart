@@ -11,6 +11,7 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 import 'apivideo_player_platform_interface.dart';
 import 'apivideo_types.dart';
+import 'javascript_controller.dart';
 
 /// A web implementation of the ApiVideoPlayerPlatform of the ApiVideoPlayer plugin.
 class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
@@ -222,12 +223,16 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
 
   @override
   Future<Size?> getVideoSize(int textureId) async {
-    final size = await Utils.getPromiseFromJs<dynamic>(
+    final jsSize = await Utils.getPromiseFromJs<dynamic>(
       textureId: textureId,
       jsMethod: () => js_controller.getVideoSize('player$textureId'),
     );
-
-    return Size(size.width, size.height);
+    if (jsSize == null) return null;
+    final size = jsToMap(jsSize);
+    return Size(
+      size['width'] as double,
+      size['height'] as double,
+    );
   }
 
   @override
