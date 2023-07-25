@@ -7,8 +7,6 @@ import 'package:js/js.dart';
 
 @JS('state.getCurrentTime')
 external int getCurrentTimeFromJs(String playerId);
-@JS('state.setCurrentTime')
-external void setCurrentTimeFromJs(String playerId, int currentTimeInSeconds);
 @JS('state.getDuration')
 external double getDurationFromJs(String playerId);
 @JS('state.getPlaying')
@@ -21,6 +19,8 @@ external bool getLoop(String playerId);
 external double getVolume(String playerId);
 @JS('state.getVideoSize')
 external dynamic getVideoSize(String playerId);
+@JS('state.getPlaybackRate')
+external double getPlaybackRate(String playerId);
 @JS('state.loadConfig')
 external void loadConfig(String playerId, Object videoOptions);
 
