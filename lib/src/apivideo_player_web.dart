@@ -334,7 +334,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
           jsMethodName: 'addEventListener',
           args: [
             playerEvent.displayPlayerSdkName,
-            () => _players[textureId]!
+            (userData) => _players[textureId]!
                 .playerEvents!
                 .add(PlayerEvent(type: playerEvent)),
           ],
