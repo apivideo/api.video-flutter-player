@@ -1,6 +1,6 @@
 name: apivideo_player
 description: The official Flutter player for api.video for iOS, Android and Web.
-version: 1.0.0
+version: 1.1.0
 repository: https://github.com/apivideo/api.video-flutter-player
 issue_tracker: https://github.com/apivideo/api.video-flutter-player/issues
 homepage: https://api.video
