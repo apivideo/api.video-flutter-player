@@ -27,6 +27,8 @@ class PlayerLifeCycleObserver extends Object with WidgetsBindingObserver {
         break;
       case AppLifecycleState.detached:
         break;
+      case AppLifecycleState.hidden:
+        break;
     }
   }
 

@@ -157,10 +157,11 @@ class _PlayerWidgetState extends State<PlayerWidget> {
         SizedBox(
           width: 400.0,
           height: 300.0,
-          child: ApiVideoPlayer(
-            controller: widget.controller,
-            hideControls: _hideControls,
-          ),
+          child: _hideControls
+              ? ApiVideoPlayer.withoutControls(controller: widget.controller)
+              : ApiVideoPlayer(
+                  controller: widget.controller,
+                ),
         ),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           IconButton(

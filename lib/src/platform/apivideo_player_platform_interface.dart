@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'apivideo_types.dart';
+import '../apivideo_types.dart';
 
 abstract class ApiVideoPlayerPlatform extends PlatformInterface {
   /// Constructs a ApiVideoPlayerPlatform.

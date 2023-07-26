@@ -53,11 +53,11 @@ flutter:
         pluginClass: ApiVideoPlayerPlugin
       web:
         pluginClass: ApiVideoPlayerPlugin
-        fileName: src/apivideo_player_web.dart
+        fileName: src/platform/apivideo_player_web.dart
   fonts:
     - family:  ApiVideoIcons
       fonts:
-       - asset: lib/src/fonts/ApiVideoIcons.ttf
+       - asset: lib/src/style/fonts/ApiVideoIcons.ttf
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

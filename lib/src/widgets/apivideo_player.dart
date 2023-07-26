@@ -1,14 +1,15 @@
+import 'package:apivideo_player/src/apivideo_player_controller.dart';
+import 'package:apivideo_player/src/style/apivideo_theme.dart';
+import 'package:apivideo_player/src/widgets/apivideo_player_opacity.dart';
 import 'package:apivideo_player/src/widgets/apivideo_player_overlay.dart';
+import 'package:apivideo_player/src/widgets/apivideo_player_video.dart';
 import 'package:flutter/material.dart';
 
-import '../controllers/apivideo_player_controller.dart';
-import '../apivideo_player_platform_interface.dart';
-
-ApiVideoPlayerPlatform get _playerPlatform {
-  return ApiVideoPlayerPlatform.instance;
-}
-
-/// The player widget.
+/// The main player widget.
+/// It displays a [Stack] containing the video and a child widget.
+/// The child widget is the player overlay by default.
+///
+/// To display a custom overlay, use [ApiVideoPlayer] and provide a [child].
 ///
 /// ```dart
 /// Widget build(BuildContext context) {
@@ -18,120 +19,44 @@ ApiVideoPlayerPlatform get _playerPlatform {
 /// }
 /// ```
 class ApiVideoPlayer extends StatefulWidget {
-  const ApiVideoPlayer({
-    super.key,
-    required this.controller,
-    this.hideControls = false,
-    this.theme = const PlayerTheme(),
-  });
+  const ApiVideoPlayer(
+      {super.key,
+      required this.controller,
+      this.theme = ApiVideoPlayerTheme.defaultTheme,
+      this.child});
 
+  const ApiVideoPlayer.withoutControls(
+      {Key? key, required ApiVideoPlayerController controller})
+      : this(key: key, controller: controller, child: const SizedBox.shrink());
+
+  /// The controller for the player.
   final ApiVideoPlayerController controller;
-  final bool hideControls;
-  final PlayerTheme theme;
+
+  /// The theme for the player.
+  final ApiVideoPlayerTheme theme;
+
+  /// The child widget to display as an overlay on top of the video.
+  final Widget? child;
 
   @override
   State<ApiVideoPlayer> createState() => _ApiVideoPlayerState();
 }
 
 class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
-  _ApiVideoPlayerState() {
-    _widgetListener = ApiVideoPlayerWidgetListener(onTextureReady: () {
-      final int newTextureId = widget.controller.textureId;
-      if (newTextureId != _textureId) {
-        setState(() {
-          _textureId = newTextureId;
-        });
-      }
-    });
-    _eventsListener = ApiVideoPlayerEventsListener(onReady: () async {
-      _updateAspectRatio();
-    });
-  }
-
-  late ApiVideoPlayerEventsListener _eventsListener;
-  late ApiVideoPlayerWidgetListener _widgetListener;
-  late int _textureId;
-  double _aspectRatio = 1.0;
-
-  @override
-  void initState() {
-    super.initState();
-    _textureId = widget.controller.textureId;
-    // In case controller is already created
-    widget.controller.isCreated.then((bool isCreated) => {
-          if (isCreated) {_updateAspectRatio()}
-        });
-    widget.controller.addWidgetListener(_widgetListener);
-    widget.controller.addEventsListener(_eventsListener);
-  }
-
-  @override
-  void dispose() {
-    widget.controller.removeWidgetListener(_widgetListener);
-    widget.controller.removeEventsListener(_eventsListener);
-    super.dispose();
-  }
+  final _opacityController = ApiVideoPlayerOpacityController();
 
   @override
   Widget build(BuildContext context) {
-    return _textureId == ApiVideoPlayerController.kUninitializedTextureId
-        ? Container()
-        : buildPlayer();
-  }
-
-  Widget buildPlayer() => Center(
-        child: AspectRatio(
-            aspectRatio: _aspectRatio,
-            child: Stack(
-              children: <Widget>[
-                _playerPlatform.buildView(_textureId),
-                Positioned.fill(
-                  child: ApiVideoPlayerOverlay(
+    return ApiVideoPlayerVideo(
+        controller: widget.controller,
+        child: widget.child ??
+            ApiVideoPlayerOpacity(
+                controller: _opacityController,
+                child: ApiVideoPlayerOverlay(
                     controller: widget.controller,
-                    hideControls: widget.hideControls,
                     theme: widget.theme,
-                  ),
-                ),
-              ],
-            )),
-      );
-
-  void _updateAspectRatio() async {
-    final size = await widget.controller.videoSize;
-    final double newAspectRatio = size?.aspectRatio ?? 1.0;
-    if (newAspectRatio != _aspectRatio) {
-      setState(() {
-        _aspectRatio = newAspectRatio;
-      });
-    }
+                    onItemPress: () {
+                      _opacityController.showForDuration();
+                    })));
   }
-}
-
-/// A customizable theme for the player.
-///
-/// ```dart
-/// final PlayerTheme theme = const PlayerTheme(
-///   controlsColor: Colors.yellow,
-///   activeTimeSliderColor: Colors.blue,
-///   inactiveTimeSliderColor: Colors.red,
-/// );
-/// ```
-class PlayerTheme {
-  const PlayerTheme({
-    this.controlsColor = Colors.white,
-    this.activeTimeSliderColor = ApiVideoColors.orange,
-    this.inactiveTimeSliderColor = Colors.grey,
-    this.activeVolumeSliderColor = Colors.white,
-    this.inactiveVolumeSliderColor = Colors.grey,
-    this.checkIconColor = ApiVideoColors.orange,
-    this.boxDecorationColor = Colors.grey,
-  });
-
-  final Color controlsColor;
-  final Color activeTimeSliderColor;
-  final Color inactiveTimeSliderColor;
-  final Color activeVolumeSliderColor;
-  final Color inactiveVolumeSliderColor;
-  final Color checkIconColor;
-  final Color boxDecorationColor;
 }
