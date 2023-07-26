@@ -140,11 +140,11 @@ class ApiVideoPlayerController {
   }
 
   Future<void> setSpeedRate(double speedRate) {
-    return _playerPlatform.setPlaybackSpeed(_textureId, speedRate);
+    return _playerPlatform.setPlaybackRate(_textureId, speedRate);
   }
 
   Future<double> get speedRate {
-    return _playerPlatform.getPlaybackSpeed(_textureId);
+    return _playerPlatform.getPlaybackRate(_textureId);
   }
 
   /// Retrieves the current video size.

@@ -236,7 +236,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
-  Future<void> setPlaybackSpeed(int textureId, double speedRate) =>
+  Future<void> setPlaybackRate(int textureId, double speedRate) =>
       Utils.callJsMethod(
         textureId: textureId,
         jsMethodName: 'setPlaybackRate',
@@ -244,7 +244,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       );
 
   @override
-  Future<double> getPlaybackSpeed(int textureId) =>
+  Future<double> getPlaybackRate(int textureId) =>
       Utils.getPromiseFromJs<double>(
         textureId: textureId,
         jsMethod: () => js_controller.getPlaybackRate('player$textureId'),
