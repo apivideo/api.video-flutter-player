@@ -368,6 +368,15 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
           ],
         );
       }
+
+      // Hide iframe border
+      if (document.head !=  null) {
+        StyleElement styleElement = StyleElement();
+        document.head!.append(styleElement);
+        CssStyleSheet sheet = styleElement.sheet as CssStyleSheet;
+        const rule = 'iframe { border: none; }';
+        sheet.insertRule(rule, 0);
+      }
     }
 
     return HtmlElementView(
