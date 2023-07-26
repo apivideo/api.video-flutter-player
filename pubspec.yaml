@@ -6,7 +6,7 @@ issue_tracker: https://github.com/apivideo/api.video-flutter-player/issues
 homepage: https://api.video
 
 environment:
-  sdk: ">=2.17.1 <3.0.0"
+  sdk: ">=2.17.1 <4.0.0"
   flutter: ">=2.5.0"
 
 dependencies:
