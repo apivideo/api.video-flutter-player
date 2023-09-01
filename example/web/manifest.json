@@ -1,6 +1,6 @@
 {
-    "name": "apivideo_player_example",
-    "short_name": "apivideo_player_example",
+    "name": "FltPlayer",
+    "short_name": "FltPlayer",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
