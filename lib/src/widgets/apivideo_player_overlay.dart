@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:apivideo_player/src/apivideo_player_controller.dart';
-import 'package:apivideo_player/src/style/apivideo_theme.dart';
+import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/src/widgets/apivideo_player_controls_bar.dart';
-import 'package:apivideo_player/src/widgets/apivideo_player_selectable_list.dart';
+import 'package:apivideo_player/src/widgets/apivideo_player_time_slider.dart';
 import 'package:apivideo_player/src/widgets/apivideo_player_volume_slider.dart';
-import 'package:apivideo_player/src/widgets/low_bar/apivideo_player_low_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+
+import 'common/apivideo_player_multi_text_button.dart';
 
 /// The overlay of the video player.
 /// It displays the controls, time slider and the action bar.
@@ -34,9 +34,7 @@ class ApiVideoPlayerOverlay extends StatefulWidget {
 
 class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     with TickerProviderStateMixin {
-  bool _isSelectedSpeedRateListViewVisible = false;
-
-  final _lowBarController = ApiVideoPlayerLowBarController();
+  final _lowBarController = ApiVideoPlayerTimeSliderController();
   final _controlsBarController = ApiVideoPlayerControlsBarController();
   final _volumeSliderController = ApiVideoPlayerVolumeSliderController();
 
@@ -96,8 +94,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
 
   @override
   Widget build(BuildContext context) => PointerInterceptor(
-        child:
-            Stack(children: <Widget>[buildOverlay(), buildSpeedRateSelector()]),
+        child: buildOverlay(),
       );
 
   Widget buildOverlay() => Stack(
@@ -105,32 +102,53 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
           Positioned(
               top: 0,
               right: 0,
-              left: 0,
-              child: kIsWeb
-                  ? ApiVideoPlayerVolumeSlider(
-                      controller: _volumeSliderController,
-                      onVolumeChanged: (volume) {
-                        widget.controller.setVolume(volume);
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    kIsWeb
+                        ? ApiVideoPlayerVolumeSlider(
+                            controller: _volumeSliderController,
+                            onVolumeChanged: (volume) {
+                              widget.controller.setVolume(volume);
+                              if (widget.onItemPress != null) {
+                                widget.onItemPress!();
+                              }
+                            },
+                            onToggleMute: () async {
+                              final isMuted = await widget.controller.isMuted;
+                              widget.controller.setIsMuted(!isMuted);
+                              if (widget.onItemPress != null) {
+                                widget.onItemPress!();
+                              }
+                            },
+                            iconsColor: widget.theme.iconsColor,
+                            activeVolumeSliderColor:
+                                widget.theme.volumeSliderActiveColor,
+                            inactiveVolumeSliderColor:
+                                widget.theme.volumeSliderInactiveColor,
+                            thumbVolumeSliderColor:
+                                widget.theme.volumeSliderThumbColor,
+                          )
+                        : Container(),
+                    ApiVideoPlayerMultiTextButton(
+                      keysValues: const {
+                        '0.5x': 0.5,
+                        '1.0x': 1.0,
+                        '1.2x': 1.2,
+                        '1.5x': 1.5,
+                        '2.0x': 2.0,
+                      },
+                      defaultKey: "1.0x",
+                      onValueChanged: (speed) {
+                        widget.controller.setSpeedRate(speed);
                         if (widget.onItemPress != null) {
                           widget.onItemPress!();
                         }
                       },
-                      onToggleMute: () async {
-                        final isMuted = await widget.controller.isMuted;
-                        widget.controller.setIsMuted(!isMuted);
-                        if (widget.onItemPress != null) {
-                          widget.onItemPress!();
-                        }
-                      },
-                      iconsColor: widget.theme.iconsColor,
-                      activeVolumeSliderColor:
-                          widget.theme.volumeSliderActiveColor,
-                      inactiveVolumeSliderColor:
-                          widget.theme.volumeSliderInactiveColor,
-                      thumbVolumeSliderColor:
-                          widget.theme.volumeSliderThumbColor,
-                    )
-                  : Container()),
+                      textColor: widget.theme.iconsColor,
+                    ),
+                  ])),
           Center(
             child: ApiVideoPlayerControlsBar(
               controller: _controlsBarController,
@@ -174,20 +192,9 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
               bottom: 0,
               right: 0,
               left: 0,
-              child: ApiVideoPlayerLowBar(
+              child: ApiVideoPlayerTimeSlider(
                 controller: _lowBarController,
-                onSpeedRatePress: () {
-                  if (mounted) {
-                    setState(() {
-                      _isSelectedSpeedRateListViewVisible =
-                          !_isSelectedSpeedRateListViewVisible;
-                    });
-                  }
-                  if (widget.onItemPress != null) {
-                    widget.onItemPress!();
-                  }
-                },
-                onTimeSliderChanged: (Duration value) {
+                onChanged: (Duration value) {
                   widget.controller.setCurrentTime(value);
                   if (widget.onItemPress != null) {
                     widget.onItemPress!();
@@ -196,40 +203,6 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
               )),
         ],
       );
-
-  Widget buildSpeedRateSelector() {
-    return FutureBuilder(
-        future: widget.controller.speedRate,
-        builder:
-            (BuildContext context, AsyncSnapshot<double> speedRateSnapshot) {
-          return Positioned(
-            bottom: 70,
-            left: 20,
-            child: Visibility(
-                visible: _isSelectedSpeedRateListViewVisible,
-                child: SizedBox(
-                  width: 120,
-                  height: 110,
-                  child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: widget.theme.boxDecorationColor,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(20)),
-                      ),
-                      child: ApiVideoPlayerSelectableList(
-                        items: const [0.5, 1.0, 1.25, 1.5, 2.0],
-                        selectedItem: speedRateSnapshot.data ?? 1.0,
-                        onSelected: (Object value) {
-                          if (value is double) {
-                            widget.controller.setSpeedRate(value);
-                          }
-                        },
-                        selectedColor: widget.theme.selectedColor,
-                      )),
-                )),
-          );
-        });
-  }
 
   void _onPlay() {
     _startRemainingTimeUpdates();

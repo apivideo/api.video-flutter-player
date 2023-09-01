@@ -94,74 +94,60 @@ class _ApiVideoPlayerVolumeSliderState extends State<ApiVideoPlayerVolumeSlider>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(
-          height: 10,
-        ),
-        MouseRegion(
-          onEnter: (_) => _animateExpand(open: true),
-          onExit: (_) => _animateExpand(open: false),
-          child: Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                    icon: Icon(
-                      _volume <= 0 || _isMuted
-                          ? Icons.volume_off
-                          : Icons.volume_up,
-                      color: widget.iconsColor ??
-                          ApiVideoPlayerTheme.defaultTheme.iconsColor,
-                    ),
-                    onPressed: () {
-                      widget.controller.isMuted = !_isMuted;
-                      widget.onToggleMute();
-                    }),
-                SizeTransition(
-                  sizeFactor: animation,
-                  axis: Axis.horizontal,
-                  child: SizedBox(
-                    height: 30.0,
-                    width: 80.0,
-                    child: SliderTheme(
-                      data: SliderThemeData(
-                          activeTrackColor: widget.activeVolumeSliderColor ??
-                              ApiVideoPlayerTheme
-                                  .defaultTheme.volumeSliderActiveColor,
-                          trackHeight: 2.0,
-                          thumbColor: widget.thumbVolumeSliderColor ??
-                              ApiVideoPlayerTheme
-                                  .defaultTheme.volumeSliderThumbColor,
-                          overlayShape: SliderComponentShape.noOverlay,
-                          thumbShape: const RoundSliderThumbShape(
-                            enabledThumbRadius: 6.0,
-                          )),
-                      child: Slider(
-                        activeColor: widget.activeVolumeSliderColor ??
-                            ApiVideoPlayerTheme
-                                .defaultTheme.volumeSliderActiveColor,
-                        inactiveColor: widget.inactiveVolumeSliderColor ??
-                            ApiVideoPlayerTheme
-                                .defaultTheme.volumeSliderInactiveColor,
-                        value: _isMuted ? 0 : _volume,
-                        onChanged: (value) {
-                          if (_isMuted) {
-                            widget.controller.isMuted = false;
-                          }
-                          widget.controller.volume = value;
-                          widget.onVolumeChanged(value);
-                        },
-                      ),
-                    ),
-                  ),
+    return MouseRegion(
+      onEnter: (_) => _animateExpand(open: true),
+      onExit: (_) => _animateExpand(open: false),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          IconButton(
+              icon: Icon(
+                _volume <= 0 || _isMuted ? Icons.volume_off : Icons.volume_up,
+                color: widget.iconsColor ??
+                    ApiVideoPlayerTheme.defaultTheme.iconsColor,
+              ),
+              onPressed: () {
+                widget.controller.isMuted = !_isMuted;
+                widget.onToggleMute();
+              }),
+          SizeTransition(
+            sizeFactor: animation,
+            axis: Axis.horizontal,
+            child: SizedBox(
+              height: 30.0,
+              width: 80.0,
+              child: SliderTheme(
+                data: SliderThemeData(
+                    activeTrackColor: widget.activeVolumeSliderColor ??
+                        ApiVideoPlayerTheme
+                            .defaultTheme.volumeSliderActiveColor,
+                    trackHeight: 2.0,
+                    thumbColor: widget.thumbVolumeSliderColor ??
+                        ApiVideoPlayerTheme.defaultTheme.volumeSliderThumbColor,
+                    overlayShape: SliderComponentShape.noOverlay,
+                    thumbShape: const RoundSliderThumbShape(
+                      enabledThumbRadius: 6.0,
+                    )),
+                child: Slider(
+                  activeColor: widget.activeVolumeSliderColor ??
+                      ApiVideoPlayerTheme.defaultTheme.volumeSliderActiveColor,
+                  inactiveColor: widget.inactiveVolumeSliderColor ??
+                      ApiVideoPlayerTheme
+                          .defaultTheme.volumeSliderInactiveColor,
+                  value: _isMuted ? 0 : _volume,
+                  onChanged: (value) {
+                    if (_isMuted) {
+                      widget.controller.isMuted = false;
+                    }
+                    widget.controller.volume = value;
+                    widget.onVolumeChanged(value);
+                  },
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
