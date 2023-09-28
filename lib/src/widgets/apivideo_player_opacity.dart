@@ -87,7 +87,7 @@ class _ApiVideoPlayerOpacityState extends State<ApiVideoPlayerOpacity> {
             onTap: () {
               widget.controller.showForDuration();
             },
-            child: widget.child,
+            child: _isVisible ? widget.child : Container(),
           ),
         ));
   }
