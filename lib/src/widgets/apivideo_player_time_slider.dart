@@ -92,41 +92,46 @@ class _ApiVideoPlayerTimeSliderState extends State<ApiVideoPlayerTimeSlider> {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(
-          child: Slider(
-            value: max(
-                0,
-                min(
-                  widget.controller.currentTime.inMilliseconds,
-                  widget.controller.duration.inMilliseconds,
-                )).toDouble(),
-            // Ensure that the slider doesn't go over the duration or under 0.0
-            min: 0.0,
-            max: widget.controller.duration.inMilliseconds.toDouble(),
-            activeColor: widget.activeColor ??
-                ApiVideoPlayerTheme.defaultTheme.timeSliderActiveColor,
-            inactiveColor: widget.inactiveColor ??
-                ApiVideoPlayerTheme.defaultTheme.timeSliderInactiveColor,
-            thumbColor: widget.thumbColor ??
-                ApiVideoPlayerTheme.defaultTheme.timeSliderThumbColor,
-            onChanged: (value) {
-              final Duration currentTime =
-                  Duration(milliseconds: value.toInt());
-              if (currentTime == widget.controller.currentTime) {
-                return;
-              }
-              widget.controller.currentTime = currentTime;
-              if (widget.onChanged != null) {
-                widget.onChanged!(currentTime);
-              }
-            },
-          ),
-        ),
-        Text((_duration - _currentTime).toPlayerString(),
-            style: TextStyle(
-                color: widget.textColor ??
-                    ApiVideoPlayerTheme.defaultTheme.timeSliderTextColor)),
+        Flexible(
+            flex: 9,
+            child: Slider(
+              value: max(
+                  0,
+                  min(
+                    widget.controller.currentTime.inMilliseconds,
+                    widget.controller.duration.inMilliseconds,
+                  )).toDouble(),
+              // Ensure that the slider doesn't go over the duration or under 0.0
+              min: 0.0,
+              max: widget.controller.duration.inMilliseconds.toDouble(),
+              activeColor: widget.activeColor ??
+                  ApiVideoPlayerTheme.defaultTheme.timeSliderActiveColor,
+              inactiveColor: widget.inactiveColor ??
+                  ApiVideoPlayerTheme.defaultTheme.timeSliderInactiveColor,
+              thumbColor: widget.thumbColor ??
+                  ApiVideoPlayerTheme.defaultTheme.timeSliderThumbColor,
+              onChanged: (value) {
+                final Duration currentTime =
+                    Duration(milliseconds: value.toInt());
+                if (currentTime == widget.controller.currentTime) {
+                  return;
+                }
+                widget.controller.currentTime = currentTime;
+                if (widget.onChanged != null) {
+                  widget.onChanged!(currentTime);
+                }
+              },
+            )),
+        Flexible(
+            flex: 1,
+            child: Text((_duration - _currentTime).toPlayerString(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: widget.textColor ??
+                        ApiVideoPlayerTheme.defaultTheme.timeSliderTextColor))),
       ],
     );
   }
