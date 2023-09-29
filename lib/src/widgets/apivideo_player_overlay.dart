@@ -123,11 +123,11 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                               }
                             },
                             iconsColor: widget.theme.iconsColor,
-                            activeVolumeSliderColor:
+                            activeSliderColor:
                                 widget.theme.volumeSliderActiveColor,
-                            inactiveVolumeSliderColor:
+                            inactiveSliderColor:
                                 widget.theme.volumeSliderInactiveColor,
-                            thumbVolumeSliderColor:
+                            thumbSliderColor:
                                 widget.theme.volumeSliderThumbColor,
                           )
                         : Container(),

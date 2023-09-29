@@ -21,20 +21,51 @@ class ApiVideoPlayerTheme {
     this.volumeSliderActiveColor = Colors.white,
     this.volumeSliderInactiveColor = Colors.grey,
     this.volumeSliderThumbColor = Colors.white,
-    this.selectedColor = ApiVideoColors.orange,
-    this.boxDecorationColor = Colors.grey,
   });
 
+  /// The color of the icons.
   final Color iconsColor;
-  final Color timeSliderActiveColor;
-  final Color timeSliderInactiveColor;
-  final Color timeSliderThumbColor;
-  final Color timeSliderTextColor;
-  final Color volumeSliderActiveColor;
-  final Color volumeSliderInactiveColor;
-  final Color volumeSliderThumbColor;
-  final Color selectedColor;
-  final Color boxDecorationColor;
 
+  /// The color to use for the portion of the time slider track that is active.
+  ///
+  /// The "active" side of the time slider is the side between the thumb
+  /// (current time) and the minimum value.
+  final Color timeSliderActiveColor;
+
+  /// The color for the inactive portion of the time slider track.
+  ///
+  /// The "inactive" side of the time slider is the side between the thumb
+  /// (current time) and the maximum value.
+  ///
+  final Color timeSliderInactiveColor;
+
+  /// The color given to the thumb to draw itself with.
+  final Color timeSliderThumbColor;
+
+  /// The color of the time slider text (current position).
+  final Color timeSliderTextColor;
+
+  /// The color to use for the portion of the volume slider track that is active.
+  ///
+  /// The "active" side of the volume slider is the side between the thumb
+  /// and the minimum value.
+  ///
+  /// Volume slider is only visible on web.
+  final Color volumeSliderActiveColor;
+
+  /// The color for the inactive portion of the volume slider track.
+  ///
+  /// The "inactive" side of the time slider is the side between the thumb
+  /// and the maximum value.
+  ///
+  /// Volume slider is only visible on web.
+  final Color volumeSliderInactiveColor;
+
+  /// The color given to the thumb to draw itself with.
+  ///
+  /// Volume slider is only visible on web.
+  final Color volumeSliderThumbColor;
+
+  /// The default theme.
   static const ApiVideoPlayerTheme defaultTheme = ApiVideoPlayerTheme();
 }

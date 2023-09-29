@@ -28,9 +28,9 @@ class ApiVideoPlayerVolumeSlider extends StatefulWidget {
     required this.onVolumeChanged,
     required this.onToggleMute,
     this.iconsColor,
-    this.activeVolumeSliderColor,
-    this.inactiveVolumeSliderColor,
-    this.thumbVolumeSliderColor,
+    this.activeSliderColor,
+    this.inactiveSliderColor,
+    this.thumbSliderColor,
   });
 
   final ApiVideoPlayerVolumeSliderController controller;
@@ -39,9 +39,9 @@ class ApiVideoPlayerVolumeSlider extends StatefulWidget {
   final VoidCallback onToggleMute;
 
   final Color? iconsColor;
-  final Color? activeVolumeSliderColor;
-  final Color? inactiveVolumeSliderColor;
-  final Color? thumbVolumeSliderColor;
+  final Color? activeSliderColor;
+  final Color? inactiveSliderColor;
+  final Color? thumbSliderColor;
 
   @override
   State<ApiVideoPlayerVolumeSlider> createState() =>
@@ -119,20 +119,20 @@ class _ApiVideoPlayerVolumeSliderState extends State<ApiVideoPlayerVolumeSlider>
               width: 80.0,
               child: SliderTheme(
                 data: SliderThemeData(
-                    activeTrackColor: widget.activeVolumeSliderColor ??
+                    activeTrackColor: widget.activeSliderColor ??
                         ApiVideoPlayerTheme
                             .defaultTheme.volumeSliderActiveColor,
                     trackHeight: 2.0,
-                    thumbColor: widget.thumbVolumeSliderColor ??
+                    thumbColor: widget.thumbSliderColor ??
                         ApiVideoPlayerTheme.defaultTheme.volumeSliderThumbColor,
                     overlayShape: SliderComponentShape.noOverlay,
                     thumbShape: const RoundSliderThumbShape(
                       enabledThumbRadius: 6.0,
                     )),
                 child: Slider(
-                  activeColor: widget.activeVolumeSliderColor ??
+                  activeColor: widget.activeSliderColor ??
                       ApiVideoPlayerTheme.defaultTheme.volumeSliderActiveColor,
-                  inactiveColor: widget.inactiveVolumeSliderColor ??
+                  inactiveColor: widget.inactiveSliderColor ??
                       ApiVideoPlayerTheme
                           .defaultTheme.volumeSliderInactiveColor,
                   value: _isMuted ? 0 : _volume,
