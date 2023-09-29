@@ -1,4 +1,3 @@
-import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/src/style/apivideo_icons.dart';
 import 'package:apivideo_player/src/style/apivideo_label.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +34,12 @@ class ApiVideoPlayerControlsBar extends StatefulWidget {
       required this.onReplay,
       required this.onForward,
       required this.onBackward,
-      required this.iconsColor});
+      this.playIcon = ApiVideoIcons.playPrimary,
+      this.pauseIcon = ApiVideoIcons.pausePrimary,
+      this.rewindIcon = ApiVideoIcons.replayPrimary,
+      this.forwardIcon = Icons.forward_10_rounded,
+      this.backwardIcon = Icons.replay_10_rounded,
+      this.style});
 
   final ApiVideoPlayerControlsBarController controller;
 
@@ -45,7 +49,15 @@ class ApiVideoPlayerControlsBar extends StatefulWidget {
   final VoidCallback onForward;
   final VoidCallback onBackward;
 
-  final Color? iconsColor;
+  /// The main icons to display.
+  final IconData playIcon;
+  final IconData pauseIcon;
+  final IconData rewindIcon;
+
+  final IconData? forwardIcon;
+  final IconData? backwardIcon;
+
+  final ApiVideoPlayerControlsBarStyle? style;
 
   @override
   State<ApiVideoPlayerControlsBar> createState() =>
@@ -86,20 +98,18 @@ class _ApiVideoPlayerControlsBarState extends State<ApiVideoPlayerControlsBar> {
                 widget.onBackward();
               },
               iconSize: 30,
-              icon: Icon(Icons.replay_10_rounded,
-                  color: widget.iconsColor ??
-                      ApiVideoPlayerTheme.defaultTheme.iconsColor,
-                  semanticLabel: ApiVideoPlayerLabel.backward)),
+              icon: Icon(widget.backwardIcon,
+                  semanticLabel: ApiVideoPlayerLabel.backward),
+              style: widget.style?.seekBackwardControlButtonStyle),
           buildBtnVideoControl(),
           IconButton(
               onPressed: () {
                 widget.onForward();
               },
               iconSize: 30,
-              icon: Icon(Icons.forward_10_rounded,
-                  color: widget.iconsColor ??
-                      ApiVideoPlayerTheme.defaultTheme.iconsColor,
-                  semanticLabel: ApiVideoPlayerLabel.forward)),
+              icon: Icon(widget.forwardIcon,
+                  semanticLabel: ApiVideoPlayerLabel.forward),
+              style: widget.style?.seekForwardControlButtonStyle),
         ],
       ),
     );
@@ -114,30 +124,26 @@ class _ApiVideoPlayerControlsBarState extends State<ApiVideoPlayerControlsBar> {
   }
 
   Widget buildBtnPlay() => IconButton(
-        onPressed: () {
-          widget.onPlay();
-        },
-        iconSize: 60,
-        icon: Icon(
-          ApiVideoIcons.playPrimary,
-          color:
-              widget.iconsColor ?? ApiVideoPlayerTheme.defaultTheme.iconsColor,
-          semanticLabel: ApiVideoPlayerLabel.play,
-        ),
-      );
+      onPressed: () {
+        widget.onPlay();
+      },
+      iconSize: 60,
+      icon: Icon(
+        widget.playIcon,
+        semanticLabel: ApiVideoPlayerLabel.play,
+      ),
+      style: widget.style?.mainControlButtonStyle);
 
   Widget buildBtnPause() => IconButton(
-        onPressed: () {
-          widget.onPause();
-        },
-        iconSize: 60,
-        icon: Icon(
-          ApiVideoIcons.pausePrimary,
-          color:
-              widget.iconsColor ?? ApiVideoPlayerTheme.defaultTheme.iconsColor,
-          semanticLabel: ApiVideoPlayerLabel.pause,
-        ),
-      );
+      onPressed: () {
+        widget.onPause();
+      },
+      iconSize: 60,
+      icon: Icon(
+        widget.pauseIcon,
+        semanticLabel: ApiVideoPlayerLabel.pause,
+      ),
+      style: widget.style?.mainControlButtonStyle);
 
   Widget buildBtnReplay() => IconButton(
       onPressed: () {
@@ -145,10 +151,10 @@ class _ApiVideoPlayerControlsBarState extends State<ApiVideoPlayerControlsBar> {
       },
       iconSize: 60,
       icon: Icon(
-        ApiVideoIcons.replayPrimary,
-        color: widget.iconsColor ?? ApiVideoPlayerTheme.defaultTheme.iconsColor,
+        widget.rewindIcon,
         semanticLabel: ApiVideoPlayerLabel.replay,
-      ));
+      ),
+      style: widget.style?.mainControlButtonStyle);
 
   _didChangeStateValue() {
     if (_isPlaying == widget.controller._state.isPlaying &&
@@ -161,5 +167,51 @@ class _ApiVideoPlayerControlsBarState extends State<ApiVideoPlayerControlsBar> {
         _didEnd = widget.controller._state.didEnd;
       });
     }
+  }
+}
+
+class ApiVideoPlayerControlsBarStyle {
+  const ApiVideoPlayerControlsBarStyle(
+      {this.mainControlButtonStyle,
+      this.seekForwardControlButtonStyle,
+      this.seekBackwardControlButtonStyle});
+
+  final ButtonStyle? mainControlButtonStyle;
+  final ButtonStyle? seekForwardControlButtonStyle;
+  final ButtonStyle? seekBackwardControlButtonStyle;
+
+  /// Applies the style to all buttons
+  ///
+  /// If [sideControlButtonStyle] is null, it will be the same as [mainControlButtonStyle].
+  static ApiVideoPlayerControlsBarStyle styleFrom(
+      {ButtonStyle? mainControlButtonStyle,
+      ButtonStyle? sideControlButtonStyle}) {
+    sideControlButtonStyle ??= mainControlButtonStyle;
+
+    return ApiVideoPlayerControlsBarStyle(
+        mainControlButtonStyle: mainControlButtonStyle,
+        seekForwardControlButtonStyle: mainControlButtonStyle,
+        seekBackwardControlButtonStyle: mainControlButtonStyle);
+  }
+
+  ApiVideoPlayerControlsBarStyle copyWith({
+    ButtonStyle? mainControlButtonStyle,
+    ButtonStyle? seekForwardControlButtonStyle,
+    ButtonStyle? seekBackwardControlButtonStyle,
+  }) {
+    return ApiVideoPlayerControlsBarStyle(
+        mainControlButtonStyle:
+            mainControlButtonStyle ?? this.mainControlButtonStyle,
+        seekForwardControlButtonStyle:
+            seekForwardControlButtonStyle ?? this.seekForwardControlButtonStyle,
+        seekBackwardControlButtonStyle: seekBackwardControlButtonStyle ??
+            this.seekBackwardControlButtonStyle);
+  }
+
+  /// Applies the [Theme.iconButtonTheme] to all buttons
+  static ApiVideoPlayerControlsBarStyle of(BuildContext context) {
+    final iconButtonTheme = Theme.of(context).iconButtonTheme;
+
+    return styleFrom(mainControlButtonStyle: iconButtonTheme.style);
   }
 }

@@ -1,5 +1,5 @@
 import 'package:apivideo_player/src/apivideo_player_controller.dart';
-import 'package:apivideo_player/src/style/apivideo_theme.dart';
+import 'package:apivideo_player/src/style/apivideo_style.dart';
 import 'package:apivideo_player/src/widgets/apivideo_player_opacity.dart';
 import 'package:apivideo_player/src/widgets/apivideo_player_overlay.dart';
 import 'package:apivideo_player/src/widgets/apivideo_player_video.dart';
@@ -20,20 +20,29 @@ import 'package:flutter/material.dart';
 /// ```
 class ApiVideoPlayer extends StatefulWidget {
   const ApiVideoPlayer(
-      {super.key,
-      required this.controller,
-      this.theme = ApiVideoPlayerTheme.defaultTheme,
-      this.child});
+      {super.key, required this.controller, this.style, this.child});
 
-  const ApiVideoPlayer.withoutControls(
-      {Key? key, required ApiVideoPlayerController controller})
-      : this(key: key, controller: controller, child: const SizedBox.shrink());
+  /// Creates a player with api.video style.
+  factory ApiVideoPlayer.styleFromApiVideo(
+      {Key? key, required ApiVideoPlayerController controller, Widget? child}) {
+    return ApiVideoPlayer(
+        key: key,
+        controller: controller,
+        style: ApiVideoPlayerStyle.defaultStyle,
+        child: child);
+  }
+
+  /// Creates a player without controls.
+  factory ApiVideoPlayer.withoutControls(
+      {Key? key, required ApiVideoPlayerController controller}) {
+    return ApiVideoPlayer(key: key, controller: controller);
+  }
 
   /// The controller for the player.
   final ApiVideoPlayerController controller;
 
   /// The theme for the player.
-  final ApiVideoPlayerTheme theme;
+  final ApiVideoPlayerStyle? style;
 
   /// The child widget to display as an overlay on top of the video.
   final Widget? child;
@@ -54,7 +63,7 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
                 controller: _opacityController,
                 child: ApiVideoPlayerOverlay(
                     controller: widget.controller,
-                    theme: widget.theme,
+                    style: widget.style,
                     onItemPress: () {
                       _opacityController.showForDuration();
                     })));

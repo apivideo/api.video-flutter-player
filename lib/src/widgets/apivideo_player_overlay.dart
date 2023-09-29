@@ -3,27 +3,22 @@ import 'dart:async';
 import 'package:apivideo_player/apivideo_player.dart';
 import 'package:apivideo_player/src/widgets/apivideo_player_controls_bar.dart';
 import 'package:apivideo_player/src/widgets/apivideo_player_time_slider.dart';
-import 'package:apivideo_player/src/widgets/apivideo_player_volume_slider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
-import 'common/apivideo_player_multi_text_button.dart';
+import 'apivideo_player_settings_bar.dart';
 
 /// The overlay of the video player.
 /// It displays the controls, time slider and the action bar.
 class ApiVideoPlayerOverlay extends StatefulWidget {
   const ApiVideoPlayerOverlay(
-      {super.key,
-      required this.controller,
-      required this.theme,
-      this.onItemPress});
+      {super.key, required this.controller, this.style, this.onItemPress});
 
   /// The controller for the player.
   final ApiVideoPlayerController controller;
 
   /// The theme for the player.
-  final ApiVideoPlayerTheme theme;
+  final ApiVideoPlayerStyle? style;
 
   /// The callback to be called when an item (play, pause,...) is clicked (used to show the overlay).
   final VoidCallback? onItemPress;
@@ -34,9 +29,9 @@ class ApiVideoPlayerOverlay extends StatefulWidget {
 
 class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
     with TickerProviderStateMixin {
-  final _lowBarController = ApiVideoPlayerTimeSliderController();
+  final _timeSliderController = ApiVideoPlayerTimeSliderController();
   final _controlsBarController = ApiVideoPlayerControlsBarController();
-  final _volumeSliderController = ApiVideoPlayerVolumeSliderController();
+  final _settingsBarController = ApiVideoPlayerSettingsBarController();
 
   Timer? _timeSliderTimer;
 
@@ -102,55 +97,28 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
           Positioned(
               top: 0,
               right: 0,
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    kIsWeb
-                        ? ApiVideoPlayerVolumeSlider(
-                            controller: _volumeSliderController,
-                            onVolumeChanged: (volume) {
-                              widget.controller.setVolume(volume);
-                              if (widget.onItemPress != null) {
-                                widget.onItemPress!();
-                              }
-                            },
-                            onToggleMute: () async {
-                              final isMuted = await widget.controller.isMuted;
-                              widget.controller.setIsMuted(!isMuted);
-                              if (widget.onItemPress != null) {
-                                widget.onItemPress!();
-                              }
-                            },
-                            iconsColor: widget.theme.iconsColor,
-                            activeSliderColor:
-                                widget.theme.volumeSliderActiveColor,
-                            inactiveSliderColor:
-                                widget.theme.volumeSliderInactiveColor,
-                            thumbSliderColor:
-                                widget.theme.volumeSliderThumbColor,
-                          )
-                        : Container(),
-                    ApiVideoPlayerMultiTextButton(
-                      keysValues: const {
-                        '0.5x': 0.5,
-                        '1.0x': 1.0,
-                        '1.2x': 1.2,
-                        '1.5x': 1.5,
-                        '2.0x': 2.0,
-                      },
-                      defaultKey: "1.0x",
-                      onValueChanged: (speed) {
-                        widget.controller.setSpeedRate(speed);
-                        if (widget.onItemPress != null) {
-                          widget.onItemPress!();
-                        }
-                      },
-                      size: 17,
-                      textColor: widget.theme.iconsColor,
-                      iconColor: widget.theme.iconsColor,
-                    )
-                  ])),
+              child: ApiVideoPlayerSettingsBar(
+                  controller: _settingsBarController,
+                  onVolumeChanged: (volume) {
+                    widget.controller.setVolume(volume);
+                    if (widget.onItemPress != null) {
+                      widget.onItemPress!();
+                    }
+                  },
+                  onToggleMute: () async {
+                    final isMuted = await widget.controller.isMuted;
+                    widget.controller.setIsMuted(!isMuted);
+                    if (widget.onItemPress != null) {
+                      widget.onItemPress!();
+                    }
+                  },
+                  onSpeedRateChanged: (speed) {
+                    widget.controller.setSpeedRate(speed);
+                    if (widget.onItemPress != null) {
+                      widget.onItemPress!();
+                    }
+                  },
+                  style: widget.style?.settingsBarStyle)),
           Center(
             child: ApiVideoPlayerControlsBar(
               controller: _controlsBarController,
@@ -187,7 +155,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                   widget.onItemPress!();
                 }
               },
-              iconsColor: widget.theme.iconsColor,
+              style: widget.style?.controlBarStyle,
             ),
           ),
           Positioned(
@@ -195,7 +163,8 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
               right: 0,
               left: 0,
               child: ApiVideoPlayerTimeSlider(
-                controller: _lowBarController,
+                controller: _timeSliderController,
+                style: widget.style?.timeSliderStyle,
                 onChanged: (Duration value) {
                   widget.controller.setCurrentTime(value);
                   if (widget.onItemPress != null) {
@@ -231,21 +200,21 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
 
   void _updateCurrentTime() async {
     Duration currentTime = await widget.controller.currentTime;
-    _lowBarController.currentTime = currentTime;
+    _timeSliderController.currentTime = currentTime;
   }
 
   void _updateDuration() async {
     Duration duration = await widget.controller.duration;
-    _lowBarController.duration = duration;
+    _timeSliderController.duration = duration;
   }
 
   void _updateVolume() async {
     double volume = await widget.controller.volume;
-    _volumeSliderController.volume = volume;
+    _settingsBarController.volume = volume;
   }
 
   void _updateMuted() async {
     bool isMuted = await widget.controller.isMuted;
-    _volumeSliderController.isMuted = isMuted;
+    _settingsBarController.isMuted = isMuted;
   }
 }

@@ -7,8 +7,7 @@ class ApiVideoPlayerMultiTextButton extends StatefulWidget {
     required this.onValueChanged,
     this.defaultKey,
     this.size = 15,
-    this.textColor,
-    this.iconColor,
+    this.style,
   })  : assert(keysValues.isNotEmpty),
         assert(defaultKey == null || keysValues.containsKey(defaultKey)),
         super(key: key);
@@ -21,8 +20,7 @@ class ApiVideoPlayerMultiTextButton extends StatefulWidget {
 
   final double size;
 
-  final Color? textColor;
-  final Color? iconColor;
+  final ButtonStyle? style;
 
   @override
   State<ApiVideoPlayerMultiTextButton> createState() =>
@@ -36,23 +34,20 @@ class _ApiVideoPlayerMultiTextButtonState
   @override
   Widget build(BuildContext context) {
     return TextButton.icon(
-      style: TextButton.styleFrom(
-        foregroundColor: widget.textColor,
-        textStyle: TextStyle(fontSize: widget.size),
-      ),
-      onPressed: () {
-        final position = widget.keysValues.keys.toList().indexOf(_selectedKey);
-        final newKey = widget.keysValues.keys
-            .elementAt((position + 1) % widget.keysValues.keys.length);
-        if (mounted) {
-          setState(() {
-            _selectedKey = newKey;
-          });
-        }
-        widget.onValueChanged(widget.keysValues[newKey]);
-      },
-      icon: Icon(Icons.speed, color: widget.iconColor, size: widget.size),
-      label: Text(_selectedKey),
-    );
+        style: widget.style,
+        onPressed: () {
+          final position =
+              widget.keysValues.keys.toList().indexOf(_selectedKey);
+          final newKey = widget.keysValues.keys
+              .elementAt((position + 1) % widget.keysValues.keys.length);
+          if (mounted) {
+            setState(() {
+              _selectedKey = newKey;
+            });
+          }
+          widget.onValueChanged(widget.keysValues[newKey]);
+        },
+        icon: Icon(Icons.speed, size: widget.size),
+        label: Text(_selectedKey));
   }
 }

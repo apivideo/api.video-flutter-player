@@ -161,7 +161,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
               ? ApiVideoPlayer.withoutControls(controller: widget.controller)
               : ApiVideoPlayer(
                   controller: widget.controller,
-                ),
+                  style: ApiVideoPlayerStyle.defaultStyle),
         ),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           IconButton(

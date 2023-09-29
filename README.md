@@ -99,13 +99,13 @@ See the sample application below for more details.
 
 A Widget that displays the video and its controls.
 
-The [ApiVideoPlayer](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player.dart) constructor takes 3 parameters:
+The [ApiVideoPlayer](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/widgets/apivideo_player.dart) constructor takes 3 parameters:
 
-| Parameter    | Mandatory                | Type                                                                                                                                                | Description                                               |
-|--------------|--------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
-| controller   | Yes                      | [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart)                  | The controller that controls a video player               |
-| hideControls | No (default false)       | bool                                                                                                                                                | Allows you to hide or show the controls of a video player |
-| theme        | No (default PlayerTheme) | [PlayerTheme](https://github.com/apivideo/api.video-flutter-player/blob/4efe23f20ccf1c9459cee7588da1d3fed74e8e36/lib/src/apivideo_player.dart#L102) | Allows you to customize the video player's colors         |
+| Parameter  | Mandatory                      | Type                                                                                                                               | Description                                                   |
+|------------|--------------------------------|------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
+| controller | Yes                            | [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/apivideo_player_controller.dart) | The controller that controls a video player                   |                                                                                                                                               | Allows you to hide or show the controls of a video player |
+| style      | No (default api.video style)   | [PlayerStyle](https://github.com/apivideo/api.video-flutter-player/blob/main/lib/src/style/apivideo_style.dart#L102)               | Allows you to customize the video player's colors, shapes,... |
+| child      | No (default api.video overlay) | Widget                                                                                                                             | Replace api.video overlay by your own implementation.         |
 
 ```dart
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
@@ -117,9 +117,10 @@ await controller.initialize();
 Widget build(BuildContext context) {
     return ApiVideoPlayer(
         controller: controller,
-    )
+    );
 }
 ```
+
 
 ## Methods
 

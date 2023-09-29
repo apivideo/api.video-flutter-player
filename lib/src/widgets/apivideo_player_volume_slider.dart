@@ -1,13 +1,12 @@
-import 'package:apivideo_player/src/style/apivideo_theme.dart';
 import 'package:flutter/material.dart';
 
 class ApiVideoPlayerVolumeSliderController extends ChangeNotifier {
-  double _value = 1.0;
+  double _volume = 1.0;
 
-  double get volume => _value;
+  double get volume => _volume;
 
   set volume(double newVolume) {
-    _value = newVolume;
+    _volume = newVolume;
     notifyListeners();
   }
 
@@ -22,15 +21,12 @@ class ApiVideoPlayerVolumeSliderController extends ChangeNotifier {
 }
 
 class ApiVideoPlayerVolumeSlider extends StatefulWidget {
-  const ApiVideoPlayerVolumeSlider({
+  const ApiVideoPlayerVolumeSlider.raw({
     super.key,
     required this.controller,
     required this.onVolumeChanged,
     required this.onToggleMute,
-    this.iconsColor,
-    this.activeSliderColor,
-    this.inactiveSliderColor,
-    this.thumbSliderColor,
+    required this.style,
   });
 
   final ApiVideoPlayerVolumeSliderController controller;
@@ -38,10 +34,23 @@ class ApiVideoPlayerVolumeSlider extends StatefulWidget {
   final Function(double) onVolumeChanged;
   final VoidCallback onToggleMute;
 
-  final Color? iconsColor;
-  final Color? activeSliderColor;
-  final Color? inactiveSliderColor;
-  final Color? thumbSliderColor;
+  final ApiVideoPlayerVolumeSliderStyle style;
+
+  factory ApiVideoPlayerVolumeSlider({
+    required ApiVideoPlayerVolumeSliderController controller,
+    required Function(double) onVolumeChanged,
+    required VoidCallback onToggleMute,
+    ApiVideoPlayerVolumeSliderStyle? style,
+  }) {
+    style ??= ApiVideoPlayerVolumeSliderStyle();
+
+    return ApiVideoPlayerVolumeSlider.raw(
+      controller: controller,
+      onVolumeChanged: onVolumeChanged,
+      onToggleMute: onToggleMute,
+      style: style,
+    );
+  }
 
   @override
   State<ApiVideoPlayerVolumeSlider> createState() =>
@@ -101,10 +110,9 @@ class _ApiVideoPlayerVolumeSliderState extends State<ApiVideoPlayerVolumeSlider>
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           IconButton(
+              style: widget.style.buttonStyle,
               icon: Icon(
                 _volume <= 0 || _isMuted ? Icons.volume_off : Icons.volume_up,
-                color: widget.iconsColor ??
-                    ApiVideoPlayerTheme.defaultTheme.iconsColor,
                 size: 18,
               ),
               onPressed: () {
@@ -118,23 +126,8 @@ class _ApiVideoPlayerVolumeSliderState extends State<ApiVideoPlayerVolumeSlider>
               height: 30.0,
               width: 80.0,
               child: SliderTheme(
-                data: SliderThemeData(
-                    activeTrackColor: widget.activeSliderColor ??
-                        ApiVideoPlayerTheme
-                            .defaultTheme.volumeSliderActiveColor,
-                    trackHeight: 2.0,
-                    thumbColor: widget.thumbSliderColor ??
-                        ApiVideoPlayerTheme.defaultTheme.volumeSliderThumbColor,
-                    overlayShape: SliderComponentShape.noOverlay,
-                    thumbShape: const RoundSliderThumbShape(
-                      enabledThumbRadius: 6.0,
-                    )),
+                data: widget.style.sliderTheme.copyWith(trackHeight: 2.0),
                 child: Slider(
-                  activeColor: widget.activeSliderColor ??
-                      ApiVideoPlayerTheme.defaultTheme.volumeSliderActiveColor,
-                  inactiveColor: widget.inactiveSliderColor ??
-                      ApiVideoPlayerTheme
-                          .defaultTheme.volumeSliderInactiveColor,
                   value: _isMuted ? 0 : _volume,
                   onChanged: (value) {
                     if (_isMuted) {
@@ -161,4 +154,35 @@ class _ApiVideoPlayerVolumeSliderState extends State<ApiVideoPlayerVolumeSlider>
       });
     }
   }
+}
+
+class ApiVideoPlayerVolumeSliderStyle {
+  const ApiVideoPlayerVolumeSliderStyle.raw({
+    this.buttonStyle,
+    required this.sliderTheme,
+  });
+
+  final ButtonStyle? buttonStyle;
+  final SliderThemeData sliderTheme;
+
+  factory ApiVideoPlayerVolumeSliderStyle({
+    ButtonStyle? buttonStyle,
+    SliderThemeData? sliderTheme,
+  }) {
+    sliderTheme ??= const SliderThemeData();
+
+    return ApiVideoPlayerVolumeSliderStyle.raw(
+      buttonStyle: buttonStyle,
+      sliderTheme: sliderTheme,
+    );
+  }
+
+  ApiVideoPlayerVolumeSliderStyle copyWith({
+    ButtonStyle? buttonStyle,
+    SliderThemeData? sliderTheme,
+  }) =>
+      ApiVideoPlayerVolumeSliderStyle.raw(
+        buttonStyle: buttonStyle ?? this.buttonStyle,
+        sliderTheme: sliderTheme ?? this.sliderTheme,
+      );
 }

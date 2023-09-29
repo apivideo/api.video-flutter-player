@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:apivideo_player/src/style/apivideo_theme.dart';
 import 'package:apivideo_player/src/utils/extensions/duration_extension.dart';
 import 'package:flutter/material.dart';
 
@@ -43,23 +42,30 @@ class ApiVideoPlayerTimeSliderController
 }
 
 class ApiVideoPlayerTimeSlider extends StatefulWidget {
-  const ApiVideoPlayerTimeSlider(
+  const ApiVideoPlayerTimeSlider.raw(
       {super.key,
       required this.controller,
-      this.activeColor,
-      this.inactiveColor,
-      this.thumbColor,
-      this.textColor,
+      required this.style,
       this.onChanged});
 
   final ApiVideoPlayerTimeSliderController controller;
 
-  final Color? activeColor;
-  final Color? inactiveColor;
-  final Color? thumbColor;
-  final Color? textColor;
+  final ApiVideoPlayerTimeSliderStyle style;
 
   final ValueChanged<Duration>? onChanged;
+
+  factory ApiVideoPlayerTimeSlider({
+    required ApiVideoPlayerTimeSliderController controller,
+    ApiVideoPlayerTimeSliderStyle? style,
+    ValueChanged<Duration>? onChanged,
+  }) {
+    style ??= ApiVideoPlayerTimeSliderStyle();
+    return ApiVideoPlayerTimeSlider.raw(
+      controller: controller,
+      style: style,
+      onChanged: onChanged,
+    );
+  }
 
   @override
   State<ApiVideoPlayerTimeSlider> createState() =>
@@ -97,41 +103,35 @@ class _ApiVideoPlayerTimeSliderState extends State<ApiVideoPlayerTimeSlider> {
       children: [
         Flexible(
             flex: 9,
-            child: Slider(
-              value: max(
-                  0,
-                  min(
-                    widget.controller.currentTime.inMilliseconds,
-                    widget.controller.duration.inMilliseconds,
-                  )).toDouble(),
-              // Ensure that the slider doesn't go over the duration or under 0.0
-              min: 0.0,
-              max: widget.controller.duration.inMilliseconds.toDouble(),
-              activeColor: widget.activeColor ??
-                  ApiVideoPlayerTheme.defaultTheme.timeSliderActiveColor,
-              inactiveColor: widget.inactiveColor ??
-                  ApiVideoPlayerTheme.defaultTheme.timeSliderInactiveColor,
-              thumbColor: widget.thumbColor ??
-                  ApiVideoPlayerTheme.defaultTheme.timeSliderThumbColor,
-              onChanged: (value) {
-                final Duration currentTime =
-                    Duration(milliseconds: value.toInt());
-                if (currentTime == widget.controller.currentTime) {
-                  return;
-                }
-                widget.controller.currentTime = currentTime;
-                if (widget.onChanged != null) {
-                  widget.onChanged!(currentTime);
-                }
-              },
-            )),
+            child: SliderTheme(
+                data: widget.style.sliderTheme,
+                child: Slider(
+                  value: max(
+                      0,
+                      min(
+                        widget.controller.currentTime.inMilliseconds,
+                        widget.controller.duration.inMilliseconds,
+                      )).toDouble(),
+                  // Ensure that the slider doesn't go over the duration or under 0.0
+                  min: 0.0,
+                  max: widget.controller.duration.inMilliseconds.toDouble(),
+                  onChanged: (value) {
+                    final Duration currentTime =
+                        Duration(milliseconds: value.toInt());
+                    if (currentTime == widget.controller.currentTime) {
+                      return;
+                    }
+                    widget.controller.currentTime = currentTime;
+                    if (widget.onChanged != null) {
+                      widget.onChanged!(currentTime);
+                    }
+                  },
+                ))),
         Flexible(
             flex: 1,
             child: Text((_duration - _currentTime).toPlayerString(),
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: widget.textColor ??
-                        ApiVideoPlayerTheme.defaultTheme.timeSliderTextColor))),
+                style: widget.style.sliderTheme.valueIndicatorTextStyle)),
       ],
     );
   }
@@ -143,5 +143,21 @@ class _ApiVideoPlayerTimeSliderState extends State<ApiVideoPlayerTimeSlider> {
         _duration = widget.controller.duration;
       });
     }
+  }
+}
+
+class ApiVideoPlayerTimeSliderStyle {
+  const ApiVideoPlayerTimeSliderStyle.raw({required this.sliderTheme});
+
+  final SliderThemeData sliderTheme;
+
+  factory ApiVideoPlayerTimeSliderStyle({SliderThemeData? sliderTheme}) {
+    sliderTheme ??= const SliderThemeData();
+    return ApiVideoPlayerTimeSliderStyle.raw(sliderTheme: sliderTheme);
+  }
+
+  static ApiVideoPlayerTimeSliderStyle of(BuildContext context) {
+    final SliderThemeData sliderTheme = SliderTheme.of(context);
+    return ApiVideoPlayerTimeSliderStyle(sliderTheme: sliderTheme);
   }
 }
