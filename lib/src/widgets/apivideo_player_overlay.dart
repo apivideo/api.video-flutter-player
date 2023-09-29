@@ -146,8 +146,10 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                           widget.onItemPress!();
                         }
                       },
+                      size: 17,
                       textColor: widget.theme.iconsColor,
-                    ),
+                      iconColor: widget.theme.iconsColor,
+                    )
                   ])),
           Center(
             child: ApiVideoPlayerControlsBar(

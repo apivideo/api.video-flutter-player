@@ -105,6 +105,7 @@ class _ApiVideoPlayerVolumeSliderState extends State<ApiVideoPlayerVolumeSlider>
                 _volume <= 0 || _isMuted ? Icons.volume_off : Icons.volume_up,
                 color: widget.iconsColor ??
                     ApiVideoPlayerTheme.defaultTheme.iconsColor,
+                size: 18,
               ),
               onPressed: () {
                 widget.controller.isMuted = !_isMuted;

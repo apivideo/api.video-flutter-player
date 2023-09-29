@@ -6,7 +6,9 @@ class ApiVideoPlayerMultiTextButton extends StatefulWidget {
     required this.keysValues,
     required this.onValueChanged,
     this.defaultKey,
+    this.size = 15,
     this.textColor,
+    this.iconColor,
   })  : assert(keysValues.isNotEmpty),
         assert(defaultKey == null || keysValues.containsKey(defaultKey)),
         super(key: key);
@@ -17,7 +19,10 @@ class ApiVideoPlayerMultiTextButton extends StatefulWidget {
 
   final ValueChanged<dynamic> onValueChanged;
 
+  final double size;
+
   final Color? textColor;
+  final Color? iconColor;
 
   @override
   State<ApiVideoPlayerMultiTextButton> createState() =>
@@ -30,10 +35,10 @@ class _ApiVideoPlayerMultiTextButtonState
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
+    return TextButton.icon(
       style: TextButton.styleFrom(
         foregroundColor: widget.textColor,
-        textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        textStyle: TextStyle(fontSize: widget.size),
       ),
       onPressed: () {
         final position = widget.keysValues.keys.toList().indexOf(_selectedKey);
@@ -46,7 +51,8 @@ class _ApiVideoPlayerMultiTextButtonState
         }
         widget.onValueChanged(widget.keysValues[newKey]);
       },
-      child: Text(_selectedKey),
+      icon: Icon(Icons.speed, color: widget.iconColor, size: widget.size),
+      label: Text(_selectedKey),
     );
   }
 }
