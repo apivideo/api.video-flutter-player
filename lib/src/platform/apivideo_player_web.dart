@@ -1,11 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'dart:html';
+import 'dart:ui_web' as ui_web;
 
 import 'package:apivideo_player/src/platform/web/javascript_controller.dart'
     as js_controller;
 import 'package:apivideo_player/src/platform/web/javascript_controller.dart';
-import 'package:apivideo_player/src/platform/web/platform_view_registry/platform_view_registry.dart';
 import 'package:apivideo_player/src/platform/web/utils/conversion.dart';
 import 'package:apivideo_player/src/platform/web/utils/player_event_type_extension.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +48,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       ..style.height = '100%'
       ..style.width = '100%';
 
-    platformViewRegistry.registerViewFactory(
+    ui_web.platformViewRegistry.registerViewFactory(
         'playerDiv$textureId', (int viewId) => videoElement);
 
     _players[textureId]!
