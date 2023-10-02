@@ -1,5 +1,5 @@
 /// The semantic label of a [ApiVideoPlayer].
-class ApiVideoPlayerLabel {
+class ApiVideoLabels {
   static const String play = "Play";
   static const String pause = "Pause";
   static const String forward = "Forward";

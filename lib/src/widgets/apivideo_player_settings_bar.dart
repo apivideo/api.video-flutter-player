@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'apivideo_player_volume_slider.dart';
 
-class ApiVideoPlayerSettingsBarController {
-  final volumeController = ApiVideoPlayerVolumeSliderController();
+class SettingsBarController {
+  final volumeController = VolumeSliderController();
 
   double get volume => volumeController.volume;
 
@@ -24,8 +24,8 @@ class ApiVideoPlayerSettingsBarController {
   }
 }
 
-class ApiVideoPlayerSettingsBar extends StatefulWidget {
-  const ApiVideoPlayerSettingsBar(
+class SettingsBar extends StatefulWidget {
+  const SettingsBar(
       {super.key,
       required this.controller,
       this.onToggleMute,
@@ -33,21 +33,20 @@ class ApiVideoPlayerSettingsBar extends StatefulWidget {
       this.onSpeedRateChanged,
       this.style});
 
-  final ApiVideoPlayerSettingsBarController controller;
+  final SettingsBarController controller;
 
   final VoidCallback? onToggleMute;
   final ValueChanged<double>? onVolumeChanged;
 
   final ValueChanged<double>? onSpeedRateChanged;
 
-  final ApiVideoPlayerSettingsBarStyle? style;
+  final SettingsBarStyle? style;
 
   @override
-  State<ApiVideoPlayerSettingsBar> createState() =>
-      _ApiVideoPlayerSettingsBarState();
+  State<SettingsBar> createState() => _SettingsBarState();
 }
 
-class _ApiVideoPlayerSettingsBarState extends State<ApiVideoPlayerSettingsBar> {
+class _SettingsBarState extends State<SettingsBar> {
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -55,7 +54,7 @@ class _ApiVideoPlayerSettingsBarState extends State<ApiVideoPlayerSettingsBar> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           kIsWeb
-              ? ApiVideoPlayerVolumeSlider(
+              ? VolumeSlider(
                   controller: widget.controller.volumeController,
                   onVolumeChanged: (volume) {
                     if (widget.onVolumeChanged != null) {
@@ -67,12 +66,12 @@ class _ApiVideoPlayerSettingsBarState extends State<ApiVideoPlayerSettingsBar> {
                       widget.onToggleMute!();
                     }
                   },
-                  style: ApiVideoPlayerVolumeSliderStyle(
+                  style: VolumeSliderStyle(
                     buttonStyle: widget.style?.buttonStyle,
                     sliderTheme: widget.style?.sliderTheme,
                   ))
               : Container(),
-          ApiVideoPlayerMultiTextButton(
+          MultiTextButton(
             keysValues: const {
               '0.5x': 0.5,
               '1.0x': 1.0,
@@ -93,39 +92,38 @@ class _ApiVideoPlayerSettingsBarState extends State<ApiVideoPlayerSettingsBar> {
   }
 }
 
-class ApiVideoPlayerSettingsBarStyle {
-  const ApiVideoPlayerSettingsBarStyle.raw(
-      {this.buttonStyle, required this.sliderTheme});
+class SettingsBarStyle {
+  const SettingsBarStyle.raw({this.buttonStyle, required this.sliderTheme});
 
   final ButtonStyle? buttonStyle;
   final SliderThemeData sliderTheme;
 
-  factory ApiVideoPlayerSettingsBarStyle({
+  factory SettingsBarStyle({
     ButtonStyle? buttonStyle,
     SliderThemeData? sliderTheme,
   }) {
     sliderTheme ??= const SliderThemeData();
 
-    return ApiVideoPlayerSettingsBarStyle.raw(
+    return SettingsBarStyle.raw(
         buttonStyle: buttonStyle, sliderTheme: sliderTheme);
   }
 
-  ApiVideoPlayerSettingsBarStyle copyWith({
+  SettingsBarStyle copyWith({
     ButtonStyle? buttonStyle,
     SliderThemeData? sliderTheme,
   }) {
-    return ApiVideoPlayerSettingsBarStyle.raw(
+    return SettingsBarStyle.raw(
         buttonStyle: buttonStyle ?? this.buttonStyle,
         sliderTheme: sliderTheme ?? this.sliderTheme);
   }
 
   /// Applies the [Theme.iconButtonTheme] to all buttons and the
   /// [Theme.sliderTheme] to the slider.
-  static ApiVideoPlayerSettingsBarStyle of(BuildContext context) {
+  static SettingsBarStyle of(BuildContext context) {
     final iconButtonTheme = Theme.of(context).iconButtonTheme;
     final sliderTheme = Theme.of(context).sliderTheme;
 
-    return ApiVideoPlayerSettingsBarStyle(
+    return SettingsBarStyle(
         buttonStyle: iconButtonTheme.style, sliderTheme: sliderTheme);
   }
 }

@@ -1,42 +1,38 @@
 import 'dart:async';
 
 import 'package:apivideo_player/apivideo_player.dart';
-import 'package:apivideo_player/src/widgets/apivideo_player_controls_bar.dart';
-import 'package:apivideo_player/src/widgets/apivideo_player_time_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
-import 'apivideo_player_settings_bar.dart';
-
 /// The overlay of the video player.
 /// It displays the controls, time slider and the action bar.
-class ApiVideoPlayerOverlay extends StatefulWidget {
-  const ApiVideoPlayerOverlay(
+class PlayerOverlay extends StatefulWidget {
+  const PlayerOverlay(
       {super.key, required this.controller, this.style, this.onItemPress});
 
   /// The controller for the player.
   final ApiVideoPlayerController controller;
 
   /// The theme for the player.
-  final ApiVideoPlayerStyle? style;
+  final PlayerStyle? style;
 
   /// The callback to be called when an item (play, pause,...) is clicked (used to show the overlay).
   final VoidCallback? onItemPress;
 
   @override
-  State<ApiVideoPlayerOverlay> createState() => _ApiVideoPlayerOverlayState();
+  State<PlayerOverlay> createState() => _PlayerOverlayState();
 }
 
-class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
+class _PlayerOverlayState extends State<PlayerOverlay>
     with TickerProviderStateMixin {
-  final _timeSliderController = ApiVideoPlayerTimeSliderController();
-  final _controlsBarController = ApiVideoPlayerControlsBarController();
-  final _settingsBarController = ApiVideoPlayerSettingsBarController();
+  final _timeSliderController = TimeSliderController();
+  final _controlsBarController = ControlsBarController();
+  final _settingsBarController = SettingsBarController();
 
   Timer? _timeSliderTimer;
 
-  late final ApiVideoPlayerEventsListener _playerEvents =
-      ApiVideoPlayerEventsListener(
+  late final ApiVideoPlayerControllerEventsListener _playerEvents =
+      ApiVideoPlayerControllerEventsListener(
     onReady: () async {
       _updateDuration();
       _updateCurrentTime();
@@ -97,7 +93,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
           Positioned(
               top: 0,
               right: 0,
-              child: ApiVideoPlayerSettingsBar(
+              child: SettingsBar(
                   controller: _settingsBarController,
                   onVolumeChanged: (volume) {
                     widget.controller.setVolume(volume);
@@ -120,7 +116,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
                   },
                   style: widget.style?.settingsBarStyle)),
           Center(
-            child: ApiVideoPlayerControlsBar(
+            child: ControlsBar(
               controller: _controlsBarController,
               onBackward: () {
                 widget.controller.seek(const Duration(seconds: -10));
@@ -162,7 +158,7 @@ class _ApiVideoPlayerOverlayState extends State<ApiVideoPlayerOverlay>
               bottom: 0,
               right: 0,
               left: 0,
-              child: ApiVideoPlayerTimeSlider(
+              child: TimeSlider(
                 controller: _timeSliderController,
                 style: widget.style?.timeSliderStyle,
                 onChanged: (Duration value) {

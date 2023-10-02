@@ -5,24 +5,24 @@ import 'package:apivideo_player/src/widgets/apivideo_player_time_slider.dart';
 import 'package:flutter/material.dart';
 
 /// Customizable style for the player.
-class ApiVideoPlayerStyle {
-  const ApiVideoPlayerStyle({
+class PlayerStyle {
+  const PlayerStyle({
     this.settingsBarStyle,
     this.controlBarStyle,
     this.timeSliderStyle,
   });
 
   /// The style of the settings button (volume, playback rate,...).
-  final ApiVideoPlayerSettingsBarStyle? settingsBarStyle;
+  final SettingsBarStyle? settingsBarStyle;
 
   /// The style of the control buttons (play, pause, rewind, seek forward and backward).
-  final ApiVideoPlayerControlsBarStyle? controlBarStyle;
+  final ControlsBarStyle? controlBarStyle;
 
   /// The style of the time slider.
-  final ApiVideoPlayerTimeSliderStyle? timeSliderStyle;
+  final TimeSliderStyle? timeSliderStyle;
 
   /// api.video default style.
-  static ApiVideoPlayerStyle styleFromApiVideo() {
+  static PlayerStyle styleFromApiVideo() {
     const textStyle = TextStyle(color: Colors.white);
     final buttonStyle = TextButton.styleFrom(
         iconColor: Colors.white,
@@ -30,7 +30,7 @@ class ApiVideoPlayerStyle {
         side: BorderSide.none,
         textStyle: textStyle);
 
-    final settingsBarStyle = ApiVideoPlayerSettingsBarStyle(
+    final settingsBarStyle = SettingsBarStyle(
         buttonStyle: buttonStyle,
         sliderTheme: SliderThemeData(
             activeTrackColor: Colors.white,
@@ -40,28 +40,28 @@ class ApiVideoPlayerStyle {
               enabledThumbRadius: 6.0,
             )));
 
-    final controlBarStyle = ApiVideoPlayerControlsBarStyle.styleFrom(
-        mainControlButtonStyle: buttonStyle);
+    final controlBarStyle =
+        ControlsBarStyle.styleFrom(mainControlButtonStyle: buttonStyle);
 
-    final timeSliderStyle = ApiVideoPlayerTimeSliderStyle(
+    final timeSliderStyle = TimeSliderStyle(
         sliderTheme: const SliderThemeData(
             activeTrackColor: ApiVideoColors.orange,
             inactiveTrackColor: Colors.grey,
             thumbColor: ApiVideoColors.orange,
             valueIndicatorTextStyle: textStyle));
 
-    return ApiVideoPlayerStyle(
+    return PlayerStyle(
         settingsBarStyle: settingsBarStyle,
         controlBarStyle: controlBarStyle,
         timeSliderStyle: timeSliderStyle);
   }
 
-  ApiVideoPlayerStyle copyWith({
-    ApiVideoPlayerSettingsBarStyle? settingsBarStyle,
-    ApiVideoPlayerControlsBarStyle? controlBarStyle,
-    ApiVideoPlayerTimeSliderStyle? timeSliderStyle,
+  PlayerStyle copyWith({
+    SettingsBarStyle? settingsBarStyle,
+    ControlsBarStyle? controlBarStyle,
+    TimeSliderStyle? timeSliderStyle,
   }) =>
-      ApiVideoPlayerStyle(
+      PlayerStyle(
           settingsBarStyle: settingsBarStyle ?? this.settingsBarStyle,
           controlBarStyle: controlBarStyle ?? this.controlBarStyle,
           timeSliderStyle: timeSliderStyle ?? this.timeSliderStyle);
@@ -74,11 +74,11 @@ class ApiVideoPlayerStyle {
   /// - [ThemeData.iconButtonTheme] for the side control buttons (seek forward and backward).
   /// - [ThemeData.sliderTheme] for the time slider.
   /// - [ThemeData.sliderTheme] for the other sliders (except the time slider).
-  static ApiVideoPlayerStyle of(BuildContext context) => ApiVideoPlayerStyle(
-      settingsBarStyle: ApiVideoPlayerSettingsBarStyle.of(context),
-      controlBarStyle: ApiVideoPlayerControlsBarStyle.of(context),
-      timeSliderStyle: ApiVideoPlayerTimeSliderStyle.of(context));
+  static PlayerStyle of(BuildContext context) => PlayerStyle(
+      settingsBarStyle: SettingsBarStyle.of(context),
+      controlBarStyle: ControlsBarStyle.of(context),
+      timeSliderStyle: TimeSliderStyle.of(context));
 
   /// The default theme of the player.
-  static ApiVideoPlayerStyle defaultStyle = styleFromApiVideo();
+  static PlayerStyle defaultStyle = styleFromApiVideo();
 }

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 
-class ApiVideoPlayerOpacityController extends ChangeNotifier {
-  ApiVideoPlayerOpacityController({
+class TimedOpacityController extends ChangeNotifier {
+  TimedOpacityController({
     this.duration = const Duration(seconds: 4),
   });
 
@@ -41,18 +41,18 @@ class ApiVideoPlayerOpacityController extends ChangeNotifier {
   }
 }
 
-class ApiVideoPlayerOpacity extends StatefulWidget {
-  const ApiVideoPlayerOpacity(
+class TimedOpacity extends StatefulWidget {
+  const TimedOpacity(
       {super.key, required this.controller, required this.child});
 
-  final ApiVideoPlayerOpacityController controller;
+  final TimedOpacityController controller;
   final Widget child;
 
   @override
-  State<ApiVideoPlayerOpacity> createState() => _ApiVideoPlayerOpacityState();
+  State<TimedOpacity> createState() => _TimedOpacityState();
 }
 
-class _ApiVideoPlayerOpacityState extends State<ApiVideoPlayerOpacity> {
+class _TimedOpacityState extends State<TimedOpacity> {
   bool _isVisible = false;
 
   @override

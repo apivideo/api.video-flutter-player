@@ -20,8 +20,8 @@ class ApiVideoPlayerController {
   int _textureId = kUninitializedTextureId;
 
   StreamSubscription<dynamic>? _eventSubscription;
-  List<ApiVideoPlayerEventsListener> eventsListeners = [];
-  List<ApiVideoPlayerWidgetListener> widgetListeners = [];
+  List<ApiVideoPlayerControllerEventsListener> eventsListeners = [];
+  List<ApiVideoPlayerControllerWidgetListener> widgetListeners = [];
 
   PlayerLifeCycleObserver? _lifeCycleObserver;
 
@@ -39,7 +39,7 @@ class ApiVideoPlayerController {
     Function(Object)? onError,
   })  : _initialAutoplay = autoplay,
         _initialVideoOptions = videoOptions {
-    eventsListeners.add(ApiVideoPlayerEventsListener(
+    eventsListeners.add(ApiVideoPlayerControllerEventsListener(
         onReady: onReady,
         onPlay: onPlay,
         onPause: onPause,
@@ -50,7 +50,7 @@ class ApiVideoPlayerController {
   ApiVideoPlayerController.fromListener(
       {required VideoOptions videoOptions,
       bool autoplay = false,
-      ApiVideoPlayerEventsListener? listener})
+      ApiVideoPlayerControllerEventsListener? listener})
       : _initialAutoplay = autoplay,
         _initialVideoOptions = videoOptions {
     if (listener != null) {
@@ -207,7 +207,7 @@ class ApiVideoPlayerController {
   ///
   /// controller.addEventsListener(_eventsListener);
   /// ```
-  void addEventsListener(ApiVideoPlayerEventsListener listener) {
+  void addEventsListener(ApiVideoPlayerControllerEventsListener listener) {
     eventsListeners.add(listener);
   }
 
@@ -219,19 +219,19 @@ class ApiVideoPlayerController {
   ///
   /// controller.removeEventsListener(_eventsListener);
   /// ```
-  void removeEventsListener(ApiVideoPlayerEventsListener listener) {
+  void removeEventsListener(ApiVideoPlayerControllerEventsListener listener) {
     eventsListeners.remove(listener);
   }
 
   /// This is exposed for internal use only. Do not use it.
   @internal
-  void addWidgetListener(ApiVideoPlayerWidgetListener listener) {
+  void addWidgetListener(ApiVideoPlayerControllerWidgetListener listener) {
     widgetListeners.add(listener);
   }
 
   /// This is exposed for internal use only. Do not use it.
   @internal
-  void removeWidgetListener(ApiVideoPlayerWidgetListener listener) {
+  void removeWidgetListener(ApiVideoPlayerControllerWidgetListener listener) {
     widgetListeners.remove(listener);
   }
 
@@ -295,7 +295,7 @@ class ApiVideoPlayerController {
   }
 }
 
-class ApiVideoPlayerEventsListener {
+class ApiVideoPlayerControllerEventsListener {
   final VoidCallback? onReady;
   final VoidCallback? onPlay;
   final VoidCallback? onPause;
@@ -304,7 +304,7 @@ class ApiVideoPlayerEventsListener {
   final VoidCallback? onEnd;
   final Function(Object)? onError;
 
-  ApiVideoPlayerEventsListener(
+  ApiVideoPlayerControllerEventsListener(
       {this.onReady,
       this.onPlay,
       this.onPause,
@@ -314,8 +314,8 @@ class ApiVideoPlayerEventsListener {
       this.onError});
 }
 
-class ApiVideoPlayerWidgetListener {
+class ApiVideoPlayerControllerWidgetListener {
   final VoidCallback? onTextureReady;
 
-  ApiVideoPlayerWidgetListener({this.onTextureReady});
+  ApiVideoPlayerControllerWidgetListener({this.onTextureReady});
 }

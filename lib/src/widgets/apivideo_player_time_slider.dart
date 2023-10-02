@@ -20,9 +20,8 @@ class TimeSliderValue {
   }
 }
 
-class ApiVideoPlayerTimeSliderController
-    extends ValueNotifier<TimeSliderValue> {
-  ApiVideoPlayerTimeSliderController() : super(const TimeSliderValue());
+class TimeSliderController extends ValueNotifier<TimeSliderValue> {
+  TimeSliderController() : super(const TimeSliderValue());
 
   Duration get currentTime => value.currentTime;
 
@@ -41,26 +40,26 @@ class ApiVideoPlayerTimeSliderController
   }
 }
 
-class ApiVideoPlayerTimeSlider extends StatefulWidget {
-  const ApiVideoPlayerTimeSlider.raw(
+class TimeSlider extends StatefulWidget {
+  const TimeSlider.raw(
       {super.key,
       required this.controller,
       required this.style,
       this.onChanged});
 
-  final ApiVideoPlayerTimeSliderController controller;
+  final TimeSliderController controller;
 
-  final ApiVideoPlayerTimeSliderStyle style;
+  final TimeSliderStyle style;
 
   final ValueChanged<Duration>? onChanged;
 
-  factory ApiVideoPlayerTimeSlider({
-    required ApiVideoPlayerTimeSliderController controller,
-    ApiVideoPlayerTimeSliderStyle? style,
+  factory TimeSlider({
+    required TimeSliderController controller,
+    TimeSliderStyle? style,
     ValueChanged<Duration>? onChanged,
   }) {
-    style ??= ApiVideoPlayerTimeSliderStyle();
-    return ApiVideoPlayerTimeSlider.raw(
+    style ??= TimeSliderStyle();
+    return TimeSlider.raw(
       controller: controller,
       style: style,
       onChanged: onChanged,
@@ -68,11 +67,10 @@ class ApiVideoPlayerTimeSlider extends StatefulWidget {
   }
 
   @override
-  State<ApiVideoPlayerTimeSlider> createState() =>
-      _ApiVideoPlayerTimeSliderState();
+  State<TimeSlider> createState() => _TimeSliderState();
 }
 
-class _ApiVideoPlayerTimeSliderState extends State<ApiVideoPlayerTimeSlider> {
+class _TimeSliderState extends State<TimeSlider> {
   Duration _currentTime = Duration.zero;
   Duration _duration = Duration.zero;
 
@@ -146,18 +144,18 @@ class _ApiVideoPlayerTimeSliderState extends State<ApiVideoPlayerTimeSlider> {
   }
 }
 
-class ApiVideoPlayerTimeSliderStyle {
-  const ApiVideoPlayerTimeSliderStyle.raw({required this.sliderTheme});
+class TimeSliderStyle {
+  const TimeSliderStyle.raw({required this.sliderTheme});
 
   final SliderThemeData sliderTheme;
 
-  factory ApiVideoPlayerTimeSliderStyle({SliderThemeData? sliderTheme}) {
+  factory TimeSliderStyle({SliderThemeData? sliderTheme}) {
     sliderTheme ??= const SliderThemeData();
-    return ApiVideoPlayerTimeSliderStyle.raw(sliderTheme: sliderTheme);
+    return TimeSliderStyle.raw(sliderTheme: sliderTheme);
   }
 
-  static ApiVideoPlayerTimeSliderStyle of(BuildContext context) {
+  static TimeSliderStyle of(BuildContext context) {
     final SliderThemeData sliderTheme = SliderTheme.of(context);
-    return ApiVideoPlayerTimeSliderStyle(sliderTheme: sliderTheme);
+    return TimeSliderStyle(sliderTheme: sliderTheme);
   }
 }

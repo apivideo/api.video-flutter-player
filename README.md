@@ -204,8 +204,8 @@ final ApiVideoPlayerController controller = ApiVideoPlayerController(
 
 await controller.initialize();
 
-final ApiVideoPlayerEventsListener eventsListener =
-      ApiVideoPlayerEventsListener(
+final ApiVideoPlayerControllerEventsListener eventsListener =
+  ApiVideoPlayerControllerEventsListener(
     onPlay: () => print('PLAY'),
   );
 
@@ -231,8 +231,8 @@ final ApiVideoPlayerController controller = ApiVideoPlayerController(
 
 await controller.initialize();
 
-final ApiVideoPlayerEventsListener eventsListener =
-      ApiVideoPlayerEventsListener(
+final ApiVideoPlayerControllerEventsListener eventsListener =
+  ApiVideoPlayerControllerEventsListener(
     onPlay: () => print('PLAY'),
   );
 
@@ -276,7 +276,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _controller.initialize();
     _controller.addEventsListener(
-      ApiVideoPlayerEventsListener(
+      ApiVideoPlayerControllerEventsListener(
         onPause: () => print('PAUSE'),
       ),
     );
@@ -332,5 +332,5 @@ class _MyAppState extends State<MyApp> {
 
 # FAQ
 
-If you have any questions, ask us in the [community](https://community.api.video). Or
+If you have any questions, ask us in the [community](https://community.api.video) or 
 use [issues](https://github.com/apivideo/api.video-flutter-player/issues).

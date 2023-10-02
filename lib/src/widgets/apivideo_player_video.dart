@@ -7,28 +7,29 @@ ApiVideoPlayerPlatform get _playerPlatform {
 }
 
 /// A stack containing the video and a child widget.
-class ApiVideoPlayerVideo extends StatefulWidget {
-  const ApiVideoPlayerVideo({super.key, required this.controller, this.child});
+class PlayerVideo extends StatefulWidget {
+  const PlayerVideo({super.key, required this.controller, this.child});
 
   final ApiVideoPlayerController controller;
   final Widget? child;
 
   @override
-  State<ApiVideoPlayerVideo> createState() => _ApiVideoPlayerVideoState();
+  State<PlayerVideo> createState() => _PlayerVideoState();
 }
 
-class _ApiVideoPlayerVideoState extends State<ApiVideoPlayerVideo> {
-  _ApiVideoPlayerVideoState() {
-    _widgetListener = ApiVideoPlayerWidgetListener(onTextureReady: () async {
+class _PlayerVideoState extends State<PlayerVideo> {
+  _PlayerVideoState() {
+    _widgetListener =
+        ApiVideoPlayerControllerWidgetListener(onTextureReady: () async {
       _updateTextureId();
     });
-    _eventsListener = ApiVideoPlayerEventsListener(onReady: () async {
+    _eventsListener = ApiVideoPlayerControllerEventsListener(onReady: () async {
       _updateAspectRatio();
     });
   }
 
-  late ApiVideoPlayerEventsListener _eventsListener;
-  late ApiVideoPlayerWidgetListener _widgetListener;
+  late ApiVideoPlayerControllerEventsListener _eventsListener;
+  late ApiVideoPlayerControllerWidgetListener _widgetListener;
   late int _textureId = widget.controller.textureId;
   double _aspectRatio = 1.0;
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ApiVideoPlayerMultiTextButton extends StatefulWidget {
-  ApiVideoPlayerMultiTextButton({
+class MultiTextButton extends StatefulWidget {
+  MultiTextButton({
     Key? key,
     required this.keysValues,
     required this.onValueChanged,
@@ -23,12 +23,10 @@ class ApiVideoPlayerMultiTextButton extends StatefulWidget {
   final ButtonStyle? style;
 
   @override
-  State<ApiVideoPlayerMultiTextButton> createState() =>
-      _ApiVideoPlayerMultiTextButtonState();
+  State<MultiTextButton> createState() => _MultiTextButtonState();
 }
 
-class _ApiVideoPlayerMultiTextButtonState
-    extends State<ApiVideoPlayerMultiTextButton> {
+class _MultiTextButtonState extends State<MultiTextButton> {
   late String _selectedKey = widget.defaultKey ?? widget.keysValues.keys.first;
 
   @override

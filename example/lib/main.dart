@@ -119,7 +119,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   void initState() {
     super.initState();
     widget.controller.initialize();
-    widget.controller.addEventsListener(ApiVideoPlayerEventsListener(
+    widget.controller.addEventsListener(ApiVideoPlayerControllerEventsListener(
       onReady: () {
         setState(() {
           _duration = 'Get duration';
@@ -161,7 +161,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
               ? ApiVideoPlayer.withoutControls(controller: widget.controller)
               : ApiVideoPlayer(
                   controller: widget.controller,
-                  style: ApiVideoPlayerStyle.defaultStyle),
+                  style: PlayerStyle.defaultStyle),
         ),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           IconButton(

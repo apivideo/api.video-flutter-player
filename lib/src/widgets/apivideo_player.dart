@@ -28,7 +28,7 @@ class ApiVideoPlayer extends StatefulWidget {
     return ApiVideoPlayer(
         key: key,
         controller: controller,
-        style: ApiVideoPlayerStyle.defaultStyle,
+        style: PlayerStyle.defaultStyle,
         child: child);
   }
 
@@ -42,7 +42,7 @@ class ApiVideoPlayer extends StatefulWidget {
   final ApiVideoPlayerController controller;
 
   /// The theme for the player.
-  final ApiVideoPlayerStyle? style;
+  final PlayerStyle? style;
 
   /// The child widget to display as an overlay on top of the video.
   final Widget? child;
@@ -52,16 +52,16 @@ class ApiVideoPlayer extends StatefulWidget {
 }
 
 class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
-  final _opacityController = ApiVideoPlayerOpacityController();
+  final _opacityController = TimedOpacityController();
 
   @override
   Widget build(BuildContext context) {
-    return ApiVideoPlayerVideo(
+    return PlayerVideo(
         controller: widget.controller,
         child: widget.child ??
-            ApiVideoPlayerOpacity(
+            TimedOpacity(
                 controller: _opacityController,
-                child: ApiVideoPlayerOverlay(
+                child: PlayerOverlay(
                     controller: widget.controller,
                     style: widget.style,
                     onItemPress: () {

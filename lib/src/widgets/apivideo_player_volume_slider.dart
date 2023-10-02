@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ApiVideoPlayerVolumeSliderController extends ChangeNotifier {
+class VolumeSliderController extends ChangeNotifier {
   double _volume = 1.0;
 
   double get volume => _volume;
@@ -20,8 +20,8 @@ class ApiVideoPlayerVolumeSliderController extends ChangeNotifier {
   }
 }
 
-class ApiVideoPlayerVolumeSlider extends StatefulWidget {
-  const ApiVideoPlayerVolumeSlider.raw({
+class VolumeSlider extends StatefulWidget {
+  const VolumeSlider.raw({
     super.key,
     required this.controller,
     required this.onVolumeChanged,
@@ -29,22 +29,22 @@ class ApiVideoPlayerVolumeSlider extends StatefulWidget {
     required this.style,
   });
 
-  final ApiVideoPlayerVolumeSliderController controller;
+  final VolumeSliderController controller;
 
   final Function(double) onVolumeChanged;
   final VoidCallback onToggleMute;
 
-  final ApiVideoPlayerVolumeSliderStyle style;
+  final VolumeSliderStyle style;
 
-  factory ApiVideoPlayerVolumeSlider({
-    required ApiVideoPlayerVolumeSliderController controller,
+  factory VolumeSlider({
+    required VolumeSliderController controller,
     required Function(double) onVolumeChanged,
     required VoidCallback onToggleMute,
-    ApiVideoPlayerVolumeSliderStyle? style,
+    VolumeSliderStyle? style,
   }) {
-    style ??= ApiVideoPlayerVolumeSliderStyle();
+    style ??= VolumeSliderStyle();
 
-    return ApiVideoPlayerVolumeSlider.raw(
+    return VolumeSlider.raw(
       controller: controller,
       onVolumeChanged: onVolumeChanged,
       onToggleMute: onToggleMute,
@@ -53,11 +53,10 @@ class ApiVideoPlayerVolumeSlider extends StatefulWidget {
   }
 
   @override
-  State<ApiVideoPlayerVolumeSlider> createState() =>
-      _ApiVideoPlayerVolumeSliderState();
+  State<VolumeSlider> createState() => _VolumeSliderState();
 }
 
-class _ApiVideoPlayerVolumeSliderState extends State<ApiVideoPlayerVolumeSlider>
+class _VolumeSliderState extends State<VolumeSlider>
     with TickerProviderStateMixin {
   late AnimationController expandController;
   late Animation<double> animation;
@@ -156,8 +155,8 @@ class _ApiVideoPlayerVolumeSliderState extends State<ApiVideoPlayerVolumeSlider>
   }
 }
 
-class ApiVideoPlayerVolumeSliderStyle {
-  const ApiVideoPlayerVolumeSliderStyle.raw({
+class VolumeSliderStyle {
+  const VolumeSliderStyle.raw({
     this.buttonStyle,
     required this.sliderTheme,
   });
@@ -165,23 +164,23 @@ class ApiVideoPlayerVolumeSliderStyle {
   final ButtonStyle? buttonStyle;
   final SliderThemeData sliderTheme;
 
-  factory ApiVideoPlayerVolumeSliderStyle({
+  factory VolumeSliderStyle({
     ButtonStyle? buttonStyle,
     SliderThemeData? sliderTheme,
   }) {
     sliderTheme ??= const SliderThemeData();
 
-    return ApiVideoPlayerVolumeSliderStyle.raw(
+    return VolumeSliderStyle.raw(
       buttonStyle: buttonStyle,
       sliderTheme: sliderTheme,
     );
   }
 
-  ApiVideoPlayerVolumeSliderStyle copyWith({
+  VolumeSliderStyle copyWith({
     ButtonStyle? buttonStyle,
     SliderThemeData? sliderTheme,
   }) =>
-      ApiVideoPlayerVolumeSliderStyle.raw(
+      VolumeSliderStyle.raw(
         buttonStyle: buttonStyle ?? this.buttonStyle,
         sliderTheme: sliderTheme ?? this.sliderTheme,
       );
