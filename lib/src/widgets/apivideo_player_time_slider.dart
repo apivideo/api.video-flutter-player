@@ -99,8 +99,8 @@ class _TimeSliderState extends State<TimeSlider> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Flexible(
-            flex: 9,
+        Expanded(
+            flex: 4,
             child: SliderTheme(
                 data: widget.style.sliderTheme,
                 child: Slider(
@@ -125,9 +125,11 @@ class _TimeSliderState extends State<TimeSlider> {
                     }
                   },
                 ))),
-        Flexible(
+        Expanded(
             flex: 1,
             child: Text((_duration - _currentTime).toPlayerString(),
+                maxLines: 1,
+                softWrap: false,
                 textAlign: TextAlign.center,
                 style: widget.style.sliderTheme.valueIndicatorTextStyle)),
       ],
