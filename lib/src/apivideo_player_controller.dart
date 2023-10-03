@@ -207,7 +207,7 @@ class ApiVideoPlayerController {
   ///
   /// controller.addEventsListener(_eventsListener);
   /// ```
-  void addEventsListener(ApiVideoPlayerControllerEventsListener listener) {
+  void addListener(ApiVideoPlayerControllerEventsListener listener) {
     eventsListeners.add(listener);
   }
 
@@ -219,7 +219,7 @@ class ApiVideoPlayerController {
   ///
   /// controller.removeEventsListener(_eventsListener);
   /// ```
-  void removeEventsListener(ApiVideoPlayerControllerEventsListener listener) {
+  void removeListener(ApiVideoPlayerControllerEventsListener listener) {
     eventsListeners.remove(listener);
   }
 

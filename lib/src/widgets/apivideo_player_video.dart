@@ -36,9 +36,8 @@ class _PlayerVideoState extends State<PlayerVideo> {
   @override
   void initState() {
     super.initState();
-
     widget.controller.addWidgetListener(_widgetListener);
-    widget.controller.addEventsListener(_eventsListener);
+    widget.controller.addListener(_eventsListener);
     // In case controller is already created
     widget.controller.isCreated.then((bool isCreated) => {
           if (isCreated) {_updateAspectRatio()}
@@ -46,9 +45,18 @@ class _PlayerVideoState extends State<PlayerVideo> {
   }
 
   @override
+  void didUpdateWidget(PlayerVideo oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    oldWidget.controller.removeWidgetListener(_widgetListener);
+    oldWidget.controller.removeListener(_eventsListener);
+    widget.controller.addWidgetListener(_widgetListener);
+    widget.controller.addListener(_eventsListener);
+  }
+
+  @override
   void dispose() {
     widget.controller.removeWidgetListener(_widgetListener);
-    widget.controller.removeEventsListener(_eventsListener);
+    widget.controller.removeListener(_eventsListener);
     super.dispose();
   }
 

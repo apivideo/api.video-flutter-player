@@ -31,7 +31,7 @@ class _PlayerOverlayState extends State<PlayerOverlay>
 
   Timer? _timeSliderTimer;
 
-  late final ApiVideoPlayerControllerEventsListener _playerEvents =
+  late final ApiVideoPlayerControllerEventsListener _listener =
       ApiVideoPlayerControllerEventsListener(
     onReady: () async {
       _updateDuration();
@@ -60,7 +60,7 @@ class _PlayerOverlayState extends State<PlayerOverlay>
   @override
   void initState() {
     super.initState();
-    widget.controller.addEventsListener(_playerEvents);
+    widget.controller.addListener(_listener);
     // In case controller is already created
     widget.controller.isCreated.then((bool isCreated) async => {
           if (isCreated)
@@ -77,8 +77,15 @@ class _PlayerOverlayState extends State<PlayerOverlay>
   }
 
   @override
+  void didUpdateWidget(PlayerOverlay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    oldWidget.controller.removeListener(_listener);
+    widget.controller.addListener(_listener);
+  }
+
+  @override
   void dispose() {
-    widget.controller.removeEventsListener(_playerEvents);
+    widget.controller.removeListener(_listener);
     _stopRemainingTimeUpdates();
     super.dispose();
   }

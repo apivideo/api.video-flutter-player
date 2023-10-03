@@ -119,7 +119,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   void initState() {
     super.initState();
     widget.controller.initialize();
-    widget.controller.addEventsListener(ApiVideoPlayerControllerEventsListener(
+    widget.controller.addListener(ApiVideoPlayerControllerEventsListener(
       onReady: () {
         setState(() {
           _duration = 'Get duration';

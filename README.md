@@ -209,7 +209,7 @@ final ApiVideoPlayerControllerEventsListener eventsListener =
     onPlay: () => print('PLAY'),
   );
 
-controller.addEventsListener(eventsListener);
+controller.addListener(eventsListener);
 ```
 
 | Event   | Type             | Description                                            |
@@ -222,7 +222,7 @@ controller.addEventsListener(eventsListener);
 
 ### Remove an event listener
 
-To remove an event listener, you need to call the controller's `removeEventsListener` method.
+To remove an event listener, you need to call the controller's `removeListener` method.
 
 ```dart
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
@@ -236,7 +236,7 @@ final ApiVideoPlayerControllerEventsListener eventsListener =
     onPlay: () => print('PLAY'),
   );
 
-controller.removeEventsListener(eventsListener);
+controller.removeListener(eventsListener);
 ```
 
 # Dependencies
@@ -275,7 +275,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _controller.initialize();
-    _controller.addEventsListener(
+    _controller.addListener(
       ApiVideoPlayerControllerEventsListener(
         onPause: () => print('PAUSE'),
       ),
