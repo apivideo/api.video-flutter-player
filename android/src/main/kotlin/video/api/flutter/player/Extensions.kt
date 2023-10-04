@@ -7,7 +7,7 @@ import java.security.InvalidParameterException
 val Map<String, Any>.videoOptions: VideoOptions
     get() = VideoOptions(
         this["videoId"] as String,
-        (this["videoType"] as String).toVideoType(),
+        (this["type"] as String).toVideoType(),
         this["token"] as String?
     )
 

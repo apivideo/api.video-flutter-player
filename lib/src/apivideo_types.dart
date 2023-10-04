@@ -14,15 +14,14 @@ enum VideoType {
 @JsonSerializable()
 class VideoOptions {
   String videoId;
-  VideoType videoType;
+  VideoType type;
   String? token;
 
   /// Creates a [VideoOptions] object.
   /// [videoId] is the id of the video.
-  /// [videoType] is the type of the video, by default it's vod.
+  /// [type] is the type of the video, by default it's vod.
   /// [token] is the token of the video, could be null.
-  VideoOptions(
-      {required this.videoId, this.videoType = VideoType.vod, this.token});
+  VideoOptions({required this.videoId, this.type = VideoType.vod, this.token});
 
   /// Creates a [VideoOptions] from a [json] map.
   factory VideoOptions.fromJson(Map<String, dynamic> json) =>

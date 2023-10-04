@@ -294,15 +294,15 @@ extension VideoType {
 
 extension Dictionary where Key == String {
     func toVideoOptions() -> VideoOptions {
-        return VideoOptions(videoId: self["videoId"] as! String, videoType: (self["videoType"] as! String).toVideoType(), token: self["token"] as? String)
+        return VideoOptions(videoId: self["videoId"] as! String, videoType: (self["type"] as! String).toVideoType(), token: self["token"] as? String)
     }
 }
 
 extension VideoOptions {
-    func toMap() -> [String: Any] {
+    func toMap() -> [String: Any?] {
         return [
             "videoId": videoId,
-            "videoType": videoType.toString(),
+            "type": videoType.toString(),
             "token": token ?? nil
         ]
     }

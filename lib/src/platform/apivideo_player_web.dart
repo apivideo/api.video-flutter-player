@@ -88,7 +88,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       'player$textureId',
       {
         'id': videoOptions.videoId,
-        'live': videoOptions.videoType == VideoType.live,
+        'live': videoOptions.type == VideoType.live,
       }.toJsObject(),
     );
     return;
@@ -343,7 +343,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
           { 
             id: "${_players[textureId]!.videoOptions!.videoId}",
             chromeless: true,
-            live: ${_players[textureId]!.videoOptions!.videoType == VideoType.live},
+            live: ${_players[textureId]!.videoOptions!.type == VideoType.live},
             autoplay: ${_players[textureId]!.autoplay},
           }
         );
