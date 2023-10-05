@@ -66,6 +66,11 @@ class ApiVideoPlayerController {
     return _playerPlatform.isPlaying(_textureId);
   }
 
+  /// Gets if the current video is a live.
+  Future<bool> get isLive async {
+    return await _playerPlatform.isLive(_textureId);
+  }
+
   /// The video current time.
   Future<Duration> get currentTime async {
     final milliseconds = await _playerPlatform.getCurrentTime(_textureId);

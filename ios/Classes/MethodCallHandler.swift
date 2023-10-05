@@ -47,6 +47,14 @@ class MethodCallHandler {
                         return
                     }
                     result(["isPlaying": self?.controller.isPlaying(textureId: Int64(textureId))])
+                case Keys.isLive:
+                    guard let args = call.arguments as? [String: Any],
+                          let textureId = args[Keys.textureId] as? Int
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                        return
+                    }
+                    result(["isLive": self?.controller.isLive(textureId: Int64(textureId))])
                 case Keys.getCurrentTime:
                     guard let args = call.arguments as? [String: Any],
                           let textureId = args[Keys.textureId] as? Int
@@ -244,6 +252,7 @@ enum Keys {
     static let dispose = "dispose"
 
     static let isPlaying = "isPlaying"
+    static let isLive = "isLive"
     static let getCurrentTime = "getCurrentTime"
     static let setCurrentTime = "setCurrentTime"
     static let getDuration = "getDuration"

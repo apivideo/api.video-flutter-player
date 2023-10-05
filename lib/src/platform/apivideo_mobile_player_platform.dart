@@ -30,6 +30,14 @@ class ApiVideoMobilePlayer extends ApiVideoPlayerPlatform {
   }
 
   @override
+  Future<bool> isLive(int textureId) async {
+    final Map<dynamic, dynamic> reply =
+        await _channel.invokeMapMethodWithTexture(
+            'isLive', TextureMessage(textureId: textureId)) as Map;
+    return reply['isLive'] as bool;
+  }
+
+  @override
   Future<int> getCurrentTime(int textureId) async {
     final Map<dynamic, dynamic> reply =
         await _channel.invokeMapMethodWithTexture(

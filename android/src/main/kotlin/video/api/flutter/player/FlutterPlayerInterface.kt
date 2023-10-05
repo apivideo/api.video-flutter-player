@@ -10,6 +10,7 @@ interface FlutterPlayerInterface {
     fun disposeAll()
 
     fun isPlaying(textureId: Long): Boolean
+    fun isLive(textureId: Long): Boolean
     fun getCurrentTime(textureId: Long): Int
     fun setCurrentTime(textureId: Long, currentTime: Int)
     fun getDuration(textureId: Long): Int

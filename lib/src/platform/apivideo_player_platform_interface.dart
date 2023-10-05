@@ -34,6 +34,11 @@ abstract class ApiVideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('isPlaying() has not been implemented.');
   }
 
+  /// Returns whether the video is a live or not
+  Future<bool> isLive(int textureId) {
+    throw UnimplementedError('isLive() has not been implemented.');
+  }
+
   /// Returns number of milliseconds from the beginning of the video to the
   /// current time
   Future<int> getCurrentTime(int textureId) {

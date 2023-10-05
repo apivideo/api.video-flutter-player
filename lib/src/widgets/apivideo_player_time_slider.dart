@@ -38,6 +38,10 @@ class TimeSliderController extends ValueNotifier<TimeSliderValue> {
       duration: newDuration,
     );
   }
+
+  setTime(Duration newCurrentTime, Duration newDuration) {
+    value = TimeSliderValue(currentTime: newCurrentTime, duration: newDuration);
+  }
 }
 
 class TimeSlider extends StatefulWidget {
@@ -127,13 +131,22 @@ class _TimeSliderState extends State<TimeSlider> {
                 ))),
         Expanded(
             flex: 1,
-            child: Text((_duration - _currentTime).toPlayerString(),
+            child: Text(_getRemainingTime().toPlayerString(),
                 maxLines: 1,
                 softWrap: false,
                 textAlign: TextAlign.center,
                 style: widget.style.sliderTheme.valueIndicatorTextStyle)),
       ],
     );
+  }
+
+  Duration _getRemainingTime() {
+    final remainingTime = _duration - _currentTime;
+    if (remainingTime.isNegative) {
+      return Duration.zero;
+    } else {
+      return remainingTime;
+    }
   }
 
   void _didChangeTimeSliderValue() {

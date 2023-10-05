@@ -98,14 +98,20 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   Future<bool> isPlaying(int textureId) async =>
       await Utils.getPromiseFromJs<bool>(
         textureId: textureId,
-        jsMethod: () => js_controller.getPlayingFromJs('player$textureId'),
+        jsMethod: () => js_controller.getPlaying('player$textureId'),
+      );
+
+  @override
+  Future<bool> isLive(int textureId) => Utils.getPromiseFromJs<bool>(
+        textureId: textureId,
+        jsMethod: () => js_controller.isLiveStream('player$textureId'),
       );
 
   @override
   Future<int> getCurrentTime(int textureId) async {
     final currentTime = await Utils.getPromiseFromJs<double>(
       textureId: textureId,
-      jsMethod: () => js_controller.getCurrentTimeFromJs('player$textureId'),
+      jsMethod: () => js_controller.getCurrentTime('player$textureId'),
     );
     return Utils.secondsToMilliseconds(seconds: currentTime);
   }
@@ -131,7 +137,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   Future<int> getDuration(int textureId) async {
     final duration = await Utils.getPromiseFromJs<double>(
       textureId: textureId,
-      jsMethod: () => js_controller.getDurationFromJs('player$textureId'),
+      jsMethod: () => js_controller.getDuration('player$textureId'),
     );
     return Utils.secondsToMilliseconds(seconds: duration);
   }
@@ -298,6 +304,10 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
             getPlaying: async function(playerId) {
               if (!playerId || !window[playerId]) return;
               return await window[playerId].getPlaying();
+            },
+            isLiveStream: async function(playerId) {
+              if (!playerId || !window[playerId]) return;
+              return await window[playerId].isLiveStream();
             },
             getMuted: async function(playerId) {
               if (!playerId || !window[playerId]) return;

@@ -60,6 +60,13 @@ class MethodCallHandler(
                     result.success(reply)
                 }
             }
+            IS_LIVE -> {
+                ensureTextureId(call, result) {
+                    val reply: MutableMap<String, Any> = HashMap()
+                    reply["isLive"] = controller.isLive(it)
+                    result.success(reply)
+                }
+            }
             GET_CURRENT_TIME -> {
                 ensureTextureId(call, result) {
                     val reply: MutableMap<String, Any> = HashMap()
@@ -268,6 +275,7 @@ class MethodCallHandler(
         private const val DISPOSE = "dispose"
 
         private const val IS_PLAYING = "isPlaying"
+        private const val IS_LIVE = "isLive"
         private const val GET_CURRENT_TIME = "getCurrentTime"
         private const val SET_CURRENT_TIME = "setCurrentTime"
         private const val GET_DURATION = "getDuration"

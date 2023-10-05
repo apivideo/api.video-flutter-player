@@ -34,8 +34,7 @@ class _PlayerOverlayState extends State<PlayerOverlay>
   late final ApiVideoPlayerControllerEventsListener _listener =
       ApiVideoPlayerControllerEventsListener(
     onReady: () async {
-      _updateDuration();
-      _updateCurrentTime();
+      _updateTimes();
     },
     onPlay: () async {
       _onPlay();
@@ -65,8 +64,7 @@ class _PlayerOverlayState extends State<PlayerOverlay>
     widget.controller.isCreated.then((bool isCreated) async => {
           if (isCreated)
             {
-              _updateCurrentTime(),
-              _updateDuration(),
+              _updateTimes(),
               _updateVolume(),
               _updateMuted(),
               widget.controller.isPlaying.then((isPlaying) => {
@@ -192,7 +190,14 @@ class _PlayerOverlayState extends State<PlayerOverlay>
     _timeSliderTimer?.cancel();
     _timeSliderTimer = Timer.periodic(
       const Duration(milliseconds: 100),
-      (_) => _updateCurrentTime(),
+      (_) async {
+        final isLive = await widget.controller.isLive;
+        if (isLive) {
+          _updateTimes();
+        } else {
+          _updateCurrentTime();
+        }
+      },
     );
   }
 
@@ -201,14 +206,15 @@ class _PlayerOverlayState extends State<PlayerOverlay>
     _timeSliderTimer = null;
   }
 
+  void _updateTimes() async {
+    Duration currentTime = await widget.controller.currentTime;
+    Duration duration = await widget.controller.duration;
+    _timeSliderController.setTime(currentTime, duration);
+  }
+
   void _updateCurrentTime() async {
     Duration currentTime = await widget.controller.currentTime;
     _timeSliderController.currentTime = currentTime;
-  }
-
-  void _updateDuration() async {
-    Duration duration = await widget.controller.duration;
-    _timeSliderController.duration = duration;
   }
 
   void _updateVolume() async {

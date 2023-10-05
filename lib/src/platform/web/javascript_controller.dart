@@ -6,16 +6,19 @@ import 'package:js/js_util.dart' as js;
 import 'package:js/js.dart';
 
 @JS('state.getCurrentTime')
-external int getCurrentTimeFromJs(String playerId);
+external int getCurrentTime(String playerId);
 
 @JS('state.setCurrentTime')
-external void setCurrentTimeFromJs(String playerId, int currentTimeInSeconds);
+external void setCurrentTime(String playerId, int currentTimeInSeconds);
 
 @JS('state.getDuration')
-external double getDurationFromJs(String playerId);
+external double getDuration(String playerId);
 
 @JS('state.getPlaying')
-external bool getPlayingFromJs(String playerId);
+external bool getPlaying(String playerId);
+
+@JS('state.isLiveStream')
+external bool isLiveStream(String playerId);
 
 @JS('state.getMuted')
 external bool getMuted(String playerId);

@@ -10,6 +10,7 @@ import io.flutter.plugin.common.EventChannel.EventSink
 import io.flutter.view.TextureRegistry
 import video.api.player.ApiVideoPlayerController
 import video.api.player.models.VideoOptions
+import video.api.player.models.VideoType
 
 class FlutterPlayerView(
     context: Context,
@@ -121,6 +122,9 @@ class FlutterPlayerView(
 
     val isPlaying: Boolean
         get() = playerController.isPlaying
+
+    val isLive: Boolean
+        get() = playerController.isLive
 
     var currentTime: Float
         get() = playerController.currentTime

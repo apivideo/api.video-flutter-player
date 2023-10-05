@@ -46,5 +46,5 @@ android {
 }
 
 dependencies {
-    implementation 'video.api:android-player:1.4.1'
+    implementation 'video.api:android-player:1.4.2'
 }

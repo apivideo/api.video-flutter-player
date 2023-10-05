@@ -47,6 +47,14 @@ class FlutterPlayerController {
         }
         return player.isPlaying
     }
+    
+    func isLive(textureId: Int64) -> Bool {
+        guard let player = players[textureId] else {
+            print("Unknown player \(textureId)")
+            return false
+        }
+        return player.isLive
+    }
 
     func getCurrentTime(textureId: Int64) -> Int {
         guard let player = players[textureId] else {
