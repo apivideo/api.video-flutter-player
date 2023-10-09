@@ -33,9 +33,9 @@ class ApiVideoPlayer extends StatefulWidget {
   }
 
   /// Creates a player without controls.
-  factory ApiVideoPlayer.withoutControls(
+  factory ApiVideoPlayer.noControls(
       {Key? key, required ApiVideoPlayerController controller}) {
-    return ApiVideoPlayer(key: key, controller: controller);
+    return ApiVideoPlayer(key: key, controller: controller, child: Container());
   }
 
   /// The controller for the player.

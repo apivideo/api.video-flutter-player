@@ -159,7 +159,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
           width: 300.0,
           height: 300.0,
           child: _hideControls
-              ? ApiVideoPlayer.withoutControls(controller: widget.controller)
+              ? ApiVideoPlayer.noControls(controller: widget.controller)
               : ApiVideoPlayer(
                   controller: widget.controller,
                   style: PlayerStyle.defaultStyle),
