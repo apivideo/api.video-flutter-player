@@ -63,7 +63,7 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
                 controller: _opacityController,
                 child: PlayerOverlay(
                     controller: widget.controller,
-                    style: widget.style,
+                    style: widget.style ?? PlayerStyle.defaultStyle,
                     onItemPress: () {
                       _opacityController.showForDuration();
                     })));
