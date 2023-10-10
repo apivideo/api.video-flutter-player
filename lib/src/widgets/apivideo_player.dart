@@ -20,7 +20,11 @@ import 'package:flutter/material.dart';
 /// ```
 class ApiVideoPlayer extends StatefulWidget {
   const ApiVideoPlayer(
-      {super.key, required this.controller, this.style, this.child});
+      {super.key,
+      required this.controller,
+      this.fit = BoxFit.contain,
+      this.style,
+      this.child});
 
   /// Creates a player with api.video style.
   factory ApiVideoPlayer.styleFromApiVideo(
@@ -44,6 +48,10 @@ class ApiVideoPlayer extends StatefulWidget {
   /// The theme for the player.
   final PlayerStyle? style;
 
+  /// The fit for the video. The overlay is not affected.
+  /// See [BoxFit] for more details.
+  final BoxFit fit;
+
   /// The child widget to display as an overlay on top of the video.
   final Widget? child;
 
@@ -58,6 +66,7 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
   Widget build(BuildContext context) {
     return PlayerVideo(
         controller: widget.controller,
+        fit: widget.fit,
         child: widget.child ??
             TimedOpacity(
                 controller: _opacityController,

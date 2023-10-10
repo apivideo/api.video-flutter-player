@@ -8,9 +8,19 @@ ApiVideoPlayerPlatform get _playerPlatform {
 
 /// A stack containing the video and a child widget.
 class PlayerVideo extends StatefulWidget {
-  const PlayerVideo({super.key, required this.controller, this.child});
+  const PlayerVideo(
+      {super.key,
+      required this.controller,
+      this.fit = BoxFit.contain,
+      this.child});
 
+  /// The controller for the player.
   final ApiVideoPlayerController controller;
+
+  /// The fit for the video. The overlay is not affected.
+  final BoxFit fit;
+
+  /// The child widget to display as an overlay on top of the video.
   final Widget? child;
 
   @override
@@ -31,7 +41,9 @@ class _PlayerVideoState extends State<PlayerVideo> {
   late ApiVideoPlayerControllerEventsListener _eventsListener;
   late ApiVideoPlayerControllerWidgetListener _widgetListener;
   late int _textureId = widget.controller.textureId;
-  double _aspectRatio = 1.0;
+
+  double _aspectRatio = 1.77;
+  Size _size = const Size(1280, 720);
 
   @override
   void initState() {
@@ -67,23 +79,32 @@ class _PlayerVideoState extends State<PlayerVideo> {
         : buildPlayer();
   }
 
-  Widget buildPlayer() => Center(
-        child: AspectRatio(
-            aspectRatio: _aspectRatio,
-            child: Stack(
-              children: [
-                _playerPlatform.buildView(_textureId),
-                Positioned.fill(child: widget.child ?? Container()),
-              ],
-            )),
-      );
+  Widget buildPlayer() => LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+        return Stack(alignment: Alignment.center, children: [
+          // See https://github.com/flutter/flutter/issues/17287
+          SizedBox(
+              width: constraints.maxWidth,
+              height: constraints.maxHeight,
+              child: FittedBox(
+                  fit: widget.fit,
+                  clipBehavior: Clip.hardEdge,
+                  child: Center(
+                      child: SizedBox(
+                          width: _size.width,
+                          height: _size.height,
+                          child: _playerPlatform.buildView(_textureId))))),
+          widget.child ?? Container()
+        ]);
+      });
 
   void _updateAspectRatio() async {
-    final size = await widget.controller.videoSize;
-    final double newAspectRatio = size?.aspectRatio ?? 1.0;
-    if (newAspectRatio != _aspectRatio) {
+    final newSize = await widget.controller.videoSize ?? const Size(1280, 720);
+    final double newAspectRatio = newSize.aspectRatio;
+    if ((newAspectRatio != _aspectRatio) || (newSize != _size)) {
       if (mounted) {
         setState(() {
+          _size = newSize;
           _aspectRatio = newAspectRatio;
         });
       }
