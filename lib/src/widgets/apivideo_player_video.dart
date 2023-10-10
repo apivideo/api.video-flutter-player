@@ -94,9 +94,17 @@ class _PlayerVideoState extends State<PlayerVideo> {
                           width: _size.width,
                           height: _size.height,
                           child: _playerPlatform.buildView(_textureId))))),
-          widget.child ?? Container()
+          buildFittedPlayerOverlay(constraints)
         ]);
       });
+
+  Widget buildFittedPlayerOverlay(BoxConstraints constraints) {
+    final fittedSize = applyBoxFit(widget.fit, _size, constraints.biggest);
+    return SizedBox(
+        width: fittedSize.destination.width,
+        height: fittedSize.destination.height,
+        child: widget.child ?? Container());
+  }
 
   void _updateAspectRatio() async {
     final newSize = await widget.controller.videoSize ?? const Size(1280, 720);

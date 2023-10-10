@@ -155,8 +155,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        Container(
-          color: Colors.black,
+        SizedBox(
           width: 300.0,
           height: 300.0,
           child: _hideControls
