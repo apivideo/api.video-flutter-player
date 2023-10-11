@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 class PlayerStyle {
   const PlayerStyle({
     this.settingsBarStyle,
-    this.controlBarStyle,
+    this.controlsBarStyle,
     this.timeSliderStyle,
   });
 
@@ -16,7 +16,7 @@ class PlayerStyle {
   final SettingsBarStyle? settingsBarStyle;
 
   /// The style of the control buttons (play, pause, rewind, seek forward and backward).
-  final ControlsBarStyle? controlBarStyle;
+  final ControlsBarStyle? controlsBarStyle;
 
   /// The style of the time slider.
   final TimeSliderStyle? timeSliderStyle;
@@ -40,7 +40,7 @@ class PlayerStyle {
               enabledThumbRadius: 6.0,
             )));
 
-    final controlBarStyle =
+    final controlsBarStyle =
         ControlsBarStyle.styleFrom(mainControlButtonStyle: buttonStyle);
 
     final timeSliderStyle = TimeSliderStyle(
@@ -52,18 +52,18 @@ class PlayerStyle {
 
     return PlayerStyle(
         settingsBarStyle: settingsBarStyle,
-        controlBarStyle: controlBarStyle,
+        controlsBarStyle: controlsBarStyle,
         timeSliderStyle: timeSliderStyle);
   }
 
   PlayerStyle copyWith({
     SettingsBarStyle? settingsBarStyle,
-    ControlsBarStyle? controlBarStyle,
+    ControlsBarStyle? controlsBarStyle,
     TimeSliderStyle? timeSliderStyle,
   }) =>
       PlayerStyle(
           settingsBarStyle: settingsBarStyle ?? this.settingsBarStyle,
-          controlBarStyle: controlBarStyle ?? this.controlBarStyle,
+          controlsBarStyle: controlsBarStyle ?? this.controlsBarStyle,
           timeSliderStyle: timeSliderStyle ?? this.timeSliderStyle);
 
   /// Extracts the style of the player from the [context].
@@ -76,7 +76,7 @@ class PlayerStyle {
   /// - [ThemeData.sliderTheme] for the other sliders (except the time slider).
   static PlayerStyle of(BuildContext context) => PlayerStyle(
       settingsBarStyle: SettingsBarStyle.of(context),
-      controlBarStyle: ControlsBarStyle.of(context),
+      controlsBarStyle: ControlsBarStyle.of(context),
       timeSliderStyle: TimeSliderStyle.of(context));
 
   /// The default theme of the player.

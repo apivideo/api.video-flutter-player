@@ -161,7 +161,7 @@ class _PlayerOverlayState extends State<PlayerOverlay>
                   widget.onItemPress!();
                 }
               },
-              style: widget.style?.controlBarStyle,
+              style: widget.style?.controlsBarStyle,
             ),
           ),
           Positioned(
