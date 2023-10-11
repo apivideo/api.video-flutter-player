@@ -1,6 +1,14 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [1.2.0] - 2023-10-11
+- Add support for live stream videos
+- Add support for Android >= 21
+- Add support for Android 34
+- Add a `fit` parameter to `ApiVideoPlayer` to set how the video is displayed in its box
+- Improve the customization of `ApiVideoPlayer` with `PlayerStyle`
+- Refactor widgets to split into several widgets
+
 ## [1.1.0] - 2023-07-26
 - Add support for private videos
 - Add support for playback speed
