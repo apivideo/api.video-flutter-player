@@ -6,7 +6,7 @@ ApiVideoPlayerPlatform get _playerPlatform {
   return ApiVideoPlayerPlatform.instance;
 }
 
-/// A stack containing the video and a child widget.
+/// The [Stack] containing the video and a [child] on top of the video.
 class PlayerVideo extends StatefulWidget {
   const PlayerVideo(
       {super.key,
@@ -17,10 +17,13 @@ class PlayerVideo extends StatefulWidget {
   /// The controller for the player.
   final ApiVideoPlayerController controller;
 
-  /// The fit for the video. The overlay is not affected.
+  /// The [BoxFit] for the video. The [child] is scale to the video box.
   final BoxFit fit;
 
-  /// The child widget to display as an overlay on top of the video.
+  /// The child widget is displayed on top of the video.
+  /// The purpose of this widget is to display an overlay on top of the video.
+  /// It is scaled to the video size.
+  /// By default, the child is an empty [Container].
   final Widget? child;
 
   @override

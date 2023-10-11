@@ -6,10 +6,10 @@ import 'package:apivideo_player/src/widgets/apivideo_player_video.dart';
 import 'package:flutter/material.dart';
 
 /// The main player widget.
-/// It displays a [Stack] containing the video and a child widget.
-/// The child widget is the player overlay by default.
+/// It displays a [Stack] containing the video and a [child] widget on top.
+/// By default, the [child] widget is the [PlayerOverlay] inside a [TimedOpacity].
 ///
-/// To display a custom overlay, use [ApiVideoPlayer] and provide a [child].
+/// Use the [child] to display a custom overlay on top of the video.
 ///
 /// ```dart
 /// Widget build(BuildContext context) {

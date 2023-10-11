@@ -58,15 +58,15 @@ class ApiVideoPlayerController {
     }
   }
 
-  /// Checks if the player has been created.
+  /// Whether the controller has been created.
   Future<bool> get isCreated => _playerPlatform.isCreated(_textureId);
 
-  /// Checks whether the video is playing.
+  /// Whether the video is playing.
   Future<bool> get isPlaying {
     return _playerPlatform.isPlaying(_textureId);
   }
 
-  /// Gets if the current video is a live.
+  /// Whether the current video is a live.
   Future<bool> get isLive async {
     return await _playerPlatform.isLive(_textureId);
   }
@@ -83,33 +83,33 @@ class ApiVideoPlayerController {
         _textureId, currentTime.inMilliseconds);
   }
 
-  /// Retrieves the duration of the video.
+  /// The duration of the video.
   Future<Duration> get duration async {
     final milliseconds = await _playerPlatform.getDuration(_textureId);
     return Duration(milliseconds: milliseconds);
   }
 
-  /// Retrieves the current video options.
+  /// The current video options.
   Future<VideoOptions> get videoOptions {
     return _playerPlatform.getVideoOptions(_textureId);
   }
 
-  /// Sets the video options.
+  /// Sets the video options to play a new video.
   Future<void> setVideoOptions(VideoOptions videoOptions) {
     return _playerPlatform.setVideoOptions(_textureId, videoOptions);
   }
 
-  /// Checks whether the video is autoplayed.
+  /// Whether the video will be play automatically.
   Future<bool> get autoplay {
     return _playerPlatform.getAutoplay(_textureId);
   }
 
-  /// Defines if the video should start playing as soon as it is loaded.
+  /// Sets if the video will be play automatically.
   Future<void> setAutoplay(bool autoplay) {
     return _playerPlatform.setAutoplay(_textureId, autoplay);
   }
 
-  /// Checks whether the video is muted.
+  /// Whether the video is muted.
   Future<bool> get isMuted {
     return _playerPlatform.getIsMuted(_textureId);
   }
@@ -119,22 +119,22 @@ class ApiVideoPlayerController {
     return _playerPlatform.setIsMuted(_textureId, isMuted);
   }
 
-  /// Checks whether the video is in loop mode.
+  /// Whether the video is in loop mode.
   Future<bool> get isLooping {
     return _playerPlatform.getIsLooping(_textureId);
   }
 
-  /// Defines if the video should be played in loop.
+  /// Sets if the video should be played in loop.
   Future<void> setIsLooping(bool isLooping) {
     return _playerPlatform.setIsLooping(_textureId, isLooping);
   }
 
-  /// Retrieves the current volume
+  /// The current audio volume
   Future<double> get volume {
     return _playerPlatform.getVolume(_textureId);
   }
 
-  /// Changes the audio volume to the given value.
+  /// Sets the audio volume.
   ///
   /// From 0 to 1 (0 = muted, 1 = 100%).
   Future<void> setVolume(double volume) {
@@ -144,15 +144,19 @@ class ApiVideoPlayerController {
     return _playerPlatform.setVolume(_textureId, volume);
   }
 
-  Future<void> setSpeedRate(double speedRate) {
-    return _playerPlatform.setPlaybackRate(_textureId, speedRate);
-  }
-
+  /// The playback speed rate.
   Future<double> get speedRate {
     return _playerPlatform.getPlaybackRate(_textureId);
   }
 
-  /// Retrieves the current video size.
+  /// Sets the playback speed rate.
+  ///
+  /// We recommend to set the value from 0.5 to 2 (0.5 = 50%, 2 = 200%).
+  Future<void> setSpeedRate(double speedRate) {
+    return _playerPlatform.setPlaybackRate(_textureId, speedRate);
+  }
+
+  /// The current video size.
   Future<Size?> get videoSize {
     return _playerPlatform.getVideoSize(_textureId);
   }
@@ -228,13 +232,13 @@ class ApiVideoPlayerController {
     eventsListeners.remove(listener);
   }
 
-  /// This is exposed for internal use only. Do not use it.
+  /// Internal use only. Do not use it.
   @internal
   void addWidgetListener(ApiVideoPlayerControllerWidgetListener listener) {
     widgetListeners.add(listener);
   }
 
-  /// This is exposed for internal use only. Do not use it.
+  /// Internal use only. Do not use it.
   @internal
   void removeWidgetListener(ApiVideoPlayerControllerWidgetListener listener) {
     widgetListeners.remove(listener);
@@ -300,6 +304,7 @@ class ApiVideoPlayerController {
   }
 }
 
+/// The controller events listener.
 class ApiVideoPlayerControllerEventsListener {
   final VoidCallback? onReady;
   final VoidCallback? onPlay;

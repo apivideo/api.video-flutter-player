@@ -7,6 +7,7 @@ class TimedOpacityController extends ChangeNotifier {
     this.duration = const Duration(seconds: 4),
   });
 
+  /// The duration to wait before hiding the overlay.
   final Duration duration;
   bool _isVisible = false;
 
@@ -41,11 +42,15 @@ class TimedOpacityController extends ChangeNotifier {
   }
 }
 
+/// A widget that automatically hides its [child] after a given duration.
 class TimedOpacity extends StatefulWidget {
   const TimedOpacity(
       {super.key, required this.controller, required this.child});
 
+  /// The controller for the opacity.
   final TimedOpacityController controller;
+
+  /// The child widget
   final Widget child;
 
   @override
