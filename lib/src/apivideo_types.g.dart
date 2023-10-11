@@ -8,7 +8,7 @@ part of 'apivideo_types.dart';
 
 VideoOptions _$VideoOptionsFromJson(Map<String, dynamic> json) => VideoOptions(
       videoId: json['videoId'] as String,
-      videoType: $enumDecodeNullable(_$VideoTypeEnumMap, json['videoType']) ??
+      type: $enumDecodeNullable(_$VideoTypeEnumMap, json['type']) ??
           VideoType.vod,
       token: json['token'] as String?,
     );
@@ -16,7 +16,7 @@ VideoOptions _$VideoOptionsFromJson(Map<String, dynamic> json) => VideoOptions(
 Map<String, dynamic> _$VideoOptionsToJson(VideoOptions instance) =>
     <String, dynamic>{
       'videoId': instance.videoId,
-      'videoType': _$VideoTypeEnumMap[instance.videoType]!,
+      'type': _$VideoTypeEnumMap[instance.type]!,
       'token': instance.token,
     };
 

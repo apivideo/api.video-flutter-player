@@ -49,6 +49,13 @@ class FlutterPlayerController(
         }
     }
 
+    override fun isLive(textureId: Long): Boolean {
+        return players[textureId]?.isLive ?: run {
+            Log.e(TAG, "Unknown player $textureId")
+            false
+        }
+    }
+
     override fun setCurrentTime(textureId: Long, currentTime: Int) {
         players[textureId]?.let { it.currentTime = currentTime.msToFloat() } ?: Log.e(
             TAG,

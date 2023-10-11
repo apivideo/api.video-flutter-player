@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:apivideo_player/apivideo_player.dart';
-import 'package:apivideo_player/src/apivideo_player_platform_interface.dart';
+import 'package:apivideo_player/src/platform/apivideo_player_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -14,7 +14,7 @@ void main() {
     ApiVideoPlayerPlatform.instance = fakeVideoPlayerPlatform;
 
     final ApiVideoPlayerController controller =
-        ApiVideoPlayerController(videoOptions: VideoOptions(videoId: "test"));
+        ApiVideoPlayerController(videoOptions: VideoOptions(videoId: "test", type: VideoType.vod));
     await controller.initialize();
     expect(fakeVideoPlayerPlatform.calls.first, 'initialize');
     expect(fakeVideoPlayerPlatform.calls[1], 'create');

@@ -26,19 +26,20 @@ class _MyAppState extends State<MyApp> {
   }
 
   void buildVideoOptions() {
-    String? token = _tokenTextEditingController.text.isEmpty
+    final token = _tokenTextEditingController.text.isEmpty
         ? null
         : _tokenTextEditingController.text;
 
+    final videoOptions = VideoOptions(
+        videoId: _videoIdTextEditingController.text,
+        type: VideoType.vod,
+        token: token);
+
     if (_controller == null) {
-      _controller = ApiVideoPlayerController(
-        videoOptions: VideoOptions(
-            videoId: _videoIdTextEditingController.text, token: token),
-        autoplay: true,
-      );
+      _controller =
+          ApiVideoPlayerController(videoOptions: videoOptions, autoplay: true);
     } else {
-      _controller?.setVideoOptions(VideoOptions(
-          videoId: _videoIdTextEditingController.text, token: token));
+      _controller?.setVideoOptions(videoOptions);
     }
   }
 
@@ -119,7 +120,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   void initState() {
     super.initState();
     widget.controller.initialize();
-    widget.controller.addEventsListener(ApiVideoPlayerEventsListener(
+    widget.controller.addListener(ApiVideoPlayerControllerEventsListener(
       onReady: () {
         setState(() {
           _duration = 'Get duration';
@@ -155,12 +156,13 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     return Column(
       children: <Widget>[
         SizedBox(
-          width: 400.0,
+          width: 300.0,
           height: 300.0,
-          child: ApiVideoPlayer(
-            controller: widget.controller,
-            hideControls: _hideControls,
-          ),
+          child: _hideControls
+              ? ApiVideoPlayer.noControls(controller: widget.controller)
+              : ApiVideoPlayer(
+                  controller: widget.controller,
+                  style: PlayerStyle.defaultStyle),
         ),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           IconButton(

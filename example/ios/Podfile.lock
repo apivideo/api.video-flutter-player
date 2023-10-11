@@ -1,10 +1,10 @@
 PODS:
   - apivideo_player (0.0.1):
-    - ApiVideoPlayer (= 1.1.3)
+    - ApiVideoPlayer (= 1.1.4)
     - Flutter
-  - ApiVideoPlayer (1.1.3):
-    - ApiVideoPlayerAnalytics (= 1.0.6)
-  - ApiVideoPlayerAnalytics (1.0.6)
+  - ApiVideoPlayer (1.1.4):
+    - ApiVideoPlayerAnalytics (= 1.1.1)
+  - ApiVideoPlayerAnalytics (1.1.1)
   - Flutter (1.0.0)
 
 DEPENDENCIES:
@@ -23,9 +23,9 @@ EXTERNAL SOURCES:
     :path: Flutter
 
 SPEC CHECKSUMS:
-  apivideo_player: 9f13ba109d77bc0ff76f3e031b1f5b0198220e58
-  ApiVideoPlayer: 1e522152adbebf37cdc4f9a704ad258cdab64ec1
-  ApiVideoPlayerAnalytics: 4770b5546b53bc3d1ecf906c1bc7015b50e5959a
+  apivideo_player: 2c473c47bbce886785fee06428dd83a1bf9989b2
+  ApiVideoPlayer: 6dbb236f0368acd5b51438e8379fb74ccf48182c
+  ApiVideoPlayerAnalytics: f8f5e7e0207aefdb99fb97cee081b1693dacae8a
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
 
 PODFILE CHECKSUM: 7368163408c647b7eb699d0d788ba6718e18fb8d
