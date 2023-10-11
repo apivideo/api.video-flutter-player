@@ -93,7 +93,6 @@ class _TimeSliderState extends State<TimeSlider> {
   @override
   void dispose() {
     widget.controller.removeListener(_didChangeTimeSliderValue);
-    widget.controller.dispose();
     super.dispose();
   }
 

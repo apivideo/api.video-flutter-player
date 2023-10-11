@@ -83,8 +83,13 @@ class _PlayerOverlayState extends State<PlayerOverlay>
 
   @override
   void dispose() {
-    widget.controller.removeListener(_listener);
     _stopRemainingTimeUpdates();
+    widget.controller.removeListener(_listener);
+
+    _timeSliderController.dispose();
+    _controlsBarController.dispose();
+    _settingsBarController.dispose();
+
     super.dispose();
   }
 
@@ -178,19 +183,23 @@ class _PlayerOverlayState extends State<PlayerOverlay>
 
   void _onPlay() {
     _startRemainingTimeUpdates();
-    _controlsBarController.state = ControlsBarState.playing;
+    if (mounted) {
+      _controlsBarController.state = ControlsBarState.playing;
+    }
   }
 
   void _onPause() {
     _stopRemainingTimeUpdates();
-    _controlsBarController.state = ControlsBarState.paused;
+    if (mounted) {
+      _controlsBarController.state = ControlsBarState.paused;
+    }
   }
 
   void _startRemainingTimeUpdates() {
     _timeSliderTimer?.cancel();
     _timeSliderTimer = Timer.periodic(
       const Duration(milliseconds: 100),
-      (_) async {
+      (timer) async {
         final isLive = await widget.controller.isLive;
         if (isLive) {
           _updateTimes();
@@ -209,21 +218,29 @@ class _PlayerOverlayState extends State<PlayerOverlay>
   void _updateTimes() async {
     Duration currentTime = await widget.controller.currentTime;
     Duration duration = await widget.controller.duration;
-    _timeSliderController.setTime(currentTime, duration);
+    if (mounted) {
+      _timeSliderController.setTime(currentTime, duration);
+    }
   }
 
   void _updateCurrentTime() async {
     Duration currentTime = await widget.controller.currentTime;
-    _timeSliderController.currentTime = currentTime;
+    if (mounted) {
+      _timeSliderController.currentTime = currentTime;
+    }
   }
 
   void _updateVolume() async {
     double volume = await widget.controller.volume;
-    _settingsBarController.volume = volume;
+    if (mounted) {
+      _settingsBarController.volume = volume;
+    }
   }
 
   void _updateMuted() async {
     bool isMuted = await widget.controller.isMuted;
-    _settingsBarController.isMuted = isMuted;
+    if (mounted) {
+      _settingsBarController.isMuted = isMuted;
+    }
   }
 }

@@ -73,7 +73,7 @@ class _VolumeSliderState extends State<VolumeSlider>
   }
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     widget.controller.addListener(_didChangeVolumeSliderValue);
     if (mounted) {
@@ -90,6 +90,13 @@ class _VolumeSliderState extends State<VolumeSlider>
       parent: expandController,
       curve: Curves.fastLinearToSlowEaseIn,
     );
+  }
+
+  @override
+  void didUpdateWidget(VolumeSlider oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    oldWidget.controller.removeListener(_didChangeVolumeSliderValue);
+    widget.controller.addListener(_didChangeVolumeSliderValue);
   }
 
   @override

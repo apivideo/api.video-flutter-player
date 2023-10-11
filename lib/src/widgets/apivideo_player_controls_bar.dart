@@ -80,9 +80,15 @@ class _ControlsBarState extends State<ControlsBar> {
   }
 
   @override
+  void didUpdateWidget(ControlsBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    oldWidget.controller.removeListener(_didChangeStateValue);
+    widget.controller.addListener(_didChangeStateValue);
+  }
+
+  @override
   void dispose() {
     widget.controller.removeListener(_didChangeStateValue);
-    widget.controller.dispose();
     super.dispose();
   }
 
