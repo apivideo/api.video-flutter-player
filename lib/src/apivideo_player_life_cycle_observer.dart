@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 
 import '../apivideo_player.dart';
 
+/// The player life cycle observer.
+/// It pauses the player when the app is paused.
+/// It resumes the player when the app is resumed (if the player was playing before).
 class PlayerLifeCycleObserver extends Object with WidgetsBindingObserver {
   final ApiVideoPlayerController controller;
   bool _wasPlayingBeforePause = false;

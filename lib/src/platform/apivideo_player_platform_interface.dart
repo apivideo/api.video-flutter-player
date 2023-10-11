@@ -3,6 +3,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../apivideo_types.dart';
 
+/// The interface that each platform must implement.
 abstract class ApiVideoPlayerPlatform extends PlatformInterface {
   /// Constructs a ApiVideoPlayerPlatform.
   ApiVideoPlayerPlatform() : super(token: _token);

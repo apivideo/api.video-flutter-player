@@ -29,6 +29,7 @@ class ApiVideoPlayerController {
   @internal
   int get textureId => _textureId;
 
+  /// Creates a new controller where each event callbacks are set explicitly.
   ApiVideoPlayerController({
     required VideoOptions videoOptions,
     bool autoplay = false,
@@ -47,6 +48,7 @@ class ApiVideoPlayerController {
         onError: onError));
   }
 
+  /// Creates a new controller with a [ApiVideoPlayerControllerEventsListener].
   ApiVideoPlayerController.fromListener(
       {required VideoOptions videoOptions,
       bool autoplay = false,
@@ -211,8 +213,8 @@ class ApiVideoPlayerController {
   /// Adds an event listener to this controller.
   ///
   /// ```dart
-  /// final ApiVideoPlayerEventsListener _eventsListener =
-  ///    ApiVideoPlayerEventsListener(onPlay: () => print('PLAY'));
+  /// final ApiVideoPlayerControllerEventsListener _eventsListener =
+  ///    ApiVideoPlayerControllerEventsListener(onPlay: () => print('PLAY'));
   ///
   /// controller.addEventsListener(_eventsListener);
   /// ```
@@ -223,8 +225,8 @@ class ApiVideoPlayerController {
   /// Adds an event listener to this controller.
   ///
   /// ```dart
-  /// final ApiVideoPlayerEventsListener _eventsListener =
-  ///    ApiVideoPlayerEventsListener(onPlay: () => print('PLAY'));
+  /// final ApiVideoPlayerControllerEventsListener _eventsListener =
+  ///    ApiVideoPlayerControllerEventsListener(onPlay: () => print('PLAY'));
   ///
   /// controller.removeEventsListener(_eventsListener);
   /// ```
@@ -305,6 +307,7 @@ class ApiVideoPlayerController {
 }
 
 /// The controller events listener.
+/// Use this to listen to the player events.
 class ApiVideoPlayerControllerEventsListener {
   final VoidCallback? onReady;
   final VoidCallback? onPlay;
@@ -324,6 +327,9 @@ class ApiVideoPlayerControllerEventsListener {
       this.onError});
 }
 
+/// The internal controller widget listener.
+/// Uses by the [ApiVideoPlayerController] to notify the widget when the texture is ready.
+/// Only to be used in the Widget that hold the video such as [ApiVideoPlayerVideo].
 class ApiVideoPlayerControllerWidgetListener {
   final VoidCallback? onTextureReady;
 

@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
-import 'apivideo_player_platform_interface.dart';
 import '../apivideo_types.dart';
+import 'apivideo_player_platform_interface.dart';
 
+/// The implementation of [ApiVideoPlayerPlatform] for mobile (Android and iOS).
 class ApiVideoMobilePlayer extends ApiVideoPlayerPlatform {
   final MethodChannel _channel =
       const MethodChannel('video.api.player/controller');
@@ -244,6 +245,7 @@ class ApiVideoMobilePlayer extends ApiVideoPlayerPlatform {
   }
 }
 
+/// Internal extensions on [MethodChannel] to handle [TextureMessage].
 extension MethodChannelExtension on MethodChannel {
   Future<Map<K, V>?> invokeMapMethodWithTexture<K, V>(
       String method, TextureMessage textureMessage,
@@ -258,6 +260,7 @@ extension MethodChannelExtension on MethodChannel {
   }
 }
 
+/// Internal message codec for handling texture id for mobile targets.
 class TextureMessage {
   TextureMessage({
     required this.textureId,

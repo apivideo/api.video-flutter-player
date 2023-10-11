@@ -14,7 +14,7 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import '../apivideo_types.dart';
 import 'apivideo_player_platform_interface.dart';
 
-/// A web implementation of the ApiVideoPlayerPlatform of the ApiVideoPlayer plugin.
+/// The implementation of [ApiVideoPlayerPlatform] for web.
 class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   /// Registers this class as the default instance of [PathProviderPlatform].
   static void registerWith(Registrar registrar) {
