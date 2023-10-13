@@ -4,8 +4,11 @@ part 'apivideo_types.g.dart';
 
 /// The video types enabled by api.video platform.
 enum VideoType {
+  /// Video on demand.
   @JsonValue("vod")
   vod,
+
+  /// Live video.
   @JsonValue("live")
   live
 }
@@ -13,8 +16,13 @@ enum VideoType {
 /// The video options that defines a video on api.video platform.
 @JsonSerializable()
 class VideoOptions {
+  /// The video id from api.video platform.
   String videoId;
+
+  /// The video type. Either [VideoType.vod] or [VideoType.live].
   VideoType type;
+
+  /// The private token if the video is private.
   String? token;
 
   /// Creates a [VideoOptions] object from a [videoId] a [type] and a [token].
