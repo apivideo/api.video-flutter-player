@@ -13,7 +13,7 @@ class PlayerOverlay extends StatefulWidget {
   /// The controller for the player.
   final ApiVideoPlayerController controller;
 
-  /// The theme for the player.
+  /// The style of the player.
   final PlayerStyle? style;
 
   /// The callback to be called when an item (play, pause,...) is clicked (used to show the overlay).

@@ -45,7 +45,7 @@ class ApiVideoPlayer extends StatefulWidget {
   /// The controller for the player.
   final ApiVideoPlayerController controller;
 
-  /// The theme for the player.
+  /// The style of the player.
   final PlayerStyle? style;
 
   /// The fit for the video. The overlay is not affected.
