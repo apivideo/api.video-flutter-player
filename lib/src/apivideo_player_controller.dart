@@ -20,8 +20,8 @@ class ApiVideoPlayerController {
   int _textureId = kUninitializedTextureId;
 
   StreamSubscription<dynamic>? _eventSubscription;
-  List<ApiVideoPlayerControllerEventsListener> eventsListeners = [];
-  List<ApiVideoPlayerControllerWidgetListener> widgetListeners = [];
+  final List<ApiVideoPlayerControllerEventsListener> _eventsListeners = [];
+  final List<ApiVideoPlayerControllerWidgetListener> _widgetListeners = [];
 
   PlayerLifeCycleObserver? _lifeCycleObserver;
 
@@ -40,7 +40,7 @@ class ApiVideoPlayerController {
     Function(Object)? onError,
   })  : _initialAutoplay = autoplay,
         _initialVideoOptions = videoOptions {
-    eventsListeners.add(ApiVideoPlayerControllerEventsListener(
+    _eventsListeners.add(ApiVideoPlayerControllerEventsListener(
         onReady: onReady,
         onPlay: onPlay,
         onPause: onPause,
@@ -56,7 +56,7 @@ class ApiVideoPlayerController {
       : _initialAutoplay = autoplay,
         _initialVideoOptions = videoOptions {
     if (listener != null) {
-      eventsListeners.add(listener);
+      _eventsListeners.add(listener);
     }
   }
 
@@ -177,7 +177,7 @@ class ApiVideoPlayerController {
 
     await _playerPlatform.create(_textureId, _initialVideoOptions);
 
-    for (var listener in [...widgetListeners]) {
+    for (var listener in [..._widgetListeners]) {
       if (listener.onTextureReady != null) {
         listener.onTextureReady!();
       }
@@ -199,7 +199,7 @@ class ApiVideoPlayerController {
   /// Disposes the controller.
   Future<void> dispose() async {
     await _eventSubscription?.cancel();
-    eventsListeners.clear();
+    _eventsListeners.clear();
     await _playerPlatform.dispose(_textureId);
     _lifeCycleObserver?.dispose();
     return;
@@ -219,7 +219,7 @@ class ApiVideoPlayerController {
   /// controller.addEventsListener(_eventsListener);
   /// ```
   void addListener(ApiVideoPlayerControllerEventsListener listener) {
-    eventsListeners.add(listener);
+    _eventsListeners.add(listener);
   }
 
   /// Adds an event listener to this controller.
@@ -231,24 +231,24 @@ class ApiVideoPlayerController {
   /// controller.removeEventsListener(_eventsListener);
   /// ```
   void removeListener(ApiVideoPlayerControllerEventsListener listener) {
-    eventsListeners.remove(listener);
+    _eventsListeners.remove(listener);
   }
 
   /// Internal use only. Do not use it.
   @internal
   void addWidgetListener(ApiVideoPlayerControllerWidgetListener listener) {
-    widgetListeners.add(listener);
+    _widgetListeners.add(listener);
   }
 
   /// Internal use only. Do not use it.
   @internal
   void removeWidgetListener(ApiVideoPlayerControllerWidgetListener listener) {
-    widgetListeners.remove(listener);
+    _widgetListeners.remove(listener);
   }
 
   void _errorListener(Object obj) {
     final PlatformException e = obj as PlatformException;
-    for (var listener in [...eventsListeners]) {
+    for (var listener in [..._eventsListeners]) {
       if (listener.onError != null) {
         listener.onError!(e);
       }
@@ -258,42 +258,42 @@ class ApiVideoPlayerController {
   void _eventListener(PlayerEvent event) {
     switch (event.type) {
       case PlayerEventType.ready:
-        for (var listener in [...eventsListeners]) {
+        for (var listener in [..._eventsListeners]) {
           if (listener.onReady != null) {
             listener.onReady!();
           }
         }
         break;
       case PlayerEventType.played:
-        for (var listener in [...eventsListeners]) {
+        for (var listener in [..._eventsListeners]) {
           if (listener.onPlay != null) {
             listener.onPlay!();
           }
         }
         break;
       case PlayerEventType.paused:
-        for (var listener in [...eventsListeners]) {
+        for (var listener in [..._eventsListeners]) {
           if (listener.onPause != null) {
             listener.onPause!();
           }
         }
         break;
       case PlayerEventType.seek:
-        for (var listener in [...eventsListeners]) {
+        for (var listener in [..._eventsListeners]) {
           if (listener.onSeek != null) {
             listener.onSeek!();
           }
         }
         break;
       case PlayerEventType.seekStarted:
-        for (var listener in [...eventsListeners]) {
+        for (var listener in [..._eventsListeners]) {
           if (listener.onSeekStarted != null) {
             listener.onSeekStarted!();
           }
         }
         break;
       case PlayerEventType.ended:
-        for (var listener in [...eventsListeners]) {
+        for (var listener in [..._eventsListeners]) {
           if (listener.onEnd != null) {
             listener.onEnd!();
           }
