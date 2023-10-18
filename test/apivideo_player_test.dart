@@ -13,8 +13,8 @@ void main() {
         FakeApiVideoPlayerPlatform();
     ApiVideoPlayerPlatform.instance = fakeVideoPlayerPlatform;
 
-    final ApiVideoPlayerController controller =
-        ApiVideoPlayerController(videoOptions: VideoOptions(videoId: "test", type: VideoType.vod));
+    final ApiVideoPlayerController controller = ApiVideoPlayerController(
+        videoOptions: VideoOptions(videoId: "test", type: VideoType.vod));
     await controller.initialize();
     expect(fakeVideoPlayerPlatform.calls.first, 'initialize');
     expect(fakeVideoPlayerPlatform.calls[1], 'create');
