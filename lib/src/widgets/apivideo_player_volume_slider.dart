@@ -102,7 +102,6 @@ class _VolumeSliderState extends State<VolumeSlider>
   @override
   void dispose() {
     widget.controller.removeListener(_didChangeVolumeSliderValue);
-    widget.controller.dispose();
     expandController.dispose();
     super.dispose();
   }
