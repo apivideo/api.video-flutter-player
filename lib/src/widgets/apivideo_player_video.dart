@@ -79,10 +79,10 @@ class _PlayerVideoState extends State<PlayerVideo> {
   Widget build(BuildContext context) {
     return _textureId == ApiVideoPlayerController.kUninitializedTextureId
         ? Container()
-        : buildPlayer();
+        : _buildPlayer();
   }
 
-  Widget buildPlayer() => LayoutBuilder(
+  Widget _buildPlayer() => LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
         return Stack(alignment: Alignment.center, children: [
           // See https://github.com/flutter/flutter/issues/17287
@@ -97,11 +97,11 @@ class _PlayerVideoState extends State<PlayerVideo> {
                           width: _size.width,
                           height: _size.height,
                           child: _playerPlatform.buildView(_textureId))))),
-          buildFittedPlayerOverlay(constraints)
+          _buildFittedPlayerOverlay(constraints)
         ]);
       });
 
-  Widget buildFittedPlayerOverlay(BoxConstraints constraints) {
+  Widget _buildFittedPlayerOverlay(BoxConstraints constraints) {
     final fittedSize = applyBoxFit(widget.fit, _size, constraints.biggest);
     return SizedBox(
         width: fittedSize.destination.width,
