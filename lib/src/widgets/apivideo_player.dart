@@ -23,15 +23,20 @@ class ApiVideoPlayer extends StatefulWidget {
       {super.key,
       required this.controller,
       this.fit = BoxFit.contain,
+      this.controlsVisibilityDuration = const Duration(seconds: 4),
       this.style,
       this.child});
 
   /// Creates a player with api.video style.
   factory ApiVideoPlayer.styleFromApiVideo(
-      {Key? key, required ApiVideoPlayerController controller, Widget? child}) {
+      {Key? key,
+      required ApiVideoPlayerController controller,
+      Duration controlsVisibilityDuration = const Duration(seconds: 4),
+      Widget? child}) {
     return ApiVideoPlayer(
         key: key,
         controller: controller,
+        controlsVisibilityDuration: controlsVisibilityDuration,
         style: PlayerStyle.defaultStyle,
         child: child);
   }
@@ -44,6 +49,9 @@ class ApiVideoPlayer extends StatefulWidget {
 
   /// The controller for the player.
   final ApiVideoPlayerController controller;
+
+  /// The duration to wait before hiding the controls.
+  final Duration controlsVisibilityDuration;
 
   /// The style of the player.
   final PlayerStyle? style;
@@ -60,7 +68,8 @@ class ApiVideoPlayer extends StatefulWidget {
 }
 
 class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
-  final _opacityController = TimedOpacityController();
+  late final _opacityController =
+      TimedOpacityController(duration: widget.controlsVisibilityDuration);
 
   @override
   Widget build(BuildContext context) {
@@ -76,5 +85,11 @@ class _ApiVideoPlayerState extends State<ApiVideoPlayer> {
                     onItemPress: () {
                       _opacityController.showForDuration();
                     })));
+  }
+
+  @override
+  void dispose() {
+    _opacityController.dispose();
+    super.dispose();
   }
 }
