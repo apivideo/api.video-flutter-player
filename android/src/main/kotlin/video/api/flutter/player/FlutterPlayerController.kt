@@ -161,8 +161,8 @@ class FlutterPlayerController(
         }
     }
 
-    override fun setPlaybackSpeed(textureId: Long, speedRate: Double) {
-        players[textureId]?.let { it.playbackSpeed = speedRate.toFloat() } ?: Log.e(
+    override fun setPlaybackSpeed(textureId: Long, playbackSpeed: Double) {
+        players[textureId]?.let { it.playbackSpeed = playbackSpeed.toFloat() } ?: Log.e(
             TAG,
             "Unknown player $textureId"
         )
@@ -181,6 +181,6 @@ class FlutterPlayerController(
     }
 
     companion object {
-        private const val TAG = "ApiVideoPlayerApiController"
+        private const val TAG = "FlutterPlayerController"
     }
 }
