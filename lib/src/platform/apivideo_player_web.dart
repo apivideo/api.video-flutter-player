@@ -286,8 +286,23 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
     }
 
     void injectScripts() {
-      if (document.body?.querySelector('#playersState') == null) {
-        const String jsString = '''
+      document.body?.nodes.add(ScriptElement()
+        ..type = 'text/javascript'
+        ..innerHtml = ''' 
+        // fix JS module loading - https://github.com/flutter/flutter/issues/126713
+        if (typeof window.define == 'function') {
+          delete window.define.amd;
+        }
+        delete window.exports;
+        delete window.module;
+        ''');
+
+      document.body!.nodes.add(ScriptElement()
+        ..src = 'https://unpkg.com/@api.video/player-sdk'
+        ..type = 'application/javascript'
+        ..addEventListener('load', (event) {
+          if (document.body?.querySelector('#playersState') == null) {
+            const String jsString = '''
           window.state = {
             getCurrentTime: async function(playerId) {
               if (!playerId || !window[playerId]) return;
@@ -340,46 +355,47 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
             }
           };
         ''';
-        final ScriptElement script = ScriptElement()
-          ..id = 'playersState'
-          ..innerText = jsString;
-        script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
-        document.body?.insertAdjacentElement('beforeend', script);
-      }
-
-      final String jsString = '''
-        window.player$textureId = new PlayerSdk(
-          "#playerDiv$textureId",
-          { 
-            id: "${_players[textureId]!.videoOptions!.videoId}",
-            chromeless: true,
-            live: ${_players[textureId]!.videoOptions!.type == VideoType.live},
-            autoplay: ${_players[textureId]!.autoplay},
+            final ScriptElement script = ScriptElement()
+              ..id = 'playersState'
+              ..innerText = jsString;
+            script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
+            document.body?.insertAdjacentElement('beforeend', script);
           }
-        );
-      ''';
-      final ScriptElement script = ScriptElement()
-        ..id = 'apiVideoPlayerJsScript$textureId'
-        ..innerText = jsString;
-      script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
-      document.body?.insertAdjacentElement('beforeend', script);
 
-      if (_players[textureId]!.playerEvents == null) {
-        throw Exception('No player events for this texture id: $textureId.');
-      }
-      for (var playerEvent in PlayerEventType.values) {
-        Utils.callJsMethod(
-          textureId: textureId,
-          jsMethodName: 'addEventListener',
-          args: [
-            playerEvent.displayPlayerSdkName,
-            (userData) => _players[textureId]!
-                .playerEvents!
-                .add(PlayerEvent(type: playerEvent)),
-          ],
-        );
-      }
+          final String jsString = '''
+            window.player$textureId = new PlayerSdk(
+              "#playerDiv$textureId",
+              { 
+                id: "${_players[textureId]!.videoOptions!.videoId}",
+                chromeless: true,
+                live: ${_players[textureId]!.videoOptions!.type == VideoType.live},
+                autoplay: ${_players[textureId]!.autoplay},
+              }
+            );
+          ''';
+          final ScriptElement script = ScriptElement()
+            ..id = 'apiVideoPlayerJsScript$textureId'
+            ..innerText = jsString;
+          script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
+          document.body?.insertAdjacentElement('beforeend', script);
 
+          if (_players[textureId]!.playerEvents == null) {
+            throw Exception(
+                'No player events for this texture id: $textureId.');
+          }
+          for (var playerEvent in PlayerEventType.values) {
+            Utils.callJsMethod(
+              textureId: textureId,
+              jsMethodName: 'addEventListener',
+              args: [
+                playerEvent.displayPlayerSdkName,
+                (userData) => _players[textureId]!
+                    .playerEvents!
+                    .add(PlayerEvent(type: playerEvent)),
+              ],
+            );
+          }
+        }));
       // Hide iframe border
       if (document.head != null) {
         StyleElement styleElement = StyleElement();
