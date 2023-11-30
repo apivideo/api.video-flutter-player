@@ -51,9 +51,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
     ui_web.platformViewRegistry.registerViewFactory(
         'playerDiv$textureId', (int viewId) => videoElement);
 
-    _players[textureId]!
-      ..videoOptions = videoOptions
-      ..isCreated = true;
+    _players[textureId]!.videoOptions = videoOptions;
   }
 
   @override
@@ -362,14 +360,19 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
             document.body?.insertAdjacentElement('beforeend', script);
           }
 
+          final player = _players[textureId];
+          if (player == null) {
+            throw Exception('No player found for this texture id: $textureId.');
+          }
+
           final String jsString = '''
             window.player$textureId = new PlayerSdk(
               "#playerDiv$textureId",
               { 
-                id: "${_players[textureId]!.videoOptions!.videoId}",
+                id: "${player.videoOptions!.videoId}",
                 chromeless: true,
-                live: ${_players[textureId]!.videoOptions!.type == VideoType.live},
-                autoplay: ${_players[textureId]!.autoplay},
+                live: ${player.videoOptions!.type == VideoType.live},
+                autoplay: ${player.autoplay},
               }
             );
           ''';
@@ -379,7 +382,9 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
           script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
           document.body?.insertAdjacentElement('beforeend', script);
 
-          if (_players[textureId]!.playerEvents == null) {
+          player.isCreated = true;
+
+          if (player.playerEvents == null) {
             throw Exception(
                 'No player events for this texture id: $textureId.');
           }
@@ -389,9 +394,8 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
               jsMethodName: 'addEventListener',
               args: [
                 playerEvent.displayPlayerSdkName,
-                (userData) => _players[textureId]!
-                    .playerEvents!
-                    .add(PlayerEvent(type: playerEvent)),
+                (userData) =>
+                    player.playerEvents!.add(PlayerEvent(type: playerEvent)),
               ],
             );
           }
