@@ -169,11 +169,14 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       );
 
   @override
-  Future<void> setVolume(int textureId, double volume) => Utils.callJsMethod(
-        textureId: textureId,
-        jsMethodName: 'setVolume',
-        args: [volume],
-      );
+  Future<void> setVolume(int textureId, double volume) async {
+    Utils.callJsMethod(
+      textureId: textureId,
+      jsMethodName: 'setVolume',
+      args: [volume],
+    );
+    return;
+  }
 
   @override
   Future<bool> getIsMuted(int textureId) => Utils.getPromiseFromJs<bool>(
@@ -182,10 +185,13 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       );
 
   @override
-  Future<void> setIsMuted(int textureId, bool isMuted) => Utils.callJsMethod(
-        textureId: textureId,
-        jsMethodName: isMuted ? 'mute' : 'unmute',
-      );
+  Future<void> setIsMuted(int textureId, bool isMuted) async {
+    Utils.callJsMethod(
+      textureId: textureId,
+      jsMethodName: isMuted ? 'mute' : 'unmute',
+    );
+    return;
+  }
 
   @override
   Future<bool> getAutoplay(int textureId) async {
@@ -198,18 +204,19 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
-  Future<void> setAutoplay(int textureId, bool autoplay) {
+  Future<void> setAutoplay(int textureId, bool autoplay) async {
     if (_players[textureId] == null) {
       throw Exception(
         'No player found for this texture id: $textureId. Cannot set autoplay value',
       );
     }
     _players[textureId]!.autoplay = autoplay;
-    return Utils.callJsMethod(
+    Utils.callJsMethod(
       textureId: textureId,
       jsMethodName: 'setAutoplay',
       args: [autoplay],
     );
+    return;
   }
 
   @override
@@ -219,12 +226,14 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       );
 
   @override
-  Future<void> setIsLooping(int textureId, bool isLooping) =>
-      Utils.callJsMethod(
-        textureId: textureId,
-        jsMethodName: 'setLoop',
-        args: [isLooping],
-      );
+  Future<void> setIsLooping(int textureId, bool isLooping) async {
+    Utils.callJsMethod(
+      textureId: textureId,
+      jsMethodName: 'setLoop',
+      args: [isLooping],
+    );
+    return;
+  }
 
   @override
   Future<Size?> getVideoSize(int textureId) async {
@@ -241,12 +250,14 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
-  Future<void> setPlaybackRate(int textureId, double speedRate) =>
-      Utils.callJsMethod(
-        textureId: textureId,
-        jsMethodName: 'setPlaybackRate',
-        args: [speedRate],
-      );
+  Future<void> setPlaybackRate(int textureId, double speedRate) async {
+    Utils.callJsMethod(
+      textureId: textureId,
+      jsMethodName: 'setPlaybackRate',
+      args: [speedRate],
+    );
+    return;
+  }
 
   @override
   Future<double> getPlaybackRate(int textureId) =>
@@ -382,8 +393,6 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
           script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
           document.body?.insertAdjacentElement('beforeend', script);
 
-          player.isCreated = true;
-
           if (player.playerEvents == null) {
             throw Exception(
                 'No player events for this texture id: $textureId.');
@@ -399,7 +408,10 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
               ],
             );
           }
+
+          player.isCreated = true;
         }));
+
       // Hide iframe border
       if (document.head != null) {
         StyleElement styleElement = StyleElement();

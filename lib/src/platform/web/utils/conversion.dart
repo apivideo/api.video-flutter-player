@@ -3,17 +3,17 @@ import 'dart:js_util';
 
 class Utils {
   /// Calls a JS object method that returns void only.
-  static Future<void> callJsMethod({
+  static dynamic callJsMethod({
     required int textureId,
     required String jsMethodName,
     List<dynamic>? args,
-  }) async {
+  }) {
     ArgumentError.checkNotNull(js.context['player$textureId'], 'player');
-    js.JsObject.fromBrowserObject(js.context['player$textureId']).callMethod(
+    return js.JsObject.fromBrowserObject(js.context['player$textureId'])
+        .callMethod(
       jsMethodName,
       args,
     );
-    return;
   }
 
   /// Handle a JS [Promise] that returns a value other than void
