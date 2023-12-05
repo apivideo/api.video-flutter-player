@@ -51,9 +51,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
     ui_web.platformViewRegistry.registerViewFactory(
         'playerDiv$textureId', (int viewId) => videoElement);
 
-    _players[textureId]!
-      ..videoOptions = videoOptions
-      ..isCreated = true;
+    _players[textureId]!.videoOptions = videoOptions;
   }
 
   @override
@@ -171,11 +169,14 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       );
 
   @override
-  Future<void> setVolume(int textureId, double volume) => Utils.callJsMethod(
-        textureId: textureId,
-        jsMethodName: 'setVolume',
-        args: [volume],
-      );
+  Future<void> setVolume(int textureId, double volume) async {
+    Utils.callJsMethod(
+      textureId: textureId,
+      jsMethodName: 'setVolume',
+      args: [volume],
+    );
+    return;
+  }
 
   @override
   Future<bool> getIsMuted(int textureId) => Utils.getPromiseFromJs<bool>(
@@ -184,10 +185,13 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       );
 
   @override
-  Future<void> setIsMuted(int textureId, bool isMuted) => Utils.callJsMethod(
-        textureId: textureId,
-        jsMethodName: isMuted ? 'mute' : 'unmute',
-      );
+  Future<void> setIsMuted(int textureId, bool isMuted) async {
+    Utils.callJsMethod(
+      textureId: textureId,
+      jsMethodName: isMuted ? 'mute' : 'unmute',
+    );
+    return;
+  }
 
   @override
   Future<bool> getAutoplay(int textureId) async {
@@ -200,18 +204,19 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
-  Future<void> setAutoplay(int textureId, bool autoplay) {
+  Future<void> setAutoplay(int textureId, bool autoplay) async {
     if (_players[textureId] == null) {
       throw Exception(
         'No player found for this texture id: $textureId. Cannot set autoplay value',
       );
     }
     _players[textureId]!.autoplay = autoplay;
-    return Utils.callJsMethod(
+    Utils.callJsMethod(
       textureId: textureId,
       jsMethodName: 'setAutoplay',
       args: [autoplay],
     );
+    return;
   }
 
   @override
@@ -221,12 +226,14 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
       );
 
   @override
-  Future<void> setIsLooping(int textureId, bool isLooping) =>
-      Utils.callJsMethod(
-        textureId: textureId,
-        jsMethodName: 'setLoop',
-        args: [isLooping],
-      );
+  Future<void> setIsLooping(int textureId, bool isLooping) async {
+    Utils.callJsMethod(
+      textureId: textureId,
+      jsMethodName: 'setLoop',
+      args: [isLooping],
+    );
+    return;
+  }
 
   @override
   Future<Size?> getVideoSize(int textureId) async {
@@ -243,12 +250,14 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
   }
 
   @override
-  Future<void> setPlaybackRate(int textureId, double speedRate) =>
-      Utils.callJsMethod(
-        textureId: textureId,
-        jsMethodName: 'setPlaybackRate',
-        args: [speedRate],
-      );
+  Future<void> setPlaybackRate(int textureId, double speedRate) async {
+    Utils.callJsMethod(
+      textureId: textureId,
+      jsMethodName: 'setPlaybackRate',
+      args: [speedRate],
+    );
+    return;
+  }
 
   @override
   Future<double> getPlaybackRate(int textureId) =>
@@ -286,8 +295,23 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
     }
 
     void injectScripts() {
-      if (document.body?.querySelector('#playersState') == null) {
-        const String jsString = '''
+      document.body?.nodes.add(ScriptElement()
+        ..type = 'text/javascript'
+        ..innerHtml = ''' 
+        // fix JS module loading - https://github.com/flutter/flutter/issues/126713
+        if (typeof window.define == 'function') {
+          delete window.define.amd;
+        }
+        delete window.exports;
+        delete window.module;
+        ''');
+
+      document.body!.nodes.add(ScriptElement()
+        ..src = 'https://unpkg.com/@api.video/player-sdk'
+        ..type = 'application/javascript'
+        ..addEventListener('load', (event) {
+          if (document.body?.querySelector('#playersState') == null) {
+            const String jsString = '''
           window.state = {
             getCurrentTime: async function(playerId) {
               if (!playerId || !window[playerId]) return;
@@ -340,45 +364,53 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
             }
           };
         ''';
-        final ScriptElement script = ScriptElement()
-          ..id = 'playersState'
-          ..innerText = jsString;
-        script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
-        document.body?.insertAdjacentElement('beforeend', script);
-      }
-
-      final String jsString = '''
-        window.player$textureId = new PlayerSdk(
-          "#playerDiv$textureId",
-          { 
-            id: "${_players[textureId]!.videoOptions!.videoId}",
-            chromeless: true,
-            live: ${_players[textureId]!.videoOptions!.type == VideoType.live},
-            autoplay: ${_players[textureId]!.autoplay},
+            final ScriptElement script = ScriptElement()
+              ..id = 'playersState'
+              ..innerText = jsString;
+            script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
+            document.body?.insertAdjacentElement('beforeend', script);
           }
-        );
-      ''';
-      final ScriptElement script = ScriptElement()
-        ..id = 'apiVideoPlayerJsScript$textureId'
-        ..innerText = jsString;
-      script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
-      document.body?.insertAdjacentElement('beforeend', script);
 
-      if (_players[textureId]!.playerEvents == null) {
-        throw Exception('No player events for this texture id: $textureId.');
-      }
-      for (var playerEvent in PlayerEventType.values) {
-        Utils.callJsMethod(
-          textureId: textureId,
-          jsMethodName: 'addEventListener',
-          args: [
-            playerEvent.displayPlayerSdkName,
-            (userData) => _players[textureId]!
-                .playerEvents!
-                .add(PlayerEvent(type: playerEvent)),
-          ],
-        );
-      }
+          final player = _players[textureId];
+          if (player == null) {
+            throw Exception('No player found for this texture id: $textureId.');
+          }
+
+          final String jsString = '''
+            window.player$textureId = new PlayerSdk(
+              "#playerDiv$textureId",
+              { 
+                id: "${player.videoOptions!.videoId}",
+                chromeless: true,
+                live: ${player.videoOptions!.type == VideoType.live},
+                autoplay: ${player.autoplay},
+              }
+            );
+          ''';
+          final ScriptElement script = ScriptElement()
+            ..id = 'apiVideoPlayerJsScript$textureId'
+            ..innerText = jsString;
+          script.innerHtml = script.innerHtml?.replaceAll('<br>', '');
+          document.body?.insertAdjacentElement('beforeend', script);
+
+          if (player.playerEvents == null) {
+            throw Exception(
+                'No player events for this texture id: $textureId.');
+          }
+          for (var playerEvent in PlayerEventType.values) {
+            Utils.callJsMethod(
+              textureId: textureId,
+              jsMethodName: 'addEventListener',
+              args: [
+                playerEvent.displayPlayerSdkName,
+                (userData) =>
+                    player.playerEvents!.add(PlayerEvent(type: playerEvent)),
+              ],
+            );
+          }
+
+          player.isCreated = true;
+        }));
 
       // Hide iframe border
       if (document.head != null) {
