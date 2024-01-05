@@ -82,6 +82,7 @@ Once instantiated, you need to initialize the controller by calling its `initial
 ```dart
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+  // For private video: VideoOptions(videoId: "YOUR_VIDEO_ID", token: "YOUR_PRIVATE_TOKEN")
 );
 
 await controller.initialize();
@@ -106,6 +107,7 @@ The [ApiVideoPlayer](https://github.com/apivideo/api.video-flutter-player/blob/m
 
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+  // For private video: VideoOptions(videoId: "YOUR_VIDEO_ID", token: "YOUR_PRIVATE_TOKEN")
 );
 
 await controller.initialize();
@@ -139,6 +141,7 @@ Example:
 
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+  // For private video: VideoOptions(videoId: "YOUR_VIDEO_ID", token: "YOUR_PRIVATE_TOKEN")
 );
 
 await controller.initialize();
@@ -169,6 +172,7 @@ Example:
 
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+  // For private video: VideoOptions(videoId: "YOUR_VIDEO_ID", token: "YOUR_PRIVATE_TOKEN")
 );
 
 await controller.initialize();
@@ -186,6 +190,7 @@ When you instantiate a new [ApiVideoPlayerController](https://github.com/apivide
 
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+  // For private video: VideoOptions(videoId: "YOUR_VIDEO_ID", token: "YOUR_PRIVATE_TOKEN")
   onPlay: () => print('PLAY'),
   onPause: () => print('PAUSE'),
 );
@@ -199,6 +204,7 @@ Once the [ApiVideoPlayerController](https://github.com/apivideo/api.video-flutte
 
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+  // For private video: VideoOptions(videoId: "YOUR_VIDEO_ID", token: "YOUR_PRIVATE_TOKEN")
 );
 
 await controller.initialize();
@@ -227,6 +233,7 @@ To remove an event listener, you need to call the controller's `removeListener` 
 
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
   videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+  // For private video: VideoOptions(videoId: "YOUR_VIDEO_ID", token: "YOUR_PRIVATE_TOKEN")
 );
 
 await controller.initialize();
@@ -259,6 +266,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final ApiVideoPlayerController _controller = ApiVideoPlayerController(
     videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+    // For private video: VideoOptions(videoId: "YOUR_VIDEO_ID", token: "YOUR_PRIVATE_TOKEN")
     onPlay: () => print('PLAY'),
   );
   String _duration = 'Get duration';
