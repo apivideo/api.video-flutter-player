@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 
 class MultiTextButton extends StatefulWidget {
   MultiTextButton({
-    Key? key,
+    super.key,
     required this.keysValues,
     required this.onValueChanged,
     this.defaultKey,
     this.size = 15,
     this.style,
   })  : assert(keysValues.isNotEmpty),
-        assert(defaultKey == null || keysValues.containsKey(defaultKey)),
-        super(key: key);
+        assert(defaultKey == null || keysValues.containsKey(defaultKey));
 
   final Map<String, dynamic> keysValues;
 
