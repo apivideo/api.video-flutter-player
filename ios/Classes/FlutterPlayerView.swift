@@ -52,7 +52,7 @@ class FlutterPlayerView: NSObject, FlutterStreamHandler {
             playerController.videoOptions = newValue
         }
     }
-    
+
     var isPlaying: Bool {
         playerController.isPlaying
     }

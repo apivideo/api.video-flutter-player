@@ -224,10 +224,10 @@ class MethodCallHandler {
                 case Keys.getPlaybackSpeed:
                     guard let args = call.arguments as? [String: Any],
                           let textureId = args[Keys.textureId] as? Int
-                        else {
-                            result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
-                            return
-                        }
+                    else {
+                        result(FlutterError(code: "invalid_parameter", message: "Failed to get texture id", details: nil))
+                        return
+                    }
                     result(["speedRate": self?.controller.getPlaybackSpeed(textureId: Int64(textureId))])
                 default:
                     result(FlutterMethodNotImplemented)
@@ -295,8 +295,6 @@ extension VideoType {
             return Keys.vod
         case VideoType.live:
             return Keys.live
-        default:
-            return Keys.vod
         }
     }
 }
@@ -312,7 +310,7 @@ extension VideoOptions {
         return [
             "videoId": videoId,
             "type": videoType.toString(),
-            "token": token ?? nil
+            "token": token ?? nil,
         ]
     }
 }

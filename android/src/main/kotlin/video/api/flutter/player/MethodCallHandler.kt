@@ -105,6 +105,7 @@ class MethodCallHandler(
             }
             SET_VIDEO_OPTIONS -> {
                 val videoOptions = try {
+                    @Suppress("UNCHECKED_CAST")
                     ((call.arguments as Map<*, *>)["videoOptions"] as Map<String, Any>).videoOptions
                 } catch (e: Exception) {
                     result.error("invalid_parameter", "Invalid video options", e)
