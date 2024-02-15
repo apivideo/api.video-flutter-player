@@ -6,10 +6,13 @@ PODS:
     - ApiVideoPlayerAnalytics (= 1.1.1)
   - ApiVideoPlayerAnalytics (1.1.1)
   - Flutter (1.0.0)
+  - pointer_interceptor_ios (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - apivideo_player (from `.symlinks/plugins/apivideo_player/ios`)
   - Flutter (from `Flutter`)
+  - pointer_interceptor_ios (from `.symlinks/plugins/pointer_interceptor_ios/ios`)
 
 SPEC REPOS:
   trunk:
@@ -21,13 +24,16 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/apivideo_player/ios"
   Flutter:
     :path: Flutter
+  pointer_interceptor_ios:
+    :path: ".symlinks/plugins/pointer_interceptor_ios/ios"
 
 SPEC CHECKSUMS:
   apivideo_player: 2c473c47bbce886785fee06428dd83a1bf9989b2
   ApiVideoPlayer: 6dbb236f0368acd5b51438e8379fb74ccf48182c
   ApiVideoPlayerAnalytics: f8f5e7e0207aefdb99fb97cee081b1693dacae8a
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  pointer_interceptor_ios: 9280618c0b2eeb80081a343924aa8ad756c21375
 
-PODFILE CHECKSUM: 7368163408c647b7eb699d0d788ba6718e18fb8d
+PODFILE CHECKSUM: 4e8f8b2be68aeea4c0d5beb6ff1e79fface1d048
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.15.2
