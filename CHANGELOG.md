@@ -2,6 +2,11 @@
 
 All changes to this project will be documented in this file.
 
+## [1.2.2] - 2024-02-15
+
+- Android: upgrade to gradle 8, AGP and Kotlin to 1.9
+- Fix few warnings
+
 ## [1.2.1] - 2023-12-05
 
 - Add an API to set the duration when the overlay is displayed
