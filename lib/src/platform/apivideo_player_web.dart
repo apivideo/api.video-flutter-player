@@ -297,7 +297,7 @@ class ApiVideoPlayerPlugin extends ApiVideoPlayerPlatform {
     void injectScripts() {
       document.body?.nodes.add(ScriptElement()
         ..type = 'text/javascript'
-        ..innerHtml = ''' 
+        ..innerHtml = '''
         // fix JS module loading - https://github.com/flutter/flutter/issues/126713
         if (typeof window.define == 'function') {
           delete window.define.amd;
