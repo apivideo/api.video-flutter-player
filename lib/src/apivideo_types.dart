@@ -16,7 +16,7 @@ enum VideoType {
 /// The video options that defines a video on api.video platform.
 @JsonSerializable()
 class VideoOptions {
-  /// The video id from api.video platform.
+  /// The video id or live stream id from api.video platform.
   String videoId;
 
   /// The video type. Either [VideoType.vod] or [VideoType.live].

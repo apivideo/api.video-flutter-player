@@ -81,7 +81,7 @@ Once instantiated, you need to initialize the controller by calling its `initial
 
 ```dart
 final ApiVideoPlayerController controller = ApiVideoPlayerController(
-  videoOptions: VideoOptions(videoId: 'VIDEO_ID'),
+  videoOptions: VideoOptions(videoId: 'VIDEO_ID'), // `VIDEO_ID` is the video id or the live stream id
   // For private video: VideoOptions(videoId: "YOUR_VIDEO_ID", token: "YOUR_PRIVATE_TOKEN")
 );
 
