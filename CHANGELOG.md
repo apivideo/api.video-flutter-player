@@ -2,6 +2,11 @@
 
 All changes to this project will be documented in this file.
 
+## [1.3.0] - 2024-03-01
+
+- iOS: add support for private live stream
+- web: format file to fix pub points
+
 ## [1.2.2] - 2024-02-15
 
 - Android: upgrade to gradle 8, AGP and Kotlin to 1.9
