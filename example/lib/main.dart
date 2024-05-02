@@ -32,7 +32,6 @@ class _MyAppState extends State<MyApp> {
 
     final videoOptions = VideoOptions(
         videoId: _videoIdTextEditingController.text,
-        type: VideoType.vod,
         token: token);
 
     if (_controller == null) {
