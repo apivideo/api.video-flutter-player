@@ -98,7 +98,7 @@ class MethodCallHandler(
                     val videoOptions =
                         controller.getVideoOptions(it)!! // As it is mandatory to set a video option. This should never be null.
                     val reply: MutableMap<String, Any> = HashMap()
-                    reply["videoId"] = videoOptions.videoId
+                    reply["videoId"] = videoOptions.mediaId
                     reply["type"] = videoOptions.videoType.toFlutterString()
                     result.success(reply)
                 }
