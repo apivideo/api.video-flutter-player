@@ -2,6 +2,15 @@
 
 All changes to this project will be documented in this file.
 
+## [1.4.0] - 2024-07-26
+
+- Use Analytics endpoint v2
+- android: gradle: remove imperative apply
+- android: fix `setIsMuted` method. See [#56](https://github.com/apivideo/api.video-flutter-player/issues/56)
+- android: fix crash due to missing `release` of the `MediaSession`. See [#58](https://github.com/apivideo/api.video-flutter-player/issues/58)
+- example: infer video type from mediaId
+- upgrade dependencies
+
 ## [1.3.0] - 2024-03-01
 
 - iOS: add support for private live stream
